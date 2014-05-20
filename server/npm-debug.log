@@ -1,0 +1,67 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/usr/bin/npm', 'install' ]
+info using npm@1.1.4
+info using node@v0.6.12
+verbose config file /home/mcortes/.npmrc
+verbose config file /usr/etc/npmrc
+verbose config file /usr/share/npm/npmrc
+verbose caching /home/mcortes/dev/Proyecto/dev/proyectofinal/server/package.json
+verbose loadDefaults node-api-rest-server-tutti-frutti@0.0.1
+verbose readDependencies: using package.json deps
+verbose where, deps [ '/home/mcortes/dev/Proyecto/dev/proyectofinal/server',
+verbose where, deps   [ 'express', 'mongoose' ] ]
+verbose from cache /home/mcortes/dev/Proyecto/dev/proyectofinal/server/package.json
+info preinstall node-api-rest-server-tutti-frutti@0.0.1
+verbose from cache /home/mcortes/dev/Proyecto/dev/proyectofinal/server/package.json
+verbose readDependencies: using package.json deps
+verbose cache add [ 'express@3.x', null ]
+silly cache add: name, spec, args [ undefined, 'express@3.x', [ 'express@3.x', null ] ]
+verbose parsed url { pathname: 'express@3.x',
+verbose parsed url   path: 'express@3.x',
+verbose parsed url   href: 'express@3.x' }
+silly cache add: name, spec, args [ 'express', '3.x', [ 'express', '3.x' ] ]
+verbose parsed url { pathname: '3.x', path: '3.x', href: '3.x' }
+verbose addNamed [ 'express', '3.x' ]
+verbose addNamed [ null, '>=3.0.0- <4.0.0-' ]
+silly name, range, hasData [ 'express', '>=3.0.0- <4.0.0-', false ]
+verbose raw, before any munging express
+verbose url resolving [ 'https://registry.npmjs.org/', './express' ]
+verbose url resolved https://registry.npmjs.org/express
+http GET https://registry.npmjs.org/express
+verbose cache add [ 'mongoose@3.x', null ]
+silly cache add: name, spec, args [ undefined, 'mongoose@3.x', [ 'mongoose@3.x', null ] ]
+verbose parsed url { pathname: 'mongoose@3.x',
+verbose parsed url   path: 'mongoose@3.x',
+verbose parsed url   href: 'mongoose@3.x' }
+silly cache add: name, spec, args [ 'mongoose', '3.x', [ 'mongoose', '3.x' ] ]
+verbose parsed url { pathname: '3.x', path: '3.x', href: '3.x' }
+verbose addNamed [ 'mongoose', '3.x' ]
+verbose addNamed [ null, '>=3.0.0- <4.0.0-' ]
+silly name, range, hasData [ 'mongoose', '>=3.0.0- <4.0.0-', false ]
+verbose raw, before any munging mongoose
+verbose url resolving [ 'https://registry.npmjs.org/', './mongoose' ]
+verbose url resolved https://registry.npmjs.org/mongoose
+http GET https://registry.npmjs.org/mongoose
+ERR! Error: failed to fetch from registry: mongoose
+ERR!     at /usr/share/npm/lib/utils/npm-registry-client/get.js:139:12
+ERR!     at cb (/usr/share/npm/lib/utils/npm-registry-client/request.js:31:9)
+ERR!     at Request._callback (/usr/share/npm/lib/utils/npm-registry-client/request.js:136:18)
+ERR!     at Request.callback (/usr/lib/nodejs/request/main.js:119:22)
+ERR!     at Request.<anonymous> (/usr/lib/nodejs/request/main.js:212:58)
+ERR!     at Request.emit (events.js:88:20)
+ERR!     at ClientRequest.<anonymous> (/usr/lib/nodejs/request/main.js:412:12)
+ERR!     at ClientRequest.emit (events.js:67:17)
+ERR!     at HTTPParser.onIncoming (http.js:1261:11)
+ERR!     at HTTPParser.onHeadersComplete (http.js:102:31)
+ERR! You may report this log at:
+ERR!     <http://bugs.debian.org/npm>
+ERR! or use
+ERR!     reportbug --attach /home/mcortes/dev/Proyecto/dev/proyectofinal/server/npm-debug.log npm
+ERR! 
+ERR! System Linux 3.5.0-49-generic
+ERR! command "node" "/usr/bin/npm" "install"
+ERR! cwd /home/mcortes/dev/Proyecto/dev/proyectofinal/server
+ERR! node -v v0.6.12
+ERR! npm -v 1.1.4
+ERR! message failed to fetch from registry: mongoose
+verbose exit [ 1, true ]
