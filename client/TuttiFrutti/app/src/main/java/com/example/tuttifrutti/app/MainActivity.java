@@ -1,12 +1,15 @@
 package com.example.tuttifrutti.app;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.view.View;
 
 public class MainActivity extends ActionBarActivity {
+
+    public final static String GAME_ID_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMEID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,5 +37,15 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void launchRound(View view) {
+
+        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
+        // aca en algun lado deberia saber el ID de la partida o ronda
+        intent.putExtra(GAME_ID_EXTRA_MESSAGE, 3);
+
+        startActivity(intent);
+    }
+
 
 }

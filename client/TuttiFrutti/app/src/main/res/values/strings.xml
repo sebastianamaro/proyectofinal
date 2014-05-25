@@ -4,6 +4,6 @@
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_play_round">PlayRoundActivity</string>
+    <string name="title_activity_play_round">Ronda X</string>
 
 </resources>

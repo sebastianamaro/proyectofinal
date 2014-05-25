@@ -1,5 +1,6 @@
 package com.example.tuttifrutti.app;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,10 @@ public class PlayRoundActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_round);
+
+        Intent intent = getIntent();
+
+        String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
     }
 
 
