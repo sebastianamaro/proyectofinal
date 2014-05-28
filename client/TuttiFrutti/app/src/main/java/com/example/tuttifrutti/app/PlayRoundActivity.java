@@ -1,13 +1,21 @@
 package com.example.tuttifrutti.app;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 
-public class PlayRoundActivity extends ActionBarActivity {
+public class PlayRoundActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +25,58 @@ public class PlayRoundActivity extends ActionBarActivity {
         Intent intent = getIntent();
 
         String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
+        //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
+        //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
+        //todo: arrancar el timer
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(new SampleFragmentPagerAdapter());
+
+    }
+
+    public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
+        final int PAGE_COUNT = 5;
+        public SampleFragmentPagerAdapter() {
+            super(getSupportFragmentManager());
+        }
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+        @Override
+        public Fragment getItem(int position) {
+            return CategoryFragment.create(position + 1);
+        }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "Page " + (position + 1);
+        }
+    }
+
+    public static class CategoryFragment extends Fragment {
+        public static final String ARG_PAGE = "ARG_PAGE";
+        private int mPage;
+        public static CategoryFragment create(int page) {
+            Bundle args = new Bundle();
+            args.putInt(ARG_PAGE, page);
+            CategoryFragment fragment = new CategoryFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            mPage = getArguments().getInt(ARG_PAGE);
+        }
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            //aca obttengo el control que esta adentro del layout que va a tener cada fragment
+            View view = inflater.inflate(R.layout.fragment_page, container, false);
+            TextView textView = (TextView) view;
+            textView.setText("Fragment #" + mPage);
+            return view;
+        }
     }
 
 
