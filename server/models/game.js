@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var round = new Schema({
   letter:   { type: String },
-  gameId:   { type: String },
+  roundId:   { type: String },
   status:   { type: String },
   startTimestamp: { type: Date }
 });
@@ -11,7 +11,8 @@ var round = new Schema({
 var game = new Schema({
   gameId:   { type: String },
   startTimestamp: { type: Date }, 
-  rounds: [round.schema]
+  rounds: [round.schema],
+  categories: [ {type: String} ]
 });
 
 module.exports = mongoose.model('Game', game);
