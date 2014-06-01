@@ -30,14 +30,15 @@
                 android:id="@+id/categoryValue"
                 android:layout_below="@+id/currentLetter"
                 android:layout_marginTop="70dp"
-                android:inputType="textNoSuggestions|text"
+                android:inputType="textNoSuggestions|textCapWords|text"
                 android:enabled="true"
                 android:layout_alignLeft="@+id/currentLetter"
                 android:layout_alignStart="@+id/currentLetter"
                 android:background="@drawable/back"
                 android:layout_alignRight="@+id/currentLetter"
                 android:layout_alignEnd="@+id/currentLetter"
-                />
+                android:capitalize="words"
+                android:singleLine="true" />
     </FrameLayout>
 
 </RelativeLayout>
