@@ -1,21 +1,27 @@
 package com.example.tuttifrutti.app;
 
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
-public class PlayRoundActivity extends FragmentActivity {
+public class PlayRoundActivity extends FragmentActivity implements
+        ActionBar.TabListener {
+
+    private String[] categories;
+    private String currentLetter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,39 +32,86 @@ public class PlayRoundActivity extends FragmentActivity {
 
         String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
         //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
+        categories = new String[6];
+        categories[0] = "Animales";
+        categories[1] = "Deportes";
+        categories[2] = "Paises";
+        categories[3] = "Frutas";
+        categories[4] = "Marcas de Auto";
+        categories[5] = "Colores";
+
+        currentLetter = "F";
         //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
         //todo: arrancar el timer
+
+        final ActionBar actionBar = getActionBar();
+        // Specify that tabs should be displayed in the action bar.
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        for (String category : categories) {
+            actionBar.addTab(actionBar.newTab().setText(category)
+                    .setTabListener(this));
+        }
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
 
+        viewPager.setOnPageChangeListener(
+                new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        // When swiping between pages, select the
+                        // corresponding tab.
+                        getActionBar().setSelectedNavigationItem(position);
+                    }
+                });
+
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        //guardar lo que tiene su textbox en la sesion
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        //setear en el textbox lo que tengo en sesion
     }
 
     public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 5;
         public SampleFragmentPagerAdapter() {
             super(getSupportFragmentManager());
         }
         @Override
         public int getCount() {
-            return PAGE_COUNT;
+            return categories.length;
         }
         @Override
         public Fragment getItem(int position) {
-            return CategoryFragment.create(position + 1);
+            return CategoryFragment.create(categories[position], currentLetter);
         }
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page " + (position + 1);
+            return categories[position];
         }
     }
 
     public static class CategoryFragment extends Fragment {
-        public static final String ARG_PAGE = "ARG_PAGE";
-        private int mPage;
-        public static CategoryFragment create(int page) {
+        public static final String ARG_CATEGORY = "ARG_CATEGORYNAME";
+        public static final String ARG_LETTER = "ARG_LETTER";
+        private String categoryName;
+        private String currentLetter;
+
+        public static CategoryFragment create(String categoryName, String currentLetter) {
             Bundle args = new Bundle();
-            args.putInt(ARG_PAGE, page);
+            args.putString(ARG_CATEGORY, categoryName);
+            args.putString(ARG_LETTER, currentLetter);
             CategoryFragment fragment = new CategoryFragment();
             fragment.setArguments(args);
             return fragment;
@@ -66,15 +119,22 @@ public class PlayRoundActivity extends FragmentActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mPage = getArguments().getInt(ARG_PAGE);
+            categoryName = getArguments().getString("ARG_CATEGORYNAME");
+            currentLetter = getArguments().getString("ARG_LETTER");
         }
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            //aca obttengo el control que esta adentro del layout que va a tener cada fragment
+
+            //aca obtengo el control que esta adentro del layout que va a tener cada fragment
             View view = inflater.inflate(R.layout.fragment_page, container, false);
-            TextView textView = (TextView) view;
-            textView.setText("Fragment #" + mPage);
+
+            TextView letter = (TextView)view.findViewById(R.id.currentLetter);
+            letter.setText(currentLetter);
+
+            EditText textView = (EditText)view.findViewById(R.id.categoryValue);;
+            textView.setText(categoryName); //solo para probar que me encuentre el textbox
+
             return view;
         }
     }
