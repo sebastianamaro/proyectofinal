@@ -1,7 +1,10 @@
 var express = require("express"),
     app     = express(),
     http    = require("http"),
-    server  = http.createServer(app);
+    server  = http.createServer(app),
+    mongoose = require('mongoose'); 
+
+routes = require('./routes/game.js')(app);
 
 app.configure(function () {
   app.use(express.bodyParser());
@@ -9,10 +12,18 @@ app.configure(function () {
   app.use(app.router);
 });
 
-app.get('/', function(req, res) {
-  res.send("Hello world!");
+app.get('/game/:id/round', startRound);
+
+mongoose.connect('mongodb://localhost:30000', function(err, res) {
+  if(err) {
+    console.log('ERROR: connecting to Database. ' + err);
+  } else {
+    console.log('Connected to Database');
+  }
 });
 
 server.listen(3000, function() {
   console.log("Node server running on http://localhost:3000");
 });
+
+
