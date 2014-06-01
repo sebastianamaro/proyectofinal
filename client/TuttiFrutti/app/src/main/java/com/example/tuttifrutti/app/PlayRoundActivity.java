@@ -8,13 +8,23 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 
 public class PlayRoundActivity extends FragmentActivity implements
@@ -22,7 +32,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     private String[] categories;
     private String currentLetter;
-
+    private String fileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +41,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         Intent intent = getIntent();
 
         String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
+        Integer roundId = 98;
+
         //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
         categories = new String[6];
         categories[0] = "Animales";
@@ -43,6 +55,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         currentLetter = "F";
         //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
         //todo: arrancar el timer
+
+        fileName = getCacheDir().getAbsolutePath() + "/hola.txt";
 
         final ActionBar actionBar = getActionBar();
         // Specify that tabs should be displayed in the action bar.
@@ -94,7 +108,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
         @Override
         public Fragment getItem(int position) {
-            return CategoryFragment.create(categories[position], currentLetter);
+            return CategoryFragment.create(categories[position], currentLetter, fileName);
         }
         @Override
         public CharSequence getPageTitle(int position) {
@@ -105,13 +119,15 @@ public class PlayRoundActivity extends FragmentActivity implements
     public static class CategoryFragment extends Fragment {
         public static final String ARG_CATEGORY = "ARG_CATEGORYNAME";
         public static final String ARG_LETTER = "ARG_LETTER";
+        public static final String ARG_FILENAME = "ARG_FILENAME";
         private String categoryName;
         private String currentLetter;
-
-        public static CategoryFragment create(String categoryName, String currentLetter) {
+        private String fileName;
+        public static CategoryFragment create(String categoryName, String currentLetter, String fileName) {
             Bundle args = new Bundle();
             args.putString(ARG_CATEGORY, categoryName);
             args.putString(ARG_LETTER, currentLetter);
+            args.putString(ARG_FILENAME,fileName);
             CategoryFragment fragment = new CategoryFragment();
             fragment.setArguments(args);
             return fragment;
@@ -121,6 +137,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             super.onCreate(savedInstanceState);
             categoryName = getArguments().getString("ARG_CATEGORYNAME");
             currentLetter = getArguments().getString("ARG_LETTER");
+            fileName = getArguments().getString("ARG_FILENAME");
         }
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -132,13 +149,78 @@ public class PlayRoundActivity extends FragmentActivity implements
             TextView letter = (TextView)view.findViewById(R.id.currentLetter);
             letter.setText(currentLetter);
 
-            EditText textView = (EditText)view.findViewById(R.id.categoryValue);;
-            textView.setText(categoryName); //solo para probar que me encuentre el textbox
+            EditText textView = (EditText)view.findViewById(R.id.categoryValue);
+
+            textView.addTextChangedListener(new GenericTextWatcher(textView,fileName));
+            textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                        String newText = v.getText().toString();
+
+                        //todo: guardarlo en el local storage
+                        File file= new File(fileName);
+
+                        try {
+                            if(!file.exists())
+                                file.createNewFile();
+                            else {
+                                //TODO leer archivo y deserializar con GSON
+                            }
+
+                            //ObjetoModelo obj;
+
+                            //Modificar el objeto con la nueva palabra
+
+                            String json=newText;
+                            //Serializar con GSON
+
+                            FileOutputStream fos= new FileOutputStream(file,false);
+                            PrintWriter pw= new PrintWriter(fos,true);
+                            pw.write(json);
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    }
+                    return false;
+                }
+            });
 
             return view;
         }
-    }
 
+        public class GenericTextWatcher implements TextWatcher{
+
+            private View view;
+            private String fileName;
+
+            private GenericTextWatcher(View view, String fileName) {
+                this.view = view;
+                this.fileName=fileName;
+            }
+
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                String text = charSequence.toString();
+                if (!text.isEmpty() && text.charAt(0) != currentLetter.charAt(0))
+                {
+                    EditText textView = (EditText) view;
+                    textView.setError("La palabra debe comenzar con la letra correspondiente a la ronda");
+                }
+            }
+
+            public void afterTextChanged(Editable editable) {
+
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -161,3 +243,4 @@ public class PlayRoundActivity extends FragmentActivity implements
     }
 
 }
+
