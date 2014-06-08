@@ -10,21 +10,33 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+
+import com.example.tuttifrutti.app.Classes.RoundResult;
+import com.google.gson.Gson;
+
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Date;
 
 
 public class PlayRoundActivity extends FragmentActivity implements
@@ -33,6 +45,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     private String[] categories;
     private String currentLetter;
     private String fileName;
+    private int roundId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +54,6 @@ public class PlayRoundActivity extends FragmentActivity implements
         Intent intent = getIntent();
 
         String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
-        Integer roundId = 98;
 
         //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
         categories = new String[6];
@@ -59,6 +71,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         fileName = getCacheDir().getAbsolutePath() + "/hola.txt";
 
         final ActionBar actionBar = getActionBar();
+
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -67,19 +80,32 @@ public class PlayRoundActivity extends FragmentActivity implements
                     .setTabListener(this));
         }
 
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
 
         viewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
+                    int prevSelectedTab = 0;
                     @Override
                     public void onPageSelected(int position) {
                         // When swiping between pages, select the
                         // corresponding tab.
+
+                        String prevCategory = categories[prevSelectedTab];
+
+                        EditText prevCategoryTextBox = (EditText)findViewById(R.id.categoryValue);
+
+                        if (prevSelectedTab != position)
+                            prevSelectedTab = position;
+
                         getActionBar().setSelectedNavigationItem(position);
                     }
-                });
 
+                }
+        );
     }
 
     @Override
@@ -90,12 +116,11 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        //guardar lo que tiene su textbox en la sesion
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        //setear en el textbox lo que tengo en sesion
+
     }
 
     public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -108,7 +133,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
         @Override
         public Fragment getItem(int position) {
-            return CategoryFragment.create(categories[position], currentLetter, fileName);
+            return CategoryFragment.create(position, currentLetter, fileName, categories.length, roundId);
         }
         @Override
         public CharSequence getPageTitle(int position) {
@@ -117,28 +142,39 @@ public class PlayRoundActivity extends FragmentActivity implements
     }
 
     public static class CategoryFragment extends Fragment {
-        public static final String ARG_CATEGORY = "ARG_CATEGORYNAME";
+        public static final String ARG_CATEGORY = "ARG_CATEGORYINDEX";
         public static final String ARG_LETTER = "ARG_LETTER";
         public static final String ARG_FILENAME = "ARG_FILENAME";
-        private String categoryName;
+        public static final String ARG_TOTALCATEGORIES = "ARG_TOTALCATEGORIES";
+        public static final String ARG_ROUNDID = "ARG_ROUNDID";
+        private int categoryIndex;
         private String currentLetter;
         private String fileName;
-        public static CategoryFragment create(String categoryName, String currentLetter, String fileName) {
+        private int totalCategories;
+        private int roundId;
+
+        public static CategoryFragment create(int categoryIndex, String currentLetter, String fileName, int totalCategories, int roundId) {
             Bundle args = new Bundle();
-            args.putString(ARG_CATEGORY, categoryName);
+            args.putInt(ARG_CATEGORY, categoryIndex);
             args.putString(ARG_LETTER, currentLetter);
-            args.putString(ARG_FILENAME,fileName);
+            args.putString(ARG_FILENAME, fileName);
+            args.putInt(ARG_TOTALCATEGORIES, totalCategories);
+            args.putInt(ARG_ROUNDID, roundId);
             CategoryFragment fragment = new CategoryFragment();
             fragment.setArguments(args);
             return fragment;
         }
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            categoryName = getArguments().getString("ARG_CATEGORYNAME");
-            currentLetter = getArguments().getString("ARG_LETTER");
-            fileName = getArguments().getString("ARG_FILENAME");
+            categoryIndex = getArguments().getInt(ARG_CATEGORY);
+            currentLetter = getArguments().getString(ARG_LETTER);
+            fileName = getArguments().getString(ARG_FILENAME);
+            totalCategories = getArguments().getInt(ARG_TOTALCATEGORIES);
+            roundId = getArguments().getInt(ARG_ROUNDID);
         }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -146,77 +182,109 @@ public class PlayRoundActivity extends FragmentActivity implements
             //aca obtengo el control que esta adentro del layout que va a tener cada fragment
             View view = inflater.inflate(R.layout.fragment_page, container, false);
 
-            TextView letter = (TextView)view.findViewById(R.id.currentLetter);
+            TextView letter = (TextView) view.findViewById(R.id.currentLetter);
             letter.setText(currentLetter);
 
-            EditText textView = (EditText)view.findViewById(R.id.categoryValue);
+            EditText textView = (EditText) view.findViewById(R.id.categoryValue);
 
-            textView.addTextChangedListener(new GenericTextWatcher(textView,fileName));
-            textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-                        String newText = v.getText().toString();
-
-                        //todo: guardarlo en el local storage
-                        File file= new File(fileName);
-
-                        try {
-                            if(!file.exists())
-                                file.createNewFile();
-                            else {
-                                //TODO leer archivo y deserializar con GSON
-                            }
-
-                            //ObjetoModelo obj;
-
-                            //Modificar el objeto con la nueva palabra
-
-                            String json=newText;
-                            //Serializar con GSON
-
-                            FileOutputStream fos= new FileOutputStream(file,false);
-                            PrintWriter pw= new PrintWriter(fos,true);
-                            pw.write(json);
-
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        return true;
-                    }
-                    return false;
-                }
-            });
+            textView.addTextChangedListener(new GenericTextWatcher(textView, fileName));
+            textView.setOnFocusChangeListener(new GenericFocusChangeListener(categoryIndex, totalCategories, roundId));
 
             return view;
         }
 
-        public class GenericTextWatcher implements TextWatcher{
+        public class GenericTextWatcher implements TextWatcher {
 
             private View view;
             private String fileName;
 
             private GenericTextWatcher(View view, String fileName) {
                 this.view = view;
-                this.fileName=fileName;
+                this.fileName = fileName;
             }
 
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+            }
 
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 String text = charSequence.toString();
-                if (!text.isEmpty() && text.charAt(0) != currentLetter.charAt(0))
-                {
+                if (!text.isEmpty() && text.charAt(0) != currentLetter.charAt(0)) {
                     EditText textView = (EditText) view;
                     textView.setError("La palabra debe comenzar con la letra correspondiente a la ronda");
                 }
             }
 
             public void afterTextChanged(Editable editable) {
+
+            }
+        }
+
+
+        public class GenericFocusChangeListener implements View.OnFocusChangeListener {
+
+            private final int Category;
+            private final int TotalCategories;
+            private final int RoundId;
+
+            public GenericFocusChangeListener(int category, int totalCategories, int roundId) {
+                Category = category;
+                TotalCategories = totalCategories;
+                RoundId = roundId;
+            }
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String enteredString = ((EditText) v).getText().toString();
+                    if (enteredString.isEmpty())
+                        return;
+
+                    RoundResult currentRoundResult;
+                    File file = new File(fileName);
+
+                    Gson gson = new Gson();
+                    //todo: guardarlo en el local storage
+
+                    try {
+                        if (file.exists()) {
+                            InputStream inputStream = new FileInputStream(file);
+                            Reader reader = new InputStreamReader(inputStream);
+                            currentRoundResult = gson.fromJson(reader, RoundResult.class);
+                            if (currentRoundResult == null)
+                            {
+                                currentRoundResult = new RoundResult();
+                                currentRoundResult.RoundId = this.RoundId;
+                                currentRoundResult.CategoriesTimeStamp = new Date[this.TotalCategories];
+                                currentRoundResult.CategoriesValues = new String[this.TotalCategories];
+                            }
+                        } else {
+                            currentRoundResult = new RoundResult();
+                            currentRoundResult.RoundId = this.RoundId;
+                            currentRoundResult.CategoriesTimeStamp = new Date[this.TotalCategories];
+                            currentRoundResult.CategoriesValues = new String[this.TotalCategories];
+                        }
+
+                        // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
+                        if (currentRoundResult.CategoriesValues[this.Category] != enteredString) {
+                            currentRoundResult.CategoriesTimeStamp[this.Category] = new Date();
+                            currentRoundResult.CategoriesValues[this.Category] = enteredString;
+
+                            //OutputStream outputStream = new FileOutputStream(file);
+                            //OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                            String json = gson.toJson(currentRoundResult);
+                            FileWriter writer = new FileWriter(file);
+                            writer.write(json);
+                            writer.close();
+                        }
+
+                        //Read more at http://javapostsforlearning.blogspot.com/2013/11/gson-example-read-and-write-json.html#MUC21Jo1eiwbq36d.99
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
         }
@@ -236,6 +304,16 @@ public class PlayRoundActivity extends FragmentActivity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.action_stop)
+        {
+            EditText textView = (EditText) findViewById(R.id.categoryValue);
+            String enteredText = textView.getText().toString();
+            int position = getActionBar().getSelectedTab().getPosition();
+            // guardar el nuevo enteredText en
+            // informar el basta para mi basta para todos
+        }
+
         if (id == R.id.action_settings) {
             return true;
         }
