@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +71,6 @@ public class PlayRoundActivity extends FragmentActivity implements
         fileName = getCacheDir().getAbsolutePath() + "/hola.txt";
 
         final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(false);
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -82,6 +79,9 @@ public class PlayRoundActivity extends FragmentActivity implements
             actionBar.addTab(actionBar.newTab().setText(category)
                     .setTabListener(this));
         }
+
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
@@ -304,6 +304,16 @@ public class PlayRoundActivity extends FragmentActivity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.action_stop)
+        {
+            EditText textView = (EditText) findViewById(R.id.categoryValue);
+            String enteredText = textView.getText().toString();
+            int position = getActionBar().getSelectedTab().getPosition();
+            // guardar el nuevo enteredText en
+            // informar el basta para mi basta para todos
+        }
+
         if (id == R.id.action_settings) {
             return true;
         }
