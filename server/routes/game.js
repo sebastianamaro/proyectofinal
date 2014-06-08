@@ -1,9 +1,33 @@
 module.exports = function(app) {
  
   var Game = require('../models/game.js');
+  var Round = require('../models/round.js');
+  var FullRound = require('../models/fullRound.js');
 
+  getRound = function(req, res) {
+    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+      
+      var playingRound = game.rounds.filter(function (round) {
+          return round.status === 'PLAYING';
+        }).pop();
+      
+      if (!playingRound) return res.send('No playing round', 404);
+      
+      var roundWithCategories = new FullRound();
+      roundWithCategories.fillData(game, playingRound);
+      res.send(roundWithCategories);      
+    })
+  }
   alterRound = function(req, res) {
-        startRound(req,res);
+    var statusRequired = req.body.status;
+    if (statusRequired == 'PLAYING')
+      startRound(req,res);
+    else if (statusRequired == 'CLOSED')
+      finishRound(req,res);
+    else
+      res.send('No action selected'+req.body+"-----"+req.body.status,500);      
   }
   startRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
@@ -28,17 +52,13 @@ module.exports = function(app) {
                 }
             }
 
-            if (letters.length == 0){
-              //TODO finalizar partida
+            if (letters.length == 0){ //no more letters!
+              // finishGame(req,res);
             }
             var assignedLetter = letters[Math.floor(Math.random() * letters.length)];
+            var round = new Round();
+            round.start(game, assignedLetter);
 
-            var round = {
-                  roundId: game.rounds.length + 1,
-                  status: 'PLAYING',
-                  letter:   assignedLetter,
-                  startTimestamp:  new Date()
-                };
             game.rounds.push(round);
 
             game.save(function(err) {
@@ -50,15 +70,31 @@ module.exports = function(app) {
             });
             playingRound = round;
         }
-        var roundWithCategories = {
-          gameId: game.gameId,
-          categories: game.categories,
-          roundId: playingRound.roundId,
-          letter: playingRound.letter,
-          startTimestamp: playingRound.startTimestamp
-        }
-        res.send(roundWithCategories);
+        res.send('Round started', 200);
     });
-}
+  }
 
-}
+  finishRound = function(req, res) {
+        Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+          if (err) return res.send(err, 500);
+          if (!game) return res.send('Game not found', 404);
+          
+          var playingRound = game.rounds.filter(function (round) {
+              return round.roundId === req.body.roundId && round.status === 'PLAYING';
+            }).pop();
+          
+          if (!playingRound) return res.send('Round not found', 404);
+
+          game.rounds[playingRound.roundId - 1] = playingRound.finish();
+
+          game.save(function(err) {
+            if(!err) {
+              console.log('Finished round');
+            } else {
+              console.log('ERROR: ' + err);
+            }
+          });
+          res.send('Round finished', 200);
+        })
+    }
+} 
