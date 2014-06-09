@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,30 +21,26 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
+import com.example.FullRound;
+import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.RoundResult;
 import com.google.gson.Gson;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Date;
 
 
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
-    private String[] categories;
-    private String currentLetter;
     private String fileName;
-    private int roundId;
+    private FullRound currentRound;
+    private TuttiFruttiAPI api;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,18 +48,11 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         Intent intent = getIntent();
 
-        String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
+        Integer gameId = 1;// Integer.parseInt(intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE));
+        api=new TuttiFruttiAPI(getString(R.string.server_url));
+        api.startRound(gameId);
+        currentRound= api.getCurrentRoundInformation(gameId);
 
-        //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
-        categories = new String[6];
-        categories[0] = "Animales";
-        categories[1] = "Deportes";
-        categories[2] = "Paises";
-        categories[3] = "Frutas";
-        categories[4] = "Marcas de Auto";
-        categories[5] = "Colores";
-
-        currentLetter = "F";
         //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
         //todo: arrancar el timer
 
@@ -75,7 +63,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        for (String category : categories) {
+        for (String category : currentRound.getCategories()) {
             actionBar.addTab(actionBar.newTab().setText(category)
                     .setTabListener(this));
         }
@@ -94,7 +82,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                         // When swiping between pages, select the
                         // corresponding tab.
 
-                        String prevCategory = categories[prevSelectedTab];
+                        String prevCategory = currentRound.getCategories()[prevSelectedTab];
 
                         EditText prevCategoryTextBox = (EditText)findViewById(R.id.categoryValue);
 
@@ -129,15 +117,15 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
         @Override
         public int getCount() {
-            return categories.length;
+            return currentRound.getCategories().length;
         }
         @Override
         public Fragment getItem(int position) {
-            return CategoryFragment.create(position, currentLetter, fileName, categories.length, roundId);
+            return CategoryFragment.create(position, currentRound.getLetter(), fileName, currentRound.getCategories().length, currentRound.getRoundId());
         }
         @Override
         public CharSequence getPageTitle(int position) {
-            return categories[position];
+            return currentRound.getCategories()[position];
         }
     }
 

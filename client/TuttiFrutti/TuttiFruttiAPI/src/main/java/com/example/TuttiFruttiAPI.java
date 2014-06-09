@@ -1,6 +1,9 @@
 package com.example;
 
+import android.os.StrictMode;
+
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class TuttiFruttiAPI {
@@ -8,18 +11,25 @@ public class TuttiFruttiAPI {
     private String serverURL;
 
     public TuttiFruttiAPI(String serverURL){
+
         this.serverURL=serverURL;
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
     }
 
     public void startRound(int gameId)
     {
-        String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        FullRound fr= new FullRound();
-        fr.setGameId(gameId);
-        fr.setStatus("PLAYING");
-        restTemplate.put(url,fr);
+            String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+            FullRound fr= new FullRound();
+            fr.setGameId(gameId);
+            fr.setStatus("PLAYING");
+            restTemplate.put(url,fr);
+
+
     }
 
     public void endRound(int gameId, int roundId)
@@ -35,7 +45,7 @@ public class TuttiFruttiAPI {
 
     }
 
-    public FullRound getRoundInformation(int gameId, int roundId)
+    public FullRound getCurrentRoundInformation(int gameId)
     {
         String url= serverURL+"game/"+gameId+"/round";
         RestTemplate restTemplate = new RestTemplate();

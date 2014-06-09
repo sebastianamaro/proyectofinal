@@ -1,8 +1,35 @@
-apply plugin: 'java'
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.1.0'
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 19
+        versionCode 1
+        versionName '1.0'
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    productFlavors {
+    }
+
+    packagingOptions{
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+    }
+}
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'org.springframework.android:spring-android-auth:1.0.1.RELEASE'
-    compile 'org.springframework.android:spring-android-core:1.0.1.RELEASE'
+    compile('org.springframework.android:spring-android-auth:1.+') {
+        exclude group :'org.springframework', module: 'commons-logging'
+        exclude group :'org.springframework', module: 'spring-core'
+        exclude group :'org.springframework', module: 'spring-web'
+    }
+    compile 'org.springframework.android:spring-android-core:1.+'
+    compile 'org.springframework.android:spring-android-rest-template:1.+'
 }
