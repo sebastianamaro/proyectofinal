@@ -186,6 +186,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             letter.setText(currentLetter);
 
             EditText textView = (EditText) view.findViewById(R.id.categoryValue);
+            textView.setTag(categoryIndex);
 
             textView.addTextChangedListener(new GenericTextWatcher(textView, fileName));
             textView.setOnFocusChangeListener(new GenericFocusChangeListener(categoryIndex, totalCategories, roundId));
@@ -307,9 +308,11 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         if (id == R.id.action_stop)
         {
-            EditText textView = (EditText) findViewById(R.id.categoryValue);
-            String enteredText = textView.getText().toString();
             int position = getActionBar().getSelectedTab().getPosition();
+
+            EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
+
+            String categoryValue = textView.getText().toString();
             // guardar el nuevo enteredText en
             // informar el basta para mi basta para todos
         }

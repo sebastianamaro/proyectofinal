@@ -6,15 +6,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Switch;
 
-public class MainActivity extends ActionBarActivity {
 
-    public final static String GAME_ID_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMEID";
+public class CreateGameActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_create_game);
     }
 
 
@@ -22,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.create_game, menu);
         return true;
     }
 
@@ -38,20 +38,13 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void launchRound(View view) {
-
-        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
-        // aca en algun lado deberia saber el ID de la partida o ronda
-        intent.putExtra(GAME_ID_EXTRA_MESSAGE, 3);
-
-        startActivity(intent);
-    }
-
     public void createGame(View view) {
 
-        Intent intent = new Intent(getApplicationContext(), CreateGameActivity.class);
+        boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
+        boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
+        boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
 
-        startActivity(intent);
+
     }
 
 }

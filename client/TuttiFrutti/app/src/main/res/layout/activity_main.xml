@@ -17,4 +17,12 @@
         android:layout_toRightOf="@+id/textView"
         android:onClick="launchRound" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crear partida"
+        android:id="@+id/createGame"
+        android:layout_below="@+id/LaunchRound"
+        android:onClick="createGame" />
+
 </RelativeLayout>
