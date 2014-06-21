@@ -1,7 +1,9 @@
 package com.example.tuttifrutti.app;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -12,7 +14,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,23 +21,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
+import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
-import com.google.gson.Gson;
-
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
 
 
 public class PlayRoundActivity extends FragmentActivity implements
@@ -52,8 +40,9 @@ public class PlayRoundActivity extends FragmentActivity implements
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
-
-        String gameId = intent.getStringExtra(MainActivity.GAME_ID_EXTRA_MESSAGE);
+        roundId = 5;
+        int userId = 9;
+        int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
 
         //todo: llamar al servidor con el [userId] y gameId y que devuelva las categorias y la letra
         categories = new String[6];
@@ -68,7 +57,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
         //todo: arrancar el timer
 
-        fileName = getCacheDir().getAbsolutePath() + "/hola.txt";
+        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(roundId) + "_" + Integer.toString(userId) + ".txt";
 
         final ActionBar actionBar = getActionBar();
 
@@ -226,11 +215,13 @@ public class PlayRoundActivity extends FragmentActivity implements
             private final int Category;
             private final int TotalCategories;
             private final int RoundId;
+            private final InternalFileHelper Helper;
 
             public GenericFocusChangeListener(int category, int totalCategories, int roundId) {
                 Category = category;
                 TotalCategories = totalCategories;
                 RoundId = roundId;
+                Helper = new InternalFileHelper();
             }
 
             @Override
@@ -240,51 +231,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                     if (enteredString.isEmpty())
                         return;
 
-                    RoundResult currentRoundResult;
-                    File file = new File(fileName);
-
-                    Gson gson = new Gson();
-                    //todo: guardarlo en el local storage
-
-                    try {
-                        if (file.exists()) {
-                            InputStream inputStream = new FileInputStream(file);
-                            Reader reader = new InputStreamReader(inputStream);
-                            currentRoundResult = gson.fromJson(reader, RoundResult.class);
-                            if (currentRoundResult == null)
-                            {
-                                currentRoundResult = new RoundResult();
-                                currentRoundResult.RoundId = this.RoundId;
-                                currentRoundResult.CategoriesTimeStamp = new Date[this.TotalCategories];
-                                currentRoundResult.CategoriesValues = new String[this.TotalCategories];
-                            }
-                        } else {
-                            currentRoundResult = new RoundResult();
-                            currentRoundResult.RoundId = this.RoundId;
-                            currentRoundResult.CategoriesTimeStamp = new Date[this.TotalCategories];
-                            currentRoundResult.CategoriesValues = new String[this.TotalCategories];
-                        }
-
-                        // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-                        if (currentRoundResult.CategoriesValues[this.Category] != enteredString) {
-                            currentRoundResult.CategoriesTimeStamp[this.Category] = new Date();
-                            currentRoundResult.CategoriesValues[this.Category] = enteredString;
-
-                            //OutputStream outputStream = new FileOutputStream(file);
-                            //OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                            String json = gson.toJson(currentRoundResult);
-                            FileWriter writer = new FileWriter(file);
-                            writer.write(json);
-                            writer.close();
-                        }
-
-                        //Read more at http://javapostsforlearning.blogspot.com/2013/11/gson-example-read-and-write-json.html#MUC21Jo1eiwbq36d.99
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    RoundResult currentRoundResult = Helper.saveCategoryValue(fileName, this.Category, enteredString, totalCategories, roundId);
                 }
 
             }
@@ -309,12 +256,46 @@ public class PlayRoundActivity extends FragmentActivity implements
         if (id == R.id.action_stop)
         {
             int position = getActionBar().getSelectedTab().getPosition();
-
             EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
             String categoryValue = textView.getText().toString();
-            // guardar el nuevo enteredText en
-            // informar el basta para mi basta para todos
+            RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, categories.length, roundId);
+
+            boolean complete = true;
+            int i = 0;
+            while (complete && i < categories.length)
+            {
+                if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
+                    complete = false;
+
+                i++;
+            }
+
+            if (!complete) {
+                AlertDialog ad = new AlertDialog.Builder(this).create();
+                ad.setCancelable(false); // This blocks the 'BACK' button
+                ad.setMessage("Debe completar todas las categorias para finalizar la ronda");
+                ad.setButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                ad.show();
+            }
+            else
+            {
+                //todo: enviar al servidor
+                //todo: eliminar el archivo solo si se envio al servidor exitosamente
+                File file = new File(fileName);
+                try {
+                    file.getCanonicalFile().delete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
         }
 
         if (id == R.id.action_settings) {
@@ -324,4 +305,6 @@ public class PlayRoundActivity extends FragmentActivity implements
     }
 
 }
+
+
 
