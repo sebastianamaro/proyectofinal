@@ -9,9 +9,7 @@ module.exports = function(app) {
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
       
-      var playingRound = game.rounds.filter(function (round) {
-          return round.status === 'PLAYING';
-        }).pop();
+      var playingRound = game.getPlayingRound();
       
       if (!playingRound) return res.send('No playing round', 404);
       
@@ -34,32 +32,19 @@ module.exports = function(app) {
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
-          var playingRound = game.rounds.filter(function (round) {return round.status === 'PLAYING';}).pop();
+          var playingRound = game.getPlayingRound();
 
           if (playingRound){
               console.log('Return existing round with letter '+playingRound.letter);
           } else {
-            var letters = ['A','B','C','D','E','F'];
-            var usedLetters = [];
-
-            game.rounds.reduce(function(previousRound, currentRound, index, array){
-                return usedLetters.push(currentRound.letter);
-            }, usedLetters);
+            var assignedLetter = game.getNextLetter();
             
-            for(var iLetter = letters.length - 1; iLetter >= 0; iLetter--) {
-                if( usedLetters.indexOf(letters[iLetter]) != -1 ) {
-                   letters.splice(iLetter, 1);
-                }
-            }
-
-            if (letters.length == 0){ //no more letters!
-              // finishGame(req,res);
-            }
-            var assignedLetter = letters[Math.floor(Math.random() * letters.length)];
+            //if (!assignedLetter) finishGame()
+            
             var round = new Round();
-            round.start(game, assignedLetter);
+            round.start(assignedLetter);
 
-            game.rounds.push(round);
+            game.addRound(round);
 
             game.save(function(err) {
               if(!err) {
@@ -68,7 +53,6 @@ module.exports = function(app) {
                 console.log('ERROR: ' + err);
               }
             });
-            playingRound = round;
         }
         res.send('Round started', 200);
     });
@@ -76,16 +60,16 @@ module.exports = function(app) {
 
   finishRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+          var reqRound = req.body;
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
-          var playingRound = game.rounds.filter(function (round) {
-              return round.roundId === req.body.roundId && round.status === 'PLAYING';
-            }).pop();
-          
-          if (!playingRound) return res.send('Round not found', 404);
+          var currentRound = game.getRound(reqRound.roundId);
 
-          game.rounds[playingRound.roundId - 1] = playingRound.finish();
+          if (!currentRound) return res.send('Round not found', 404);
+
+          //currentRound.finish(); //doesnt do much
+          currentRound.addLine(reqRound.line);
 
           game.save(function(err) {
             if(!err) {
@@ -94,7 +78,21 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
+          //check if all finished---> count points
+
           res.send('Round finished', 200);
         })
     }
+  createGame = function(req,res){
+    var game = new Game();
+    game.setValues(req.body);
+    game.save(function(err) {
+            if(!err) {
+              console.log('Finished round');
+            } else {
+              console.log('ERROR: ' + err);
+            }
+          });
+          res.send('Game started', 200);
+  }
 } 

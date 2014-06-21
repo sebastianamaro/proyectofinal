@@ -12,8 +12,10 @@ app.configure(function () {
   app.use(app.router);
 });
 
-app.put('/game/:id/round', alterRound); //va a ser un put, dejo get a efectos de debug, el status seguramente venga en el cuerpo
-app.get('/game/:id/round', getRound); //va a ser un put, dejo get a efectos de debug, el status seguramente venga en el cuerpo
+app.put('/game/:id/round', alterRound); 
+app.get('/game/:id/round', getRound);
+
+app.post('/game', createGame); 
 
 mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
