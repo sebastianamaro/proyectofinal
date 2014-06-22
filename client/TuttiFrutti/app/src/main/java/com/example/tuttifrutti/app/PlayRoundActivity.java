@@ -61,12 +61,12 @@ public class PlayRoundActivity extends FragmentActivity implements
         api.startRound(gameId);
         currentRound= api.getCurrentRoundInformation(gameId);
        
-        
+        int userId=9;
 
         //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
         //todo: arrancar el timer
 
-        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(roundId) + "_" + Integer.toString(userId) + ".txt";
+        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(currentRound.getRoundId()) + "_" + Integer.toString(userId) + ".txt";
 
         final ActionBar actionBar = getActionBar();
 
@@ -105,7 +105,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                 }
         );
 
-        new InternalFileHelper().startRound(fileName, roundId);
+        new InternalFileHelper().startRound(fileName, currentRound.getRoundId());
         // 120000 = 2 min
         new CountDownTimer(120000, 1000) {
 
@@ -288,11 +288,11 @@ public class PlayRoundActivity extends FragmentActivity implements
             EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
             String categoryValue = textView.getText().toString();
-            RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, categories.length, roundId);
+            RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId());
 
             boolean complete = true;
             int i = 0;
-            while (complete && i < categories.length)
+            while (complete && i < currentRound.getCategories().length)
             {
                 if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
                     complete = false;
