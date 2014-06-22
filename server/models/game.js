@@ -7,7 +7,10 @@ var gameSchema = new Schema({
   	startTimestamp: { type: Date }, 
   	rounds: [Round.schema],
   	status: { type: String },
-  	categories: [ { type: String } ]
+  	categories: [ { type: String } ],
+    mode : { type: String },
+    categoriesType: { type: String },
+    oponentsType: { type: String }
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
@@ -42,6 +45,12 @@ gameSchema.methods.getNextLetter = function getNextLetter(){
 gameSchema.methods.addRound = function addRound(round){
   round.roundId = this.rounds.length + 1;
   this.rounds.push(round);
+}
+
+gameSchema.methods.setValues = function setValues(game){
+  this.mode = game.mode;
+  this.categoriesType = game.categoriesType;
+  this.oponentsType = game.oponentsType;
 }
 
 

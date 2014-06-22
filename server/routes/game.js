@@ -48,7 +48,7 @@ module.exports = function(app) {
 
             game.save(function(err) {
               if(!err) {
-                console.log('Created game with letter '+assignedLetter);
+                console.log('Created round with letter '+assignedLetter);
               } else {
                 console.log('ERROR: ' + err);
               }
@@ -84,15 +84,27 @@ module.exports = function(app) {
         })
     }
   createGame = function(req,res){
-    var game = new Game();
-    game.setValues(req.body);
-    game.save(function(err) {
-            if(!err) {
-              console.log('Finished round');
+    Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
+      var largerId;
+      if (doc){
+        largerId = doc.gameId + 1;  
+      } else {
+        largerId = 1;
+      }
+      var game = new Game();
+      game.gameId = largerId;
+      game.status = "PLAYING";
+      game.categories = ["ANIMALES", "COLORES", "LUGARES", "FRUTAS", "MARCAS DE AUTO"];
+      game.setValues(req.body);
+      game.save(function(err) {
+              if(!err) {
+              console.log('Created game with gameId '+largerId);
             } else {
               console.log('ERROR: ' + err);
             }
           });
-          res.send('Game started', 200);
+          return res.send('Game started with gameId '+largerId, 200);
+     });
+  
   }
-} 
+}
