@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
 
+import com.example.TuttiFruttiAPI;
+
 
 public class CreateGameActivity extends ActionBarActivity {
 
@@ -43,6 +45,8 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
         boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
+        TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
+        api.createGame(mode,oponents,categories);
 
 
     }

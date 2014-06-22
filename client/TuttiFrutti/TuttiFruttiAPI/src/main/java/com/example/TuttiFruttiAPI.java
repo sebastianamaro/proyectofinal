@@ -19,6 +19,32 @@ public class TuttiFruttiAPI {
         }
     }
 
+    public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode)
+    {
+        String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        Game g= new Game();
+
+        if(gameMode)
+            g.setMode("ONLINE");
+        else
+            g.setMode("OFFLINE");
+
+        if(opponentsMode)
+            g.setOpponentsType("RANDOM");
+        else
+            g.setOpponentsType("FRIENDS");
+
+        if(categoriesMode)
+            g.setCategoriesType("FIXED");
+        else
+            g.setCategoriesType("FREE");
+
+
+        restTemplate.postForObject(url,g,null);
+    }
+
     public void startRound(int gameId)
     {
             String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
