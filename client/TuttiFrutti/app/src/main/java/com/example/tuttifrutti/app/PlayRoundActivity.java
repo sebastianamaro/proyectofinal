@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
@@ -70,7 +72,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
 
         actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(false);
+        //actionBar.setDisplayShowTitleEnabled(false);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new SampleFragmentPagerAdapter());
@@ -95,6 +97,26 @@ public class PlayRoundActivity extends FragmentActivity implements
 
                 }
         );
+
+        new InternalFileHelper().startRound(fileName, roundId);
+        // 120000 = 2 min
+        new CountDownTimer(120000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                //ver donde mostrarlo
+
+                getActionBar().setTitle(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                ));
+            }
+
+            public void onFinish() {
+                showPopUp("Se te terminó el tiempo!!");
+            }
+        }.start();
+
     }
 
     @Override
@@ -272,16 +294,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             }
 
             if (!complete) {
-                AlertDialog ad = new AlertDialog.Builder(this).create();
-                ad.setCancelable(false); // This blocks the 'BACK' button
-                ad.setMessage("Debe completar todas las categorias para finalizar la ronda");
-                ad.setButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                ad.show();
+                showPopUp("Debe completar todas las categorias para finalizar la ronda");
             }
             else
             {
@@ -302,6 +315,20 @@ public class PlayRoundActivity extends FragmentActivity implements
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showPopUp(String message)
+    {
+        AlertDialog ad = new AlertDialog.Builder(this).create();
+        ad.setCancelable(false); // This blocks the 'BACK' button
+        ad.setMessage(message);
+        ad.setButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        ad.show();
     }
 
 }

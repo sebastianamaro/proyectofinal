@@ -16,6 +16,26 @@ import java.util.Date;
  * Created by Nituguivi on 21/06/2014.
  */
 public class InternalFileHelper {
+    public void startRound(String fileName, int roundId)
+    {
+        File file = new File(fileName);
+        Gson gson = new Gson();
+
+        RoundResult currentRoundResult = new RoundResult();
+        currentRoundResult.RoundId = roundId;
+        currentRoundResult.StartTime = new Date();
+
+        String json = gson.toJson(currentRoundResult);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     public RoundResult saveCategoryValue(String fileName, int categoryPosition, String categoryValue, int categoriesLength, int roundId) {
         RoundResult currentRoundResult = new RoundResult();
 
