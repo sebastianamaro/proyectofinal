@@ -9,4 +9,5 @@ public class RoundResult {
     public int RoundId;
     public Date[] CategoriesTimeStamp;
     public String[] CategoriesValues;
+    public Date StartTime;
 }
