@@ -37,7 +37,7 @@ public class InternalFileHelper {
 
     }
     public RoundResult saveCategoryValue(String fileName, int categoryPosition, String categoryValue, int categoriesLength, int roundId) {
-        RoundResult currentRoundResult = new RoundResult();
+        RoundResult currentRoundResult = null;
 
         File file = new File(fileName);
 
@@ -80,4 +80,6 @@ public class InternalFileHelper {
 
         return currentRoundResult;
     }
+
+
 }

@@ -3,8 +3,9 @@ package com.example;
 import android.os.StrictMode;
 
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 public class TuttiFruttiAPI {
 
@@ -42,7 +43,7 @@ public class TuttiFruttiAPI {
             g.setCategoriesType("FREE");
 
 
-        restTemplate.postForObject(url,g,null);
+        String response=restTemplate.postForObject(url,g,String.class);
     }
 
     public void startRound(int gameId)
@@ -51,23 +52,26 @@ public class TuttiFruttiAPI {
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
             FullRound fr= new FullRound();
-            fr.setGameId(gameId);
             fr.setStatus("PLAYING");
             restTemplate.put(url,fr);
-
-
     }
 
-    public void endRound(int gameId, int roundId)
+    public void finishRound(int gameId, int roundId,String playerId, Date startTimeStamp, Play[] plays)
     {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        FullRound fr= new FullRound();
-        fr.setGameId(gameId);
-        fr.setRoundId(roundId);
-        fr.setStatus("CLOSED");
-        restTemplate.put(url,fr);
+        PlayedRound pr= new PlayedRound();
+        pr.setStatus("CLOSED");
+        pr.setRoundId(roundId);
+
+        RoundLine rl= new RoundLine();
+        rl.setPlayer(playerId);
+        rl.setStartTimestamp(startTimeStamp);
+        rl.setPlays(plays);
+
+        pr.setLine(rl);
+        restTemplate.put(url,pr);
 
     }
 

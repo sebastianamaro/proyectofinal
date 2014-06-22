@@ -29,13 +29,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.example.FullRound;
+import com.example.Play;
 import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.RoundResult;
 import com.google.gson.Gson;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
@@ -91,10 +94,6 @@ public class PlayRoundActivity extends FragmentActivity implements
                     public void onPageSelected(int position) {
                         // When swiping between pages, select the
                         // corresponding tab.
-
-                        String prevCategory = currentRound.getCategories()[prevSelectedTab];
-
-                        EditText prevCategoryTextBox = (EditText)findViewById(R.id.categoryValue);
 
                         if (prevSelectedTab != position)
                             prevSelectedTab = position;
@@ -305,8 +304,21 @@ public class PlayRoundActivity extends FragmentActivity implements
             }
             else
             {
-                //todo: enviar al servidor
-                //todo: eliminar el archivo solo si se envio al servidor exitosamente
+                List<Play> plays= new ArrayList<Play>();
+
+                for(int index=0;index<currentRound.getCategories().length;index++){
+                    Play play= new Play();
+                    play.setCategory(currentRound.getCategories()[index]);
+                    play.setWord(currentRoundResult.CategoriesValues[index]);
+                    play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
+                    plays.add(play);
+                }
+
+                Play[] playArray=new Play[plays.size()];
+                plays.toArray(playArray);
+
+                api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),"USERID",currentRoundResult.StartTime,playArray);
+
                 File file = new File(fileName);
                 try {
                     file.getCanonicalFile().delete();
