@@ -2,6 +2,8 @@ package com.example;
 
 import android.os.StrictMode;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,9 +44,9 @@ public class TuttiFruttiAPI {
             g.setCategoriesType("FIXED");
         else
             g.setCategoriesType("FREE");
-
+        ResponseEntity<String> resp=null;
         try {
-            restTemplate.postForObject(url,g,String.class);
+           resp=restTemplate.postForEntity(url, g, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
