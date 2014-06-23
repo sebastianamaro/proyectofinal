@@ -52,6 +52,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     private String fileName;
     private FullRound currentRound;
     private TuttiFruttiAPI api;
+    private CountDownTimer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +107,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         new InternalFileHelper().startRound(fileName, currentRound.getRoundId());
         // 120000 = 2 min
-        new CountDownTimer(120000, 1000) {
+        timer = new CountDownTimer(120000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 //ver donde mostrarlo
@@ -119,7 +120,12 @@ public class PlayRoundActivity extends FragmentActivity implements
             }
 
             public void onFinish() {
+                getActionBar().setTitle(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(0),
+                        TimeUnit.MILLISECONDS.toSeconds(0))
+                );
                 showPopUp("Se te terminó el tiempo!!");
+                //todo: hacer el basta para mi basta para todos con lo que tiene
             }
         }.start();
 
@@ -325,6 +331,19 @@ public class PlayRoundActivity extends FragmentActivity implements
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                AlertDialog ad = new AlertDialog.Builder(this).create();
+                ad.setCancelable(false); // This blocks the 'BACK' button
+                ad.setMessage("Tus datos fueron enviados exitosamente");
+                ad.setButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        timer.cancel();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+                ad.show();
 
             }
 

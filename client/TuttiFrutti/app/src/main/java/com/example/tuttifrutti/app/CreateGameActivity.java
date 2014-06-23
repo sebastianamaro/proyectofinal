@@ -1,5 +1,7 @@
 package com.example.tuttifrutti.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -48,6 +50,17 @@ public class CreateGameActivity extends ActionBarActivity {
         TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
         api.createGame(mode,oponents,categories);
 
+        AlertDialog ad = new AlertDialog.Builder(this).create();
+        ad.setCancelable(false); // This blocks the 'BACK' button
+        ad.setMessage("Se ha creado la partida!");
+        ad.setButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+        ad.show();
 
     }
 

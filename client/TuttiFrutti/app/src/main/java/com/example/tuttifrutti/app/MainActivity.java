@@ -41,8 +41,8 @@ public class MainActivity extends ActionBarActivity {
     public void launchRound(View view) {
 
         Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
-        // aca en algun lado deberia saber el ID de la partida o ronda
-        intent.putExtra(GAME_ID_EXTRA_MESSAGE, 3);
+        // aca en algun lado deberia saber el ID de la partida
+        intent.putExtra(GAME_ID_EXTRA_MESSAGE, 1);
 
         startActivity(intent);
     }

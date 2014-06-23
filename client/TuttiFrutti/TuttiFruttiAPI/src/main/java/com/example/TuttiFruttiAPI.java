@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Date;
 
 public class TuttiFruttiAPI {
@@ -42,8 +43,11 @@ public class TuttiFruttiAPI {
         else
             g.setCategoriesType("FREE");
 
-
-        String response=restTemplate.postForObject(url,g,String.class);
+        try {
+            restTemplate.postForObject(url,g,String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void startRound(int gameId)

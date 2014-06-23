@@ -44,16 +44,23 @@ public class InternalFileHelper {
         Gson gson = new Gson();
 
         try {
+            //deberia existir siempre, pero por las dudas...
             if (file.exists()) {
                 InputStream inputStream = new FileInputStream(file);
                 Reader reader = new InputStreamReader(inputStream);
                 currentRoundResult = gson.fromJson(reader, RoundResult.class);
+                //deberia existir siempre, pero por las dudas...
                 if (currentRoundResult == null) {
                     currentRoundResult = new RoundResult();
                     currentRoundResult.RoundId = roundId;
                     currentRoundResult.CategoriesTimeStamp = new Date[categoriesLength];
                     currentRoundResult.CategoriesValues = new String[categoriesLength];
+                }else if (currentRoundResult.CategoriesTimeStamp == null)
+                {
+                    currentRoundResult.CategoriesTimeStamp = new Date[categoriesLength];
+                    currentRoundResult.CategoriesValues = new String[categoriesLength];
                 }
+
             } else {
                 currentRoundResult = new RoundResult();
                 currentRoundResult.RoundId = roundId;
