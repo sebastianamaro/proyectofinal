@@ -1,0 +1,3 @@
+[submodule "gcm"]
+	path = gcm
+	url = http://github.com/h2soft/node-gcm.git

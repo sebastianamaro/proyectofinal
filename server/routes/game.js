@@ -3,7 +3,7 @@ module.exports = function(app) {
   var Game = require('../models/game.js');
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
-
+  
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
       if (err) return res.send(err, 500);
@@ -78,6 +78,9 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
+
+          var notification = new Notification();
+
           //check if all finished---> count points
 
           res.send('Round finished', 200);
