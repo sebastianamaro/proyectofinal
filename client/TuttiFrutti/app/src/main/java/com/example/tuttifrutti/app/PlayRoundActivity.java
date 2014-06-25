@@ -67,9 +67,6 @@ public class PlayRoundActivity extends FragmentActivity implements
        
         int userId=9;
 
-        //todo: llenar los tabs con las categorias y mostrar la letra donde corresponda
-        //todo: arrancar el timer
-
         fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(currentRound.getRoundId()) + "_" + Integer.toString(userId) + ".txt";
 
         final ActionBar actionBar = getActionBar();
@@ -124,7 +121,11 @@ public class PlayRoundActivity extends FragmentActivity implements
                         TimeUnit.MILLISECONDS.toMinutes(0),
                         TimeUnit.MILLISECONDS.toSeconds(0))
                 );
-                showPopUp("Se te terminó el tiempo!!");
+
+                EndRoundAndSendData(false, "Se te terminó el tiempo!");
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+
                 //todo: hacer el basta para mi basta para todos con lo que tiene
             }
         }.start();
@@ -289,70 +290,74 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         if (id == R.id.action_stop)
         {
-            int position = getActionBar().getSelectedTab().getPosition();
-            EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
-
-            String categoryValue = textView.getText().toString();
-            RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId());
-
-            boolean complete = true;
-            int i = 0;
-            while (complete && i < currentRound.getCategories().length)
-            {
-                if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
-                    complete = false;
-
-                i++;
-            }
-
-            if (!complete) {
-                showPopUp("Debe completar todas las categorias para finalizar la ronda");
-            }
-            else
-            {
-                List<Play> plays= new ArrayList<Play>();
-
-                for(int index=0;index<currentRound.getCategories().length;index++){
-                    Play play= new Play();
-                    play.setCategory(currentRound.getCategories()[index]);
-                    play.setWord(currentRoundResult.CategoriesValues[index]);
-                    play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
-                    plays.add(play);
-                }
-
-                Play[] playArray=new Play[plays.size()];
-                plays.toArray(playArray);
-
-                api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),"USERID",currentRoundResult.StartTime,playArray);
-
-                File file = new File(fileName);
-                try {
-                    file.getCanonicalFile().delete();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                AlertDialog ad = new AlertDialog.Builder(this).create();
-                ad.setCancelable(false); // This blocks the 'BACK' button
-                ad.setMessage("Tus datos fueron enviados exitosamente");
-                ad.setButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        timer.cancel();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                    }
-                });
-                ad.show();
-
-            }
-
+            EndRoundAndSendData(true, "Tus datos fueron enviados exitosamente");
         }
 
         if (id == R.id.action_settings) {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void EndRoundAndSendData(Boolean validateAllCategoriesPresent, String messageToShow) {
+        int position = getActionBar().getSelectedTab().getPosition();
+        EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
+
+        String categoryValue = textView.getText().toString();
+        RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId());
+
+        boolean complete = true;
+        if (validateAllCategoriesPresent) {
+            int i = 0;
+            while (complete && i < currentRound.getCategories().length) {
+                if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
+                    complete = false;
+
+                i++;
+            }
+        }
+
+        if (!complete) {
+            showPopUp("Debe completar todas las categorias para finalizar la ronda");
+        }
+        else
+        {
+            List<Play> plays= new ArrayList<Play>();
+
+            for(int index=0;index<currentRound.getCategories().length;index++){
+                Play play= new Play();
+                play.setCategory(currentRound.getCategories()[index]);
+                play.setWord(currentRoundResult.CategoriesValues[index]);
+                play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
+                plays.add(play);
+            }
+
+            Play[] playArray=new Play[plays.size()];
+            plays.toArray(playArray);
+
+            api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),"USERID",currentRoundResult.StartTime,playArray);
+
+            File file = new File(fileName);
+            try {
+                file.getCanonicalFile().delete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            AlertDialog ad = new AlertDialog.Builder(this).create();
+            ad.setCancelable(false); // This blocks the 'BACK' button
+            ad.setMessage(messageToShow);
+            ad.setButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    timer.cancel();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+            ad.show();
+
+        }
     }
 
     public void showPopUp(String message)
