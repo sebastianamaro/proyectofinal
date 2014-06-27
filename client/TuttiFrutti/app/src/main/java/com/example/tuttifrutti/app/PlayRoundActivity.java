@@ -33,6 +33,7 @@ import java.io.InputStream;
 import com.example.FullRound;
 import com.example.Play;
 import com.example.TuttiFruttiAPI;
+import com.example.tuttifrutti.app.Classes.FilePlay;
 import com.example.tuttifrutti.app.Classes.RoundResult;
 import com.google.gson.Gson;
 
@@ -73,13 +74,13 @@ public class PlayRoundActivity extends FragmentActivity implements
         Intent intent = getIntent();
 
         int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
+
         api=new TuttiFruttiAPI(getString(R.string.server_url));
         api.startRound(gameId);
         currentRound= api.getCurrentRoundInformation(gameId);
        
-        int userId=9;
 
-        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(currentRound.getRoundId()) + "_" + Integer.toString(userId) + ".txt";
+        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(currentRound.getRoundId())  + ".txt";
 
         final ActionBar actionBar = getActionBar();
 
@@ -87,8 +88,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         for (String category : currentRound.getCategories()) {
-            actionBar.addTab(actionBar.newTab().setText(category)
-                    .setTabListener(this));
+            actionBar.addTab(actionBar.newTab().setText(category).setTabListener(this));
         }
 
         actionBar.setDisplayShowHomeEnabled(false);
@@ -114,8 +114,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                 }
         );
 
-        new InternalFileHelper().startRound(fileName, currentRound.getRoundId());
-
+        new InternalFileHelper().startRound(new FilePlay(fileName, currentRound.getRoundId()));
         // 120000 = 2 min
         timer = new CountDownTimer(120000, 1000) {
 
@@ -225,7 +224,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             EditText textView = (EditText) view.findViewById(R.id.categoryValue);
             textView.setTag(categoryIndex);
 
-            textView.addTextChangedListener(new GenericTextWatcher(textView, fileName));
+            textView.addTextChangedListener(new GenericTextWatcher(textView));
             textView.setOnFocusChangeListener(new GenericFocusChangeListener(categoryIndex, totalCategories, roundId));
 
             return view;
@@ -234,11 +233,10 @@ public class PlayRoundActivity extends FragmentActivity implements
         public class GenericTextWatcher implements TextWatcher {
 
             private View view;
-            private String fileName;
 
-            private GenericTextWatcher(View view, String fileName) {
+
+            private GenericTextWatcher(View view) {
                 this.view = view;
-                this.fileName = fileName;
             }
 
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -279,7 +277,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                     if (enteredString.isEmpty())
                         return;
 
-                    RoundResult currentRoundResult = Helper.saveCategoryValue(fileName, this.Category, enteredString, totalCategories, roundId);
+                    RoundResult currentRoundResult = Helper.saveCategoryValue(new FilePlay(fileName, this.Category, enteredString, totalCategories, roundId));
                 }
 
             }
@@ -317,7 +315,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
         String categoryValue = textView.getText().toString();
-        RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId());
+        RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(new FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
 
         boolean complete = true;
         if (validateAllCategoriesPresent) {
@@ -347,8 +345,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
             Play[] playArray=new Play[plays.size()];
             plays.toArray(playArray);
-
-            api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),"USERID",currentRoundResult.StartTime,playArray);
+            api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),currentRoundResult.StartTime,playArray);
 
             File file = new File(fileName);
             try {
@@ -373,8 +370,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
     }
 
-    public void showPopUp(String message)
-    {
+    public void showPopUp(String message)    {
         AlertDialog ad = new AlertDialog.Builder(this).create();
         ad.setCancelable(false); // This blocks the 'BACK' button
         ad.setMessage(message);

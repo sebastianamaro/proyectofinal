@@ -63,7 +63,7 @@ public class TuttiFruttiAPI {
             restTemplate.put(url,fr);
     }
 
-    public void finishRound(int gameId, int roundId,String playerId, Date startTimeStamp, Play[] plays)
+    public void finishRound(int gameId, int roundId, Date startTimeStamp, Play[] plays)
     {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
@@ -73,7 +73,7 @@ public class TuttiFruttiAPI {
         pr.setRoundId(roundId);
 
         RoundLine rl= new RoundLine();
-        rl.setPlayer(playerId);
+        rl.setPlayer("PLAYERID_REEMPLAZAR POR TOKEN CUANDO ESTE");
         rl.setStartTimestamp(startTimeStamp);
         rl.setPlays(plays);
 

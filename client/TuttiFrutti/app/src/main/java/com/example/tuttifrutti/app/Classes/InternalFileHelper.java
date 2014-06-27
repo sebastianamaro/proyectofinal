@@ -16,13 +16,13 @@ import java.util.Date;
  * Created by Nituguivi on 21/06/2014.
  */
 public class InternalFileHelper {
-    public void startRound(String fileName, int roundId)
+    public void startRound(FilePlay filePlay)
     {
-        File file = new File(fileName);
+        File file = new File(filePlay.getFileName());
         Gson gson = new Gson();
 
         RoundResult currentRoundResult = new RoundResult();
-        currentRoundResult.RoundId = roundId;
+        currentRoundResult.RoundId = filePlay.getRoundId();
         currentRoundResult.StartTime = new Date();
 
         String json = gson.toJson(currentRoundResult);
@@ -36,10 +36,10 @@ public class InternalFileHelper {
         }
 
     }
-    public RoundResult saveCategoryValue(String fileName, int categoryPosition, String categoryValue, int categoriesLength, int roundId) {
+    public RoundResult saveCategoryValue(FilePlay filePlay) {
         RoundResult currentRoundResult = null;
 
-        File file = new File(fileName);
+        File file = new File(filePlay.getFileName());
 
         Gson gson = new Gson();
 
@@ -52,26 +52,26 @@ public class InternalFileHelper {
                 //deberia existir siempre, pero por las dudas...
                 if (currentRoundResult == null) {
                     currentRoundResult = new RoundResult();
-                    currentRoundResult.RoundId = roundId;
-                    currentRoundResult.CategoriesTimeStamp = new Date[categoriesLength];
-                    currentRoundResult.CategoriesValues = new String[categoriesLength];
+                    currentRoundResult.RoundId = filePlay.getRoundId();
+                    currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
+                    currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
                 }else if (currentRoundResult.CategoriesTimeStamp == null)
                 {
-                    currentRoundResult.CategoriesTimeStamp = new Date[categoriesLength];
-                    currentRoundResult.CategoriesValues = new String[categoriesLength];
+                    currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
+                    currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
                 }
 
             } else {
                 currentRoundResult = new RoundResult();
-                currentRoundResult.RoundId = roundId;
-                currentRoundResult.CategoriesTimeStamp = new Date[categoriesLength];
-                currentRoundResult.CategoriesValues = new String[categoriesLength];
+                currentRoundResult.RoundId = filePlay.getRoundId();
+                currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
+                currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
             }
 
             // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-            if (currentRoundResult.CategoriesValues[categoryPosition] != categoryValue) {
-                currentRoundResult.CategoriesTimeStamp[categoryPosition] = new Date();
-                currentRoundResult.CategoriesValues[categoryPosition] = categoryValue;
+            if (currentRoundResult.CategoriesValues[filePlay.getCategoriesLength()] != filePlay.getCategoryValue()) {
+                currentRoundResult.CategoriesTimeStamp[filePlay.getCategoriesLength()] = new Date();
+                currentRoundResult.CategoriesValues[filePlay.getCategoriesLength()] = filePlay.getCategoryValue();
 
                 String json = gson.toJson(currentRoundResult);
                 FileWriter writer = new FileWriter(file);
