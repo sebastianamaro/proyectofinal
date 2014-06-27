@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 var Round = require('./round.js');
+var Player = require('./player.js');
 
 var gameSchema = new Schema({
   	gameId:   { type: Number },
@@ -10,7 +11,8 @@ var gameSchema = new Schema({
   	categories: [ { type: String } ],
     mode : { type: String },
     categoriesType: { type: String },
-    oponentsType: { type: String }
+    oponentsType: { type: String },
+    players: [ Player.schema ]
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
@@ -53,5 +55,25 @@ gameSchema.methods.setValues = function setValues(game){
   this.oponentsType = game.oponentsType;
 }
 
+gameSchema.methods.addPlayer = function addPlayer(player){
+  var newPlayer = new Player();
+  newPlayer.setValues(player);
+  //TODO validate it doesn't already exist in game
+  this.players.push = newPlayer;
+}
+
+gameSchema.methods.sendNotifications = function sendNotifications(round, callback){
+  for (var i = game.players.length - 1; i >= 0; i--) {
+    var player = game.players[i];
+    var notification = new Notification();
+    notification.setRegistrationId(player.registrationId);
+    notification.setValues({'gameId':game.gameId, 'roundId':currentRound.roundId, 'status' : 'FINISHED'});
+    notification.send(function(err){
+      if (err){
+        callback(new Error("algo salio mal"));
+      }
+    });
+  }
+}
 
 module.exports = mongoose.model('Game', gameSchema);
