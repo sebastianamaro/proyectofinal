@@ -35,8 +35,6 @@ module.exports = function(app) {
           var playingRound = game.getPlayingRound();
           var reqRound = req.body;
 
-          game.addPlayer(reqRound);
-
           if (playingRound){
               console.log('Return existing round with letter '+playingRound.letter);
           } else {
