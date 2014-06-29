@@ -6,6 +6,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -53,6 +55,16 @@ public class PlayRoundActivity extends FragmentActivity implements
     private FullRound currentRound;
     private TuttiFruttiAPI api;
     private CountDownTimer timer;
+
+    public Handler _handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int hola = 1;
+
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +115,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         );
 
         new InternalFileHelper().startRound(fileName, currentRound.getRoundId());
+
         // 120000 = 2 min
         timer = new CountDownTimer(120000, 1000) {
 
