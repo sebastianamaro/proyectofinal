@@ -3,7 +3,7 @@ module.exports = function(app) {
   var Game = require('../models/game.js');
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
-
+  
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
       if (err) return res.send(err, 500);
@@ -33,13 +33,16 @@ module.exports = function(app) {
           if (!game) return res.send('Game not found', 404);
           
           var playingRound = game.getPlayingRound();
+          var reqRound = req.body;
+
+          game.addPlayer(reqRound);
 
           if (playingRound){
               console.log('Return existing round with letter '+playingRound.letter);
           } else {
             var assignedLetter = game.getNextLetter();
             
-            //if (!assignedLetter) finishGame()
+            //if (!assignedLetter) finishGame();
             
             var round = new Round();
             round.start(assignedLetter);
@@ -54,6 +57,7 @@ module.exports = function(app) {
               }
             });
         }
+
         res.send('Round started', 200);
     });
   }
@@ -78,6 +82,14 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
+          game.sendNotifications(currentRound, function(err){
+            if(err) {
+              console.log('ERROR: ' + err);
+            } else {
+              console.log('Notifications sent');
+            }
+          });
+          
           //check if all finished---> count points
 
           res.send('Round finished', 200);
