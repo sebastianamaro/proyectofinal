@@ -54,14 +54,14 @@ gameSchema.methods.setValues = function setValues(game){
   this.mode = game.mode;
   this.categoriesType = game.categoriesType;
   this.oponentsType = game.oponentsType;
-  this.addPlayer(game.player); 
+  this.addPlayer(game.player);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(player){
   var newPlayer = new Player();
   newPlayer.setValues(player);
   //TODO validate it doesn't already exist in game
-  this.players.push(newPlayer);
+  this.players.push = newPlayer;
 }
 
 gameSchema.methods.sendNotifications = function sendNotifications(callback){

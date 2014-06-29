@@ -88,7 +88,20 @@ module.exports = function(app) {
             }
           });
           
+<<<<<<< HEAD
           //check if all finished---> count points
+=======
+          if (currentRound.checkAllPlayersFinished()){
+            currentRound.calculateScores();
+            currentRound.save(function(err) {
+            if(!err) {
+              console.log('Finished round');
+            } else {
+              console.log('ERROR: ' + err);
+            }
+          });
+          }
+>>>>>>> Calculating scores on server side when all players have finished the round. For now, all words are considered valid (there is a dummy). It checks for repeated answers. Not finished.
 
           res.send('Round finished', 200);
         })

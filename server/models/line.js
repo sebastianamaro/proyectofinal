@@ -17,13 +17,17 @@ lineSchema.methods.setValues = function setValues(line) {
  }
 
 lineSchema.methods.addPlays = function addPlays(plays) {
+  for (var i = plays.length - 1; i >= 0; i--) {
+    var newPlay = new Play();
+    newPlay.setValues(plays[i]);
+    this.plays.push(newPlay);
+    };
+}
 
-	for (var i = plays.length - 1; i >= 0; i--) {
-		var newPlay = new Play();
-		newPlay.setValues(plays[i]);
-		this.plays.push(newPlay);
-  	};
- }
-
+lineSchema.methods.getPlaySimilarTo = function getPlaySimilarTo(searchedPlay) {
+  return this.plays.filter(function (play) {
+    return play.isSimilarTo(searchedPlay);
+  }).pop();
+}
 
 module.exports = mongoose.model('Line', lineSchema);

@@ -13,5 +13,8 @@ playSchema.methods.setValues = function setValues(play) {
   this.word = play.word;
   return this;
 }
+playSchema.methods.isSimilarTo = function isSimilarTo(play) {
+	return play.category == this.category && play.word == this.word;
+}
 
 module.exports = mongoose.model('Play', playSchema);
