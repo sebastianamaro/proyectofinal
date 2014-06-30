@@ -61,6 +61,8 @@ public class CreateGameActivity extends ActionBarActivity {
     private class CreateGameTask extends AsyncTask<GameSettings,Void, Void>{
 
         AlertDialog ad;
+        TuttiFruttiAPI api;
+
         @Override
         protected Void doInBackground(GameSettings... settings) {
 
@@ -101,7 +103,7 @@ public class CreateGameActivity extends ActionBarActivity {
         protected void onPreExecute(){
             ad=new AlertDialog.Builder(CreateGameActivity.this).create();
 
-
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
 }

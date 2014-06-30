@@ -40,7 +40,7 @@ public class InternalFileHelper {
         RoundResult currentRoundResult = null;
 
         File file = new File(filePlay.getFileName());
-
+        Boolean writeFile=false;
         Gson gson = new Gson();
 
         try {
@@ -49,7 +49,7 @@ public class InternalFileHelper {
                 InputStream inputStream = new FileInputStream(file);
                 Reader reader = new InputStreamReader(inputStream);
                 currentRoundResult = gson.fromJson(reader, RoundResult.class);
-                //deberia existir siempre, pero por las dudas...
+
                 if (currentRoundResult == null) {
                     currentRoundResult = new RoundResult();
                     currentRoundResult.RoundId = filePlay.getRoundId();
@@ -61,32 +61,44 @@ public class InternalFileHelper {
                     currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
                 }
 
+
+                // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
+                if (currentRoundResult.CategoriesValues[filePlay.getCategoryPosition()] != filePlay.getCategoryValue()) {
+                    currentRoundResult.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
+                    currentRoundResult.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
+                    writeFile=true;
+                }
+
             } else {
                 currentRoundResult = new RoundResult();
                 currentRoundResult.RoundId = filePlay.getRoundId();
-                currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
-                currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
+                currentRoundResult.StartTime = new Date();
+                writeFile=true;
             }
 
-            // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-            if (currentRoundResult.CategoriesValues[filePlay.getCategoriesLength()] != filePlay.getCategoryValue()) {
-                currentRoundResult.CategoriesTimeStamp[filePlay.getCategoriesLength()] = new Date();
-                currentRoundResult.CategoriesValues[filePlay.getCategoriesLength()] = filePlay.getCategoryValue();
+            if(writeFile)
+                writeRoundResult(currentRoundResult,gson,file);
 
-                String json = gson.toJson(currentRoundResult);
-                FileWriter writer = new FileWriter(file);
-                writer.write(json);
-                writer.close();
-            }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return currentRoundResult;
     }
 
+    private void writeRoundResult(RoundResult currentRoundResult, Gson gson, File file){
 
+        String json = gson.toJson(currentRoundResult);
+        try {
+            FileWriter writer = new FileWriter(file);
+
+            writer.write(json);
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

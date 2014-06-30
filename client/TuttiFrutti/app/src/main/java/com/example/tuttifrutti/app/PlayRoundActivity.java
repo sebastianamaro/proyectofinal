@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +35,7 @@ import com.example.FullRound;
 import com.example.Play;
 import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.FilePlay;
+import com.example.tuttifrutti.app.Classes.FinishedRound;
 import com.example.tuttifrutti.app.Classes.RoundResult;
 import com.google.gson.Gson;
 
@@ -47,14 +49,11 @@ import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
 
 
-
-
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
     private String fileName;
     private FullRound currentRound;
-    private TuttiFruttiAPI api;
     private CountDownTimer timer;
 
     public Handler _handler = new Handler() {
@@ -75,72 +74,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
 
-        api=new TuttiFruttiAPI(getString(R.string.server_url));
-        api.startRound(gameId);
-        currentRound= api.getCurrentRoundInformation(gameId);
-       
-
-        fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(gameId) + "_" +  Integer.toString(currentRound.getRoundId())  + ".txt";
-
-        final ActionBar actionBar = getActionBar();
-
-        // Specify that tabs should be displayed in the action bar.
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        for (String category : currentRound.getCategories()) {
-            actionBar.addTab(actionBar.newTab().setText(category).setTabListener(this));
-        }
-
-        actionBar.setDisplayShowHomeEnabled(false);
-        //actionBar.setDisplayShowTitleEnabled(false);
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(new SampleFragmentPagerAdapter());
-
-        viewPager.setOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
-                    int prevSelectedTab = 0;
-                    @Override
-                    public void onPageSelected(int position) {
-                        // When swiping between pages, select the
-                        // corresponding tab.
-
-                        if (prevSelectedTab != position)
-                            prevSelectedTab = position;
-
-                        getActionBar().setSelectedNavigationItem(position);
-                    }
-
-                }
-        );
-
-        new InternalFileHelper().startRound(new FilePlay(fileName, currentRound.getRoundId()));
-        // 120000 = 2 min
-        timer = new CountDownTimer(120000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                //ver donde mostrarlo
-
-                getActionBar().setTitle(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
-                ));
-            }
-
-            public void onFinish() {
-                getActionBar().setTitle(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(0),
-                        TimeUnit.MILLISECONDS.toSeconds(0))
-                );
-
-                EndRoundAndSendData(false, "Se te terminó el tiempo!");
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-
-                //todo: hacer el basta para mi basta para todos con lo que tiene
-            }
-        }.start();
+        new APIStartRoundTask().execute(gameId);
 
     }
 
@@ -156,7 +90,6 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
     }
 
     public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -169,6 +102,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
         @Override
         public Fragment getItem(int position) {
+
             return CategoryFragment.create(position, currentRound.getLetter(), fileName, currentRound.getCategories().length, currentRound.getRoundId());
         }
         @Override
@@ -183,6 +117,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         public static final String ARG_FILENAME = "ARG_FILENAME";
         public static final String ARG_TOTALCATEGORIES = "ARG_TOTALCATEGORIES";
         public static final String ARG_ROUNDID = "ARG_ROUNDID";
+
         private int categoryIndex;
         private String currentLetter;
         private String fileName;
@@ -225,7 +160,8 @@ public class PlayRoundActivity extends FragmentActivity implements
             textView.setTag(categoryIndex);
 
             textView.addTextChangedListener(new GenericTextWatcher(textView));
-            textView.setOnFocusChangeListener(new GenericFocusChangeListener(categoryIndex, totalCategories, roundId));
+            textView.setOnFocusChangeListener(new GenericFocusChangeListener(fileName,categoryIndex, totalCategories, roundId));
+
 
             return view;
         }
@@ -256,32 +192,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         }
 
 
-        public class GenericFocusChangeListener implements View.OnFocusChangeListener {
 
-            private final int Category;
-            private final int TotalCategories;
-            private final int RoundId;
-            private final InternalFileHelper Helper;
-
-            public GenericFocusChangeListener(int category, int totalCategories, int roundId) {
-                Category = category;
-                TotalCategories = totalCategories;
-                RoundId = roundId;
-                Helper = new InternalFileHelper();
-            }
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    String enteredString = ((EditText) v).getText().toString();
-                    if (enteredString.isEmpty())
-                        return;
-
-                    RoundResult currentRoundResult = Helper.saveCategoryValue(new FilePlay(fileName, this.Category, enteredString, totalCategories, roundId));
-                }
-
-            }
-        }
     }
 
     @Override
@@ -315,59 +226,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
         String categoryValue = textView.getText().toString();
-        RoundResult currentRoundResult = new InternalFileHelper().saveCategoryValue(new FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
+        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow).execute(new FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
 
-        boolean complete = true;
-        if (validateAllCategoriesPresent) {
-            int i = 0;
-            while (complete && i < currentRound.getCategories().length) {
-                if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
-                    complete = false;
-
-                i++;
-            }
-        }
-
-        if (!complete) {
-            showPopUp("Debe completar todas las categorias para finalizar la ronda");
-        }
-        else
-        {
-            List<Play> plays= new ArrayList<Play>();
-
-            for(int index=0;index<currentRound.getCategories().length;index++){
-                Play play= new Play();
-                play.setCategory(currentRound.getCategories()[index]);
-                play.setWord(currentRoundResult.CategoriesValues[index]);
-                play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
-                plays.add(play);
-            }
-
-            Play[] playArray=new Play[plays.size()];
-            plays.toArray(playArray);
-            api.finishRound(currentRound.getGameId(),currentRound.getRoundId(),currentRoundResult.StartTime,playArray);
-
-            File file = new File(fileName);
-            try {
-                file.getCanonicalFile().delete();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            AlertDialog ad = new AlertDialog.Builder(this).create();
-            ad.setCancelable(false); // This blocks the 'BACK' button
-            ad.setMessage(messageToShow);
-            ad.setButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    timer.cancel();
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                }
-            });
-            ad.show();
-
-        }
     }
 
     public void showPopUp(String message)    {
@@ -383,7 +243,183 @@ public class PlayRoundActivity extends FragmentActivity implements
         ad.show();
     }
 
+    private class APIStartRoundTask extends AsyncTask<Integer, Void, FullRound>{
+
+        TuttiFruttiAPI api;
+        @Override
+        protected FullRound doInBackground(Integer... integers) {
+            api.startRound(integers[0]);
+            return api.getCurrentRoundInformation(integers[0]);
+
+        }
+
+        /* */
+
+
+        @Override
+        protected void onPostExecute(FullRound result) {
+
+            currentRound=result;
+            fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(result.getGameId()) + "_" +  Integer.toString(result.getRoundId())  + ".txt";
+
+            final ActionBar actionBar = getActionBar();
+
+            // Specify that tabs should be displayed in the action bar.
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+            for (String category : result.getCategories()) {
+                actionBar.addTab(actionBar.newTab().setText(category).setTabListener(PlayRoundActivity.this));
+            }
+
+            actionBar.setDisplayShowHomeEnabled(false);
+            //actionBar.setDisplayShowTitleEnabled(false);
+
+            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            viewPager.setAdapter(new SampleFragmentPagerAdapter());
+
+            viewPager.setOnPageChangeListener(
+                    new ViewPager.SimpleOnPageChangeListener() {
+                        int prevSelectedTab = 0;
+                        @Override
+                        public void onPageSelected(int position) {
+                            // When swiping between pages, select the
+                            // corresponding tab.
+
+                            if (prevSelectedTab != position)
+                                prevSelectedTab = position;
+
+                            getActionBar().setSelectedNavigationItem(position);
+                        }
+
+                    }
+            );
+
+            new SaveFilePlayStartRoundTask().execute(new FilePlay(fileName, result.getRoundId()));
+
+        }
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+    }
+
+    private class APIFinishRoundTask extends AsyncTask<FinishedRound, Void, Void>{
+        TuttiFruttiAPI api;
+
+        @Override
+        protected Void doInBackground(FinishedRound... finishedRounds) {
+            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),finishedRounds[0].getStartTime(),finishedRounds[0].getPlays());
+            return null;
+        }
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+    }
+
+    private class SaveFilePlayStartRoundTask extends SaveFilePlayTask{
+
+        @Override
+        protected void onPostExecute(RoundResult result) {
+
+            // 120000 = 2 min
+            timer = new CountDownTimer(120000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    //ver donde mostrarlo
+
+                    getActionBar().setTitle(String.format("%d min, %d sec",
+                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                    ));
+                }
+
+                public void onFinish() {
+                    getActionBar().setTitle(String.format("%d min, %d sec",
+                                    TimeUnit.MILLISECONDS.toMinutes(0),
+                                    TimeUnit.MILLISECONDS.toSeconds(0))
+                    );
+
+                    EndRoundAndSendData(false, "Se te terminó el tiempo!");
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+
+                    //todo: hacer el basta para mi basta para todos con lo que tiene
+                }
+            }.start();
+
+        }
+
+    }
+
+    private class SaveFilePlayFinishRoundTask extends SaveFilePlayTask{
+
+        Boolean validateAllCategoriesPresent;
+        String messageToShow;
+
+        public SaveFilePlayFinishRoundTask(Boolean validateAllCategoriesPresent, String messageToShow){
+            this.validateAllCategoriesPresent=validateAllCategoriesPresent;
+            this.messageToShow=messageToShow;
+        }
+       protected void onPostExecute(RoundResult currentRoundResult){
+           //TODO refact
+           boolean complete = true;
+           if (validateAllCategoriesPresent) {
+               int i = 0;
+               while (complete && i < currentRound.getCategories().length) {
+                   if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
+                       complete = false;
+
+                   i++;
+               }
+           }
+
+           if (!complete) {
+               showPopUp("Debe completar todas las categorias para finalizar la ronda");
+           }
+           else
+           {
+               List<Play> plays= new ArrayList<Play>();
+
+               for(int index=0;index<currentRound.getCategories().length;index++){
+                   Play play= new Play();
+                   play.setCategory(currentRound.getCategories()[index]);
+                   play.setWord(currentRoundResult.CategoriesValues[index]);
+                   play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
+                   plays.add(play);
+               }
+
+               Play[] playArray=new Play[plays.size()];
+               plays.toArray(playArray);
+
+                new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(),currentRoundResult.StartTime,playArray));
+               File file = new File(fileName);
+               try {
+                   file.getCanonicalFile().delete();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+
+               AlertDialog ad = new AlertDialog.Builder(PlayRoundActivity.this).create();
+               ad.setCancelable(false); // This blocks the 'BACK' button
+               ad.setMessage(messageToShow);
+               ad.setButton("OK", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       timer.cancel();
+                       Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                       startActivity(intent);
+                   }
+               });
+               ad.show();
+
+           }
+       }
+
+    }
+
+
 }
-
-
 

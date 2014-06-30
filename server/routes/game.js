@@ -68,9 +68,11 @@ module.exports = function(app) {
           var currentRound = game.getRound(reqRound.roundId);
 
           if (!currentRound) return res.send('Round not found', 404);
+
           if (currentRound.hasLineOfPlayer(reqRound.line.player)) {
             return res.send('Round finished', 200)
           }; 
+
           currentRound.addLine(reqRound.line);
           game.save(function(err) {
             if(!err) {
