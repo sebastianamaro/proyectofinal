@@ -50,7 +50,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         PlayServicesHelper helper = new PlayServicesHelper();
         String regid = "";
         if (helper.checkPlayServices(this))
@@ -58,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
             regid = helper.getRegistrationId(getApplicationContext());
             if (regid == "")
                 helper.registerGCMInBackground(getApplicationContext());
+
         }
     }
 
