@@ -13,12 +13,12 @@ var gameSchema = new Schema({
     mode : { type: String },
     categoriesType: { type: String },
     oponentsType: { type: String },
-    players: [ Player.schema ]
+    players: [ { type: String } ]
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
 	var round = this.rounds.filter(function (round) {
-              return round.roundId === roundId;
+              return round.roundId == roundId;
             }).pop();
 	return round;
  }
@@ -64,14 +64,12 @@ gameSchema.methods.addPlayer = function addPlayer(player){
   this.players.push = newPlayer;
 }
 
-gameSchema.methods.sendNotifications = function sendNotifications(callback){
-    console.log("entra a send");
+gameSchema.methods.sendNotifications = function sendNotifications(round, callback){
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
-    console.log(player);
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    notification.setValues({'gameId':this.gameId, 'status' : 'FINISHED'});
+    notification.setValues({'gameId':this.gameId, 'roundId':round.roundId, 'status' : 'FINISHED'});
     notification.send(function(err){
       if (err){
         callback(new Error("algo salio mal"));

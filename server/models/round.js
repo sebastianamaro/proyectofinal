@@ -7,20 +7,18 @@ var Line = require('./line.js');
 var roundSchema = new Schema({
   roundId : { type: Number },
   letter:   { type: String },
-  status:   { type: String },
+  status:   { type: String },  
   lines: [Line.schema] 
-});
+}, { _id : false });
 
 roundSchema.methods.start = function start(letter) {
   this.letter = letter;
   this.status = 'PLAYING';
-  return this;
- }
+}
 
 roundSchema.methods.finish = function finish() {
   this.status = "CLOSED";
-  return this;
- }
+}
 
 roundSchema.methods.addLine = function addLine(newLine) {
   var existingLine = this.lines.filter(function (line) {return line.player == newLine.player; }).pop();
@@ -42,37 +40,45 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
 }
 
 roundSchema.methods.validatePlay = function validatePlay(play) {
-  return true; //for now it's a dummy
+  return play.word.charAt(0) == this.letter; //for now it's almost a dummy
 }
+roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
 
-roundSchema.methods.setValidScore = function setValidScore(play) {
-  var repeatedPlays = this.lines.filter(function (line) 
-    {
-      return line.getPlaySimilarTo(play);
+  for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
+    if (iLine == iLineMyLine){
+      continue;
     }
-  ).pop();
-  if (repeatedPlay)
-
-
-  this.lines.reduce(function(previousLine, currentLine, index, array){
-      return plays.push(currentLine.plays);
-  }, usedLetters);
+    var line = this.lines[iLine];
+    var repeatedPlay = line.getPlaySimilarTo(play);
+    if (repeatedPlay){
+      repeatedPlay.setRepeatedResult();
+      play.setRepeatedResult();
+      continue;
+    }
+  };
+  if (!play.result){ //it's not repeated, neither invalid
+    play.setUniqueScore();
+  }
 }
 
+roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player) {
+  var lineOfPlayerExists = this.lines.filter(function (line) {return line.player == player; }).pop();
+  if (lineOfPlayerExists === undefined) return false;
+  return true;
+}
 roundSchema.methods.calculateScores = function calculateScores(game) {
-  for (var i = this.lines.length - 1; i >= 0; i--) {
-    var line = this.lines[i];
-    for (var j = line.plays.length - 1; j >= 0; j--) {
-      var play = line.plays[j];
-      if (play.result){
+  for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
+    var line = this.lines[iLine];
+    for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
+      var play = line.plays[iPlay];
+      if (!play.result === undefined){
         continue;
       }
       if (!this.validatePlay(play)){
-        play.score = 0;
-        play.result = "INVALID";
+        play.setInvalidResult();
         continue;
       }
-      this.setValidScore(play);
+      this.setValidScore(play, iLine);
     };
   };
 }

@@ -14,7 +14,6 @@ app.configure(function () {
 
 app.put('/game/:id/round', alterRound); 
 app.get('/game/:id/round', getRound);
-
 app.post('/game', createGame); 
 app.get('/test/:id', sendNotifications); 
 

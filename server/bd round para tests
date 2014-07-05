@@ -1,0 +1,24 @@
+{"status":"CLOSED",
+"roundId": 1,
+"line": { "player": "Nitu",
+"plays":
+[{"category":"ANIMALES","word":"Aaa"},
+{"category":"COLORES","word":"Aaa"},
+{"category":"LUGARES","word":"Aaa"},
+{"category":"FRUTAS","word":"Aaa"},
+{"category":"MARCAS DE AUTO","word":"Aaa"}
+]
+}}
+
+{"status":"CLOSED",
+"roundId": 1,
+"line": { "player": "Martu",
+"plays":
+[{"category":"ANIMALES","word":"Alalala"},
+{"category":"COLORES","word":"Asadsadas"},
+{"category":"LUGARES","word":"Aiudioasu"},
+{"category":"FRUTAS","word":"Aaa"},
+{"category":"MARCAS DE AUTO","word":"Aaa"}
+]
+}}
+

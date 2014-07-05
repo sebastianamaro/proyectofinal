@@ -5,10 +5,10 @@ var Play = require('./play.js');
 
 var lineSchema = new Schema({
   player:   { type: String },
-  plays:   [ Play.schema ],
+  plays:   [Play.schema],
   score: { type: Number },
   startTimestamp: { type: Date }
-});
+}, { _id : false });
 
 lineSchema.methods.setValues = function setValues(line) {
   this.player = line.player;
@@ -21,7 +21,7 @@ lineSchema.methods.addPlays = function addPlays(plays) {
     var newPlay = new Play();
     newPlay.setValues(plays[i]);
     this.plays.push(newPlay);
-    };
+  };
 }
 
 lineSchema.methods.getPlaySimilarTo = function getPlaySimilarTo(searchedPlay) {
