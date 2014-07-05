@@ -1,5 +1,6 @@
-function Notification(){
+Notification = function(){
 	this.apiKey = 'AIzaSyDnzPmtbKIvPEPAXF8AsRdqyiDqdT2RDlQ';
+	return this;
 }
 
 Notification.prototype.send =  function(callback){
@@ -9,11 +10,10 @@ Notification.prototype.send =  function(callback){
 
 	var message = {
 	    registration_id: this.registrationId,
+	    'data.key1': 'value1',
+    	'data.key2': 'value2'
 	};
-
-	for(var key in this.values){
-		message.set(key, this.values[key]);
-	}
+	
 	gcm.send(message, function(err, messageId){
 	    if (err) {
 	        console.log("Something has gone wrong!");
@@ -26,10 +26,10 @@ Notification.prototype.send =  function(callback){
 	});
 }
 
-Notification.prototype.setRegistrationId(registrationId){
+Notification.prototype.setRegistrationId= function (registrationId){
 	this.registrationId = registrationId;
 }
 
-Notification.prototype.setValues(values){
+Notification.prototype.setValues= function (values){
 	this.values = values;
 }

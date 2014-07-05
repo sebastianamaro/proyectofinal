@@ -16,6 +16,7 @@ app.put('/game/:id/round', alterRound);
 app.get('/game/:id/round', getRound);
 
 app.post('/game', createGame); 
+app.get('/test/:id', sendNotifications); 
 
 mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
@@ -25,7 +26,7 @@ mongoose.connect('mongodb://localhost:30000', function(err, res) {
   }
 });
 
-server.listen(3000, function() {
+server.listen(8080, function() {
   console.log("Node server running on http://localhost:3000");
 });
 

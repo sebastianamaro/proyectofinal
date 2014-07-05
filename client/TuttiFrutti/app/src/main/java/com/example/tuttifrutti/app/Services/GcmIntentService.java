@@ -50,6 +50,8 @@ public class GcmIntentService extends IntentService {
             }
         }
 
+        GcmBroadcastReceiver.completeWakefulIntent(intent);
+
 
     }
 }

@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.example.TuttiFruttiAPI;
+import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 
 public class CreateGameActivity extends ActionBarActivity {
@@ -48,7 +50,17 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
         TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
-        api.createGame(mode,oponents,categories);
+
+        PlayServicesHelper helper = new PlayServicesHelper();
+        String regid = "";
+        if (helper.checkPlayServices(this))
+        {
+            regid = helper.getRegistrationId(getApplicationContext());
+            if (regid == "")
+                helper.registerGCMInBackground(getApplicationContext());
+        }
+
+        api.createGame(mode,oponents,categories, regid);
 
         AlertDialog ad = new AlertDialog.Builder(this).create();
         ad.setCancelable(false); // This blocks the 'BACK' button

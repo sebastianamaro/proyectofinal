@@ -23,12 +23,13 @@ public class TuttiFruttiAPI {
         }
     }
 
-    public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode)
+    public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode, String registrationId)
     {
         String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         Game g= new Game();
+        g.setPlayer(registrationId);
 
         if(gameMode)
             g.setMode("ONLINE");

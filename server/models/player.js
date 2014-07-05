@@ -6,7 +6,7 @@ var playerSchema = new Schema({
 });
 
 playerSchema.methods.setValues = function setValues(player) {
-  this.registrationId = player.registrationId;
+  this.registrationId = player;
   return this;
 }
 

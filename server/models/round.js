@@ -29,7 +29,6 @@ roundSchema.methods.addLine = function addLine(newLine) {
     myLine.setValues(newLine);
     this.lines.push(myLine);
   }
-  console.log(existingLine+" la line ya existe (ponele)");
 }
 
 roundSchema.methods.isPlaying = function isPlaying() {

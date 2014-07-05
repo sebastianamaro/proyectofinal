@@ -117,4 +117,19 @@ module.exports = function(app) {
      });
   
   }
+  sendNotifications = function(req, res) {
+        Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+          game.sendNotifications(function(err){
+            if(err) {
+              console.log('ERROR: ' + err);
+            } else {
+              console.log('Notifications sent');
+            }
+          });
+          
+          //check if all finished---> count points
+
+          res.send('Notifications sent', 200);
+        })
+    }
 }

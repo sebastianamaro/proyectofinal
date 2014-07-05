@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 var Round = require('./round.js');
 var Player = require('./player.js');
+var NotificationFile = require('./notification.js');
 
 var gameSchema = new Schema({
   	gameId:   { type: Number },
@@ -63,12 +64,14 @@ gameSchema.methods.addPlayer = function addPlayer(player){
   this.players.push(newPlayer);
 }
 
-gameSchema.methods.sendNotifications = function sendNotifications(round, callback){
-  for (var i = game.players.length - 1; i >= 0; i--) {
-    var player = game.players[i];
+gameSchema.methods.sendNotifications = function sendNotifications(callback){
+    console.log("entra a send");
+  for (var i = this.players.length - 1; i >= 0; i--) {
+    var player = this.players[i];
+    console.log(player);
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    notification.setValues({'gameId':game.gameId, 'roundId':currentRound.roundId, 'status' : 'FINISHED'});
+    notification.setValues({'gameId':this.gameId, 'status' : 'FINISHED'});
     notification.send(function(err){
       if (err){
         callback(new Error("algo salio mal"));

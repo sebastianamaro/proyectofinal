@@ -15,6 +15,11 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        String regId = intent.getExtras().getString("registration_id");
+        if(regId != null && !regId.equals("")) {
+            String hola = "hola";
+        }
         // Explicitly specify that GcmIntentService will handle the intent.
         ComponentName comp = new ComponentName(context.getPackageName(),
                 GcmIntentService.class.getName());

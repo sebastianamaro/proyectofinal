@@ -7,6 +7,7 @@ public class Game {
     private String mode;
     private String categoriesType;
     private String opponentsType;
+    private String player;
 
     public String getMode(){return mode;}
     public void setMode(String mode){this.mode=mode;}
@@ -14,6 +15,7 @@ public class Game {
     public String getCategoriesType(){return categoriesType;}
     public void setCategoriesType(String categoriesType){this.categoriesType=categoriesType;}
 
+    public void setPlayer(String player){this.player=player;}
 
     public String getOpponentsType() {
         return opponentsType;
