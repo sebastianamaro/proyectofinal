@@ -1,4 +1,4 @@
-/*
+
 package com.example;
 
 import org.springframework.http.HttpStatus;
@@ -12,4 +12,4 @@ public class CustomHttpException extends HttpStatusCodeException {
 
 
 }
-*/
+

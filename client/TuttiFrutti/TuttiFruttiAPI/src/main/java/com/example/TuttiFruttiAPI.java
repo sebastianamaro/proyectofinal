@@ -21,13 +21,17 @@ public class TuttiFruttiAPI {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        System.setProperty("http.keepAlive", "false");
     }
 
     public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode, String registrationId)
     {
         String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomErrorHandler());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
         Game g= new Game();
         g.setPlayer(registrationId);
 
