@@ -59,7 +59,6 @@ module.exports = function(app) {
         res.send('Round started', 200);
     });
   }
-
   finishRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
           var reqRound = req.body;
@@ -69,10 +68,10 @@ module.exports = function(app) {
           var currentRound = game.getRound(reqRound.roundId);
 
           if (!currentRound) return res.send('Round not found', 404);
-
-          //currentRound.finish(); //doesnt do much
+          if (currentRound.hasLineOfPlayer(reqRound.line.player)) {
+            return res.send('Round finished', 200)
+          }; 
           currentRound.addLine(reqRound.line);
-
           game.save(function(err) {
             if(!err) {
               console.log('Finished round');
@@ -87,11 +86,7 @@ module.exports = function(app) {
               console.log('Notifications sent');
             }
           });
-          
-<<<<<<< HEAD
-          //check if all finished---> count points
-=======
-          if (currentRound.checkAllPlayersFinished()){
+          if (currentRound.checkAllPlayersFinished(game)){
             currentRound.calculateScores();
             currentRound.save(function(err) {
             if(!err) {
@@ -101,11 +96,9 @@ module.exports = function(app) {
             }
           });
           }
->>>>>>> Calculating scores on server side when all players have finished the round. For now, all words are considered valid (there is a dummy). It checks for repeated answers. Not finished.
-
           res.send('Round finished', 200);
         })
-    }
+  }
   createGame = function(req,res){
     Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
       var largerId;
@@ -120,15 +113,14 @@ module.exports = function(app) {
       game.categories = ["ANIMALES", "COLORES", "LUGARES", "FRUTAS", "MARCAS DE AUTO"];
       game.setValues(req.body);
       game.save(function(err) {
-              if(!err) {
-              console.log('Created game with gameId '+largerId);
-            } else {
-              console.log('ERROR: ' + err);
-            }
-          });
-          return res.send('Game started with gameId '+largerId, 200);
+        if(!err) {
+          console.log('Created game with gameId '+largerId);
+        } else {
+          console.log('ERROR: ' + err);
+        }
+      });
+      return res.send('Game started with gameId '+largerId, 200);
      });
-  
   }
   sendNotifications = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
