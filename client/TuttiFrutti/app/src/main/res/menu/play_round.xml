@@ -6,6 +6,7 @@
     <item android:id="@+id/action_stop"
         android:icon="@drawable/ic_action_cloud"
         android:title="Basta"
-        android:showAsAction="always"
+        app:showAsAction="always"
+
         />
 </menu>

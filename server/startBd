@@ -1,1 +1,1 @@
-mongod --dbpath /home/mcortes/dev/Proyecto/dev/proyectofinal/server/db --journal --port 30000 --fork --logpath /home/mcortes/dev/Proyecto/dev/proyectofinal/server/db/lala
+mongod --dbpath "C:\Users\Nituguivi\Documents\Facultad\Proyecto Final\Repo\proyectofinal\server\db" --journal --port 30000 --logpath "C:\Users\Nituguivi\Documents\Facultad\Proyecto Final\Repo\proyectofinal\server\logs"

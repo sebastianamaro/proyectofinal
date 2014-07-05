@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
+import com.example.tuttifrutti.app.MainActivity;
 import com.example.tuttifrutti.app.PlayRoundActivity;
 import com.example.tuttifrutti.app.R;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -47,11 +48,32 @@ public class GcmIntentService extends IntentService {
                 Message msg = Message.obtain();
                 msg.what = 999;
                 new PlayRoundActivity()._handler.sendMessage(msg);
+                //mostrarNotification("hola soy nitu desde el servicio");
             }
         }
 
         GcmBroadcastReceiver.completeWakefulIntent(intent);
 
 
+    }
+
+    private void mostrarNotification(String msg)
+    {
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setContentTitle("Notificación GCM")
+                        .setContentText(msg);
+
+        Intent notIntent =  new Intent(this, MainActivity.class);
+        PendingIntent contIntent = PendingIntent.getActivity(
+                this, 0, notIntent, 0);
+
+        mBuilder.setContentIntent(contIntent);
+
+        mNotificationManager.notify(1, mBuilder.build());
     }
 }
