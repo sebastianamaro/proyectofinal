@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -180,7 +181,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 String text = charSequence.toString();
-                if (!text.isEmpty() && text.charAt(0) != currentLetter.charAt(0)) {
+                if (!text.isEmpty() && Character.toLowerCase(text.charAt(0)) != Character.toLowerCase(currentLetter.charAt(0))) {
                     EditText textView = (EditText) view;
                     textView.setError("La palabra debe comenzar con la letra correspondiente a la ronda");
                 }
@@ -200,6 +201,10 @@ public class PlayRoundActivity extends FragmentActivity implements
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.play_round, menu);
+        MenuItem stopButton = menu.findItem(R.id.action_stop);
+        stopButton.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        stopButton.setVisible(true);
+
         return true;
     }
 
@@ -224,6 +229,11 @@ public class PlayRoundActivity extends FragmentActivity implements
     public void EndRoundAndSendData(Boolean validateAllCategoriesPresent, String messageToShow) {
         int position = getActionBar().getSelectedTab().getPosition();
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
+
+        if (textView == null)
+            showPopUp("el textview es null");
+        else if (textView.getText() == null)
+            showPopUp("el getText es null");
 
         String categoryValue = textView.getText().toString();
         new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow).execute(new FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
@@ -271,7 +281,10 @@ public class PlayRoundActivity extends FragmentActivity implements
                 actionBar.addTab(actionBar.newTab().setText(category).setTabListener(PlayRoundActivity.this));
             }
 
-            actionBar.setDisplayShowHomeEnabled(false);
+            View homeIcon = findViewById(android.R.id.home);
+            ((View) homeIcon.getParent()).setVisibility(View.GONE);
+
+            //actionBar.setDisplayShowHomeEnabled(false);
             //actionBar.setDisplayShowTitleEnabled(false);
 
             ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
@@ -324,7 +337,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         protected void onPostExecute(RoundResult result) {
 
             // 120000 = 2 min
-            timer = new CountDownTimer(120000, 1000) {
+            timer = new CountDownTimer(60000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
                     //ver donde mostrarlo
@@ -343,8 +356,6 @@ public class PlayRoundActivity extends FragmentActivity implements
                     );
 
                     EndRoundAndSendData(false, "Se te terminó el tiempo!");
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
 
                     //todo: hacer el basta para mi basta para todos con lo que tiene
                 }
