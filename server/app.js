@@ -26,7 +26,7 @@ mongoose.connect('mongodb://localhost:30000', function(err, res) {
 });
 
 server.listen(8080, function() {
-  console.log("Node server running on http://localhost:3000");
+  console.log("Node server running on http://localhost:8080");
 });
 
 

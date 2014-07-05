@@ -65,7 +65,7 @@ gameSchema.methods.addPlayer = function addPlayer(player){
 }
 
 gameSchema.methods.sendNotifications = function sendNotifications(round, callback){
-  for (var i = this.players.length - 1; i >= 0; i--) {
+  /*for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
@@ -75,7 +75,7 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, callbac
         callback(new Error("algo salio mal"));
       }
     });
-  }
+  }*/
 }
 
 module.exports = mongoose.model('Game', gameSchema);
