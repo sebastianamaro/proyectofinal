@@ -3,6 +3,7 @@ package com.example;
 import android.os.StrictMode;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +23,6 @@ public class TuttiFruttiAPI {
             StrictMode.setThreadPolicy(policy);
         }
 
-        System.setProperty("http.keepAlive", "false");
     }
 
     public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode, String registrationId)
@@ -31,7 +31,7 @@ public class TuttiFruttiAPI {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new CustomErrorHandler());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         Game g= new Game();
         g.setPlayer(registrationId);
 
@@ -62,6 +62,7 @@ public class TuttiFruttiAPI {
             String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
             FullRound fr= new FullRound();
             fr.setStatus("PLAYING");
             restTemplate.put(url,fr);
@@ -72,6 +73,7 @@ public class TuttiFruttiAPI {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         PlayedRound pr= new PlayedRound();
         pr.setStatus("CLOSED");
         pr.setRoundId(roundId);
@@ -90,6 +92,7 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"game/"+gameId+"/round";
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         return restTemplate.getForObject(url,FullRound.class);
     }
