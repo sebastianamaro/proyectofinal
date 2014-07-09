@@ -25,7 +25,7 @@ module.exports = function(app) {
     else if (statusRequired == 'CLOSED')
       finishRound(req,res);
     else
-      res.send('No action selected'+req.body+"-----"+req.body.status,500);      
+      res.send('Incomplete request',500);      
   }
   startRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
@@ -39,14 +39,9 @@ module.exports = function(app) {
               console.log('Return existing round with letter '+playingRound.letter);
           } else {
             var assignedLetter = game.getNextLetter();
-            
-            //if (!assignedLetter) finishGame();
-            
             var round = new Round();
             round.start(assignedLetter);
-
             game.addRound(round);
-
             game.save(function(err) {
               if(!err) {
                 console.log('Created round with letter '+assignedLetter);
@@ -89,7 +84,7 @@ module.exports = function(app) {
             }
           });
           if (currentRound.checkAllPlayersFinished(game)){
-            currentRound.calculateScores();
+            currentRound.finish();
             currentRound.save(function(err) {
             if(!err) {
               console.log('Finished round');
@@ -125,18 +120,27 @@ module.exports = function(app) {
      });
   }
   sendNotifications = function(req, res) {
-        Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
-          game.sendNotifications(function(err){
-            if(err) {
-              console.log('ERROR: ' + err);
-            } else {
-              console.log('Notifications sent');
-            }
-          });
-          
-          //check if all finished---> count points
-
-          res.send('Notifications sent', 200);
-        })
-    }
+    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+      game.sendNotifications(function(err){
+        if(err) {
+          console.log('ERROR: ' + err);
+        } else {
+          console.log('Notifications sent');
+        }
+      });
+      
+      res.send('Notifications sent', 200);
+    })
+  }
+  getRoundScores = function(req, res){
+    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+      var reqRound = req.body;
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);          
+      var currentRound = game.getRound(reqRound.roundId);
+      if (!currentRound) return res.send('Round not found with roundId '+reqRound.roundId, 404);
+      if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
+      res.send(currentRound.lines, 200);            
+    });
+  }
 }

@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
 
 var Play = require('./play.js');
 var Line = require('./line.js');
+var Category = require('./category.js');
 
 var roundSchema = new Schema({
   roundId : { type: Number },
@@ -39,8 +40,15 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
   return playersCount == linesCount;
 }
 
-roundSchema.methods.validatePlay = function validatePlay(play) {
-  return play.word.charAt(0) == this.letter; //for now it's almost a dummy
+roundSchema.methods.validatePlay = function validatePlay(play, game) {
+  if (play.word.charAt(0) !== this.letter){
+    return false;
+  } //for now it's almost a dummy
+  if (game.categoriesType == "FIXED"){
+    var categoryInstance = new Category();
+    return categoryInstance.isWordValid(play.word, play.category);
+  }
+  return true;
 }
 roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
 
@@ -66,7 +74,10 @@ roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player) {
   if (lineOfPlayerExists === undefined) return false;
   return true;
 }
-roundSchema.methods.calculateScores = function calculateScores(game) {
+
+roundSchema.methods.finish = function finish(game) {
+  this.status = "FINISHED";
+  //CALCULATES SCORES
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
     var line = this.lines[iLine];
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
@@ -74,12 +85,13 @@ roundSchema.methods.calculateScores = function calculateScores(game) {
       if (!play.result === undefined){
         continue;
       }
-      if (!this.validatePlay(play)){
+      if (!this.validatePlay(play)){ //checks it's correct and accepted
         play.setInvalidResult();
         continue;
       }
-      this.setValidScore(play, iLine);
+      this.setValidScore(play, iLine); // sets either OK or REPEATED
     };
+    line.setTotalScore(game.gameId, this.roundId);
   };
 }
 
