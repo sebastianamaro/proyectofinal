@@ -59,7 +59,6 @@ public class PlayRoundActivity extends FragmentActivity implements
         registerReceiver(gcmLocalReceiver, new IntentFilter("gcmLocalReceiver"));
 
         int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
-
         new APIStartRoundTask().execute(gameId);
 
     }
