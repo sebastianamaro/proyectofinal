@@ -81,7 +81,7 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
-          game.sendNotifications(currentRound, function(err){
+          game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
             if(err) {
               console.log('ERROR: ' + err);
             } else {

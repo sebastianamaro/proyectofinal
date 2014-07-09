@@ -21,7 +21,7 @@ roundSchema.methods.finish = function finish() {
 }
 
 roundSchema.methods.addLine = function addLine(newLine) {
-  var existingLine = this.lines.filter(function (line) {return line.player == newLine.player; }).pop();
+  var existingLine = this.lines.filter(function (line) {return line.player.registrationId == newLine.player.registrationId; }).pop();
   if (!existingLine){
     var myLine = new Line();
     myLine.setValues(newLine);
@@ -82,5 +82,18 @@ roundSchema.methods.calculateScores = function calculateScores(game) {
     };
   };
 }
- 
+
+roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
+  var existingLine = this.lines.filter(function (line) {
+    return line.player.registrationId == player.registrationId; 
+  }).pop();  
+  return existingLine !== undefined;
+}
+
+roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
+  var line = new Line();
+  line.player = player;
+  this.addLine(line);
+}
+
 module.exports = mongoose.model('Round', roundSchema);

@@ -2,10 +2,11 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
 var Play = require('./play.js');
+var Player = require('./player.js');
 
 var lineSchema = new Schema({
-  player:   { type: String },
-  plays:   [Play.schema],
+  player:   {registrationId: {type: String}},
+  plays:   [ Play.schema ],
   score: { type: Number },
   startTimestamp: { type: Date }
 }, { _id : false });

@@ -64,18 +64,36 @@ gameSchema.methods.addPlayer = function addPlayer(player){
   this.players.push = newPlayer;
 }
 
-gameSchema.methods.sendNotifications = function sendNotifications(round, callback){
-  /*for (var i = this.players.length - 1; i >= 0; i--) {
+
+gameSchema.methods.sendNotifications = function sendNotifications(round, registrationId, callback){
+    console.log("entra a send");
+  for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
+    if (round.hasLineOfPlayer(player)) { // if it has a line of the player it means he has already sent me his line OR i have sent him notification
+      console.log("Tiene line el player "+player.registrationId);
+      continue;
+    }
+    console.log("Voy a mandarle al player "+player.registrationId);
+
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
     notification.setValues({'gameId':this.gameId, 'roundId':round.roundId, 'status' : 'FINISHED'});
     notification.send(function(err){
       if (err){
-        callback(new Error("algo salio mal"));
+        callback(new Error("Error when sendNotifications"));
       }
     });
-  }*/
+
+    round.setNotificationSentForPlayer(player);
+    this.save(function(err) {
+              if(!err) {
+              console.log('Notifications sent ');
+            } else {
+              console.log('ERROR: ' + err);
+              callback(new Error("Error on save game"));
+            }
+          });
+  }
 }
 
 module.exports = mongoose.model('Game', gameSchema);
