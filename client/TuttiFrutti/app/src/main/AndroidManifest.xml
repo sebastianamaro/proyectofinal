@@ -35,8 +35,7 @@
         </activity>
         <activity
             android:name=".PlayRoundActivity"
-            android:label="@string/title_activity_play_round"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:label="@string/title_activity_play_round">
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
