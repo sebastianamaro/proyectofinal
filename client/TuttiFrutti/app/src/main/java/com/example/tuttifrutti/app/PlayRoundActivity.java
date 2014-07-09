@@ -3,9 +3,12 @@ package com.example.tuttifrutti.app;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.content.IntentFilter;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
@@ -23,26 +26,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-
 import com.example.FullRound;
 import com.example.Play;
 import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.FilePlay;
 import com.example.tuttifrutti.app.Classes.FinishedRound;
+import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
-import com.google.gson.Gson;
-
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.example.tuttifrutti.app.Classes.InternalFileHelper;
@@ -56,15 +49,6 @@ public class PlayRoundActivity extends FragmentActivity implements
     private FullRound currentRound;
     private CountDownTimer timer;
 
-    public Handler _handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int hola = 1;
-
-        }
-
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +56,25 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         Intent intent = getIntent();
 
+        registerReceiver(gcmLocalReceiver, new IntentFilter("gcmLocalReceiver"));
+
         int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
 
         new APIStartRoundTask().execute(gameId);
 
+    }
+
+    private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            EndRoundAndSendData(false, "MONGUITO hizo basta para mi basta para todos!!");
+
+        }
+    };
+
+    @Override
+    public void onDestroy(){
+        unregisterReceiver(gcmLocalReceiver);
     }
 
     @Override
@@ -230,18 +229,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     }
 
-    public void showPopUp(String message)    {
-        AlertDialog ad = new AlertDialog.Builder(this).create();
-        ad.setCancelable(false); // This blocks the 'BACK' button
-        ad.setMessage(message);
-        ad.setButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        ad.show();
-    }
+
 
     private class APIStartRoundTask extends AsyncTask<Integer, Void, FullRound>{
 
@@ -308,7 +296,8 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         @Override
         protected Void doInBackground(FinishedRound... finishedRounds) {
-            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),finishedRounds[0].getStartTime(),finishedRounds[0].getPlays());
+            String regid = new PlayServicesHelper().getRegistrationId(getApplicationContext());
+            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),regid,finishedRounds[0].getStartTime(),finishedRounds[0].getPlays());
             return null;
         }
 
@@ -350,8 +339,23 @@ public class PlayRoundActivity extends FragmentActivity implements
                 }
             }.start();
 
+            }
         }
 
+
+
+    public void showPopUp(String message)
+    {
+        AlertDialog ad = new AlertDialog.Builder(this).create();
+        ad.setCancelable(false); // This blocks the 'BACK' button
+        ad.setMessage(message);
+        ad.setButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        ad.show();
     }
 
     private class SaveFilePlayFinishRoundTask extends SaveFilePlayTask{

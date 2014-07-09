@@ -43,12 +43,7 @@ public class GcmIntentService extends IntentService {
 
         if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-
-                //todo: preguntar si es el mensaje de basta para mi..
-                Message msg = Message.obtain();
-                msg.what = 999;
-                new PlayRoundActivity()._handler.sendMessage(msg);
-                //mostrarNotification("hola soy nitu desde el servicio");
+                sendBroadcast(new Intent("gcmLocalReceiver"));
             }
         }
 
