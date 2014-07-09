@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
 var Play = require('./play.js');
+var Game = require('./game.js');
 
 var lineSchema = new Schema({
   player:   { type: String },
@@ -28,6 +29,15 @@ lineSchema.methods.getPlaySimilarTo = function getPlaySimilarTo(searchedPlay) {
   return this.plays.filter(function (play) {
     return play.isSimilarTo(searchedPlay);
   }).pop();
+}
+
+lineSchema.methods.setTotalScore = function setTotalScore(gameId, roundId) {
+  var totalScore = 0;
+  for (var i = this.plays.length - 1; i >= 0; i--) {
+    var play = this.plays[i];
+    totalScore += play.score;
+  };
+  this.score = totalScore;
 }
 
 module.exports = mongoose.model('Line', lineSchema);
