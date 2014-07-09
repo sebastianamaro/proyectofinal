@@ -125,6 +125,13 @@ module.exports = function(app) {
      });
   }
 
-}
 
- 
+
+  getGamesForPlayer = function(req, res) {
+    Player.findOne({ 'notificationId': req.params.notificationId}, function (err, player){
+      if (err) return res.send(err, 500);
+      if (!player) return res.send('Player not found', 404);     
+      res.send(player.getGames(), 200); //add error manipulation
+    });
+  } 
+}
