@@ -8,7 +8,7 @@ import java.util.Date;
 public class RoundLine {
     private Date startTimestamp;
     private Play[] plays;
-    private String player;
+    private Player player;
     private Integer score;
 
     public Date getStartTimestamp() {
@@ -27,13 +27,12 @@ public class RoundLine {
         this.plays = plays;
     }
 
-    public String getPlayer() {
-        return player;
+    public void setPlayer(String playerRegId) {
+        this.player = new Player();
+        this.player.setRegistrationId(playerRegId);
     }
 
-    public void setPlayer(String player) {
-        this.player = player;
-    }
+    public Player getPlayer() { return this.player; }
 
     public Integer getScore() {
         return score;

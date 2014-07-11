@@ -3,11 +3,10 @@ var mongoose = require('mongoose'),
 
 var playerSchema = new Schema({
     registrationId: { type: String }
-});
+}); 
 
 playerSchema.methods.setValues = function setValues(player) {
-  this.registrationId = player;
-  return this;
+  this.registrationId = player.registrationId;
 }
 
 module.exports = mongoose.model('Player', playerSchema);

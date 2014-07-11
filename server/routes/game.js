@@ -69,6 +69,7 @@ module.exports = function(app) {
           }; 
 
           currentRound.addLine(reqRound.line);
+
           game.save(function(err) {
             if(!err) {
               console.log('Finished round');
@@ -76,6 +77,8 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
+          console.log(game);
+
           game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
             if(err) {
               console.log('ERROR: ' + err);
@@ -84,8 +87,8 @@ module.exports = function(app) {
             }
           });
           if (currentRound.checkAllPlayersFinished(game)){
-            currentRound.finish();
-            currentRound.save(function(err) {
+            currentRound.finish(game);
+            game.save(function(err) {
             if(!err) {
               console.log('Finished round');
             } else {
@@ -108,6 +111,7 @@ module.exports = function(app) {
       game.gameId = largerId;
       game.status = "PLAYING";
       game.categories = ["ANIMALES", "COLORES", "LUGARES", "FRUTAS", "MARCAS DE AUTO"];
+
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {

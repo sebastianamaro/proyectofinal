@@ -38,9 +38,6 @@ import com.example.tuttifrutti.app.Classes.RoundResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import com.example.tuttifrutti.app.Classes.InternalFileHelper;
-import com.example.tuttifrutti.app.Classes.RoundResult;
-
 
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {
@@ -66,6 +63,11 @@ public class PlayRoundActivity extends FragmentActivity implements
     private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (currentRound == null) {
+                TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
+                int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
+                currentRound = api.getCurrentRoundInformation(gameId);
+            }
             EndRoundAndSendData(false, "MONGUITO hizo basta para mi basta para todos!!");
 
         }
@@ -396,14 +398,14 @@ public class PlayRoundActivity extends FragmentActivity implements
            {
                List<Play> plays= new ArrayList<Play>();
 
-               for(int index=0;index<currentRound.getCategories().length;index++){
-                   Play play= new Play();
+               for (int index = 0; index < currentRound.getCategories().length; index++) {
+                   Play play = new Play();
                    play.setCategory(currentRound.getCategories()[index]);
                    play.setWord(currentRoundResult.CategoriesValues[index]);
                    play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
                    plays.add(play);
                }
-
+               
                Play[] playArray=new Play[plays.size()];
                plays.toArray(playArray);
 

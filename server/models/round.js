@@ -17,17 +17,14 @@ roundSchema.methods.start = function start(letter) {
   this.status = 'PLAYING';
 }
 
-roundSchema.methods.finish = function finish() {
-  this.status = "CLOSED";
-}
 
 roundSchema.methods.addLine = function addLine(newLine) {
   var existingLine = this.lines.filter(function (line) {return line.player.registrationId == newLine.player.registrationId; }).pop();
   if (!existingLine){
-    var myLine = new Line();
-    myLine.setValues(newLine);
-    this.lines.push(myLine);
-  }
+    existingLine = new Line();
+    this.lines.push(existingLine);
+  } 
+  existingLine.setValues(newLine);
 }
 
 roundSchema.methods.isPlaying = function isPlaying() {
@@ -35,37 +32,40 @@ roundSchema.methods.isPlaying = function isPlaying() {
 }
 
 roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(game) {
-  var playersCount = game.players.length;
-  var linesCount = this.lines.length;
-  return playersCount == linesCount;
-}
-
-roundSchema.methods.validatePlay = function validatePlay(play, game) {
-  if (play.word.charAt(0) !== this.letter){
-    return false;
-  } //for now it's almost a dummy
-  if (game.categoriesType == "FIXED"){
-    var categoryInstance = new Category();
-    return categoryInstance.isWordValid(play.word, play.category);
-  }
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    if (!line.wasSentByPlayer()){
+      return false;
+    }
+  };
   return true;
 }
-roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
 
+
+roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine, game) {
+  var atLeastAnotherValid =  false;
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
     if (iLine == iLineMyLine){
       continue;
     }
     var line = this.lines[iLine];
-    var repeatedPlay = line.getPlaySimilarTo(play);
-    if (repeatedPlay){
-      repeatedPlay.setRepeatedResult();
-      play.setRepeatedResult();
-      continue;
+    var anotherValidPlay = line.getValidPlayForSameCategory(play, this, game); 
+    if (anotherValidPlay){
+      atLeastAnotherValid = true;
+      var repeatedPlay = anotherValidPlay.isSameWordAs(play); 
+      if (repeatedPlay){
+        anotherValidPlay.setRepeatedResult();
+        play.setRepeatedResult();
+        continue;
+      }
     }
   };
   if (!play.result){ //it's not repeated, neither invalid
-    play.setUniqueScore();
+    if (atLeastAnotherValid){ //is he the only one who answered for this cat?
+       play.setUniqueScore(); //10
+    } else{
+      play.setOnlyScore(); //20
+    }
   }
 }
 
@@ -85,11 +85,11 @@ roundSchema.methods.finish = function finish(game) {
       if (!play.result === undefined){
         continue;
       }
-      if (!this.validatePlay(play)){ //checks it's correct and accepted
+      if (!play.isWordValid(this, game)){ //checks it's correct and accepted
         play.setInvalidResult();
         continue;
       }
-      this.setValidScore(play, iLine); // sets either OK or REPEATED
+      this.setValidScore(play, iLine, game); // sets either OK or REPEATED
     };
     line.setTotalScore(game.gameId, this.roundId);
   };
@@ -99,12 +99,14 @@ roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
   var existingLine = this.lines.filter(function (line) {
     return line.player.registrationId == player.registrationId; 
   }).pop();  
-  return existingLine !== undefined;
+  var result= !(existingLine == undefined);
+  return result;
 }
 
 roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
   var line = new Line();
   line.player = player;
+  console.log("Setting setNotificationSentForPlayer "+player.registrationId);
   this.addLine(line);
 }
 

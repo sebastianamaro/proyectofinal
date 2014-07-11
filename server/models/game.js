@@ -13,7 +13,7 @@ var gameSchema = new Schema({
     mode : { type: String },
     categoriesType: { type: String },
     oponentsType: { type: String },
-    players: [ { type: String } ]
+    players: [ Player.schema ]
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
@@ -61,9 +61,8 @@ gameSchema.methods.addPlayer = function addPlayer(player){
   var newPlayer = new Player();
   newPlayer.setValues(player);
   //TODO validate it doesn't already exist in game
-  this.players.push = newPlayer;
+  this.players.push(newPlayer);
 }
-
 
 gameSchema.methods.sendNotifications = function sendNotifications(round, registrationId, callback){
     console.log("entra a send");
@@ -87,7 +86,7 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, registr
     round.setNotificationSentForPlayer(player);
     this.save(function(err) {
               if(!err) {
-              console.log('Notifications sent ');
+              console.log('Game saved.');
             } else {
               console.log('ERROR: ' + err);
               callback(new Error("Error on save game"));

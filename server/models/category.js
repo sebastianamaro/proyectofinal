@@ -6,8 +6,10 @@ var categorySchema = new Schema({
   acceptedWords:   [ { type: String } ],
 });
 
-categorySchema.methods.isWordValid = function isWordValid(word, category) {
+categorySchema.methods.isWordValid = function isWordValid(play) {
   return true;//for now just a dummy
 }
-
+categorySchema.methods.setCategory = function setCategory(category) {
+  return this;//for now just a dummy
+}
 module.exports = mongoose.model('Category', categorySchema);
