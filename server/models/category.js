@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var categorySchema = new Schema({
   name : { type: String },
-  acceptedWords:   [ type: String ],
+  acceptedWords:   [ { type: String } ],
 });
 
 categorySchema.methods.isWordValid = function isWordValid(word, category) {
