@@ -14,6 +14,7 @@ var lineSchema = new Schema({
 
 lineSchema.methods.setValues = function setValues(line) {
   this.player = line.player;
+  console.log("el timestamp de la ronda es: " + line.startTimestamp);
   this.startTimestamp = line.startTimestamp;
   this.addPlays(line.plays);
  }
