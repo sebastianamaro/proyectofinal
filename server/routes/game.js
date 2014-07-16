@@ -4,10 +4,7 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
-<<<<<<< HEAD
   var Play = require('../models/play.js');
-=======
->>>>>>> Returns gameIds and statuses for a player by his registrationId. Mind there has to be a player (collection players in db) with an array of games.
 
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
