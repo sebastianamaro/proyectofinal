@@ -1,6 +1,8 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
+var Game = require('./game.js');
+
 var playerSchema = new Schema({
     registrationId: { type: String },
     games: [{ type: Number }]

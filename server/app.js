@@ -5,6 +5,7 @@ var express = require("express"),
     mongoose = require('mongoose'); 
 
 routes = require('./routes/game.js')(app);
+routes = require('./routes/player.js')(app);
 
 app.configure(function () {
   app.use(express.bodyParser());
@@ -16,6 +17,7 @@ app.put('/game/:id/round', alterRound);
 app.get('/game/:id/round', getRound);
 app.post('/game', createGame); 
 app.get('/game/:id/round/:roundId/scores', getRoundScores);
+app.get('/player/:id/game', getGamesForPlayer);
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {

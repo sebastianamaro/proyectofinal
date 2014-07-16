@@ -4,7 +4,10 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
+<<<<<<< HEAD
   var Play = require('../models/play.js');
+=======
+>>>>>>> Returns gameIds and statuses for a player by his registrationId. Mind there has to be a player (collection players in db) with an array of games.
 
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
@@ -128,8 +131,11 @@ module.exports = function(app) {
 
 
   getGamesForPlayer = function(req, res) {
-    Player.findOne({ 'notificationId': req.params.notificationId}, function (err, player){
+    var numId =  parseInt(req.params.id);
+    console.log(numId);
+    Player.findOne({}, function (err, player){
       if (err) return res.send(err, 500);
+
       if (!player) return res.send('Player not found', 404);     
       res.send(player.getGames(), 200); //add error manipulation
     });
