@@ -2,6 +2,7 @@ package com.example;
 
 import android.os.StrictMode;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -9,6 +10,7 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class TuttiFruttiAPI {
@@ -95,6 +97,16 @@ public class TuttiFruttiAPI {
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         return restTemplate.getForObject(url,FullRound.class);
+    }
+
+    public ArrayList getScores(int gameId, int roundId)
+    {
+        String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        return restTemplate.getForObject(url,ArrayList.class);
     }
 
 }
