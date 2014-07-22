@@ -3,7 +3,8 @@ module.exports = function(app) {
   var Game = require('../models/game.js');
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
-  
+  var Player = require('../models/player.js');
+
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
       if (err) return res.send(err, 500);
@@ -69,7 +70,6 @@ module.exports = function(app) {
           }; 
 
           currentRound.addLine(reqRound.line);
-
           game.save(function(err) {
             if(!err) {
               console.log('Finished round');
@@ -77,8 +77,6 @@ module.exports = function(app) {
               console.log('ERROR: ' + err);
             }
           });
-          console.log(game);
-
           game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
             if(err) {
               console.log('ERROR: ' + err);
@@ -87,8 +85,8 @@ module.exports = function(app) {
             }
           });
           if (currentRound.checkAllPlayersFinished(game)){
-            currentRound.finish(game);
-            game.save(function(err) {
+            currentRound.finish();
+            currentRound.save(function(err) {
             if(!err) {
               console.log('Finished round');
             } else {
@@ -111,7 +109,6 @@ module.exports = function(app) {
       game.gameId = largerId;
       game.status = "PLAYING";
       game.categories = ["ANIMALES", "COLORES", "LUGARES", "FRUTAS", "MARCAS DE AUTO"];
-
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {
@@ -123,19 +120,6 @@ module.exports = function(app) {
       return res.send('Game started with gameId '+largerId, 200);
      });
   }
-  sendNotifications = function(req, res) {
-    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
-      game.sendNotifications(function(err){
-        if(err) {
-          console.log('ERROR: ' + err);
-        } else {
-          console.log('Notifications sent');
-        }
-      });
-      
-      res.send('Notifications sent', 200);
-    })
-  }
   getRoundScores = function(req, res){
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
       var reqRound = req.body;
@@ -145,6 +129,8 @@ module.exports = function(app) {
       if (!currentRound) return res.send('Round not found with roundId '+reqRound.roundId, 404);
       if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
       res.send(currentRound.lines, 200);            
-    });
-  }
+     });
+    }
+
 }
+

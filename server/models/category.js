@@ -3,13 +3,11 @@ var mongoose = require('mongoose'),
 
 var categorySchema = new Schema({
   name : { type: String },
-  acceptedWords:   [ { type: String } ],
+  acceptedWords:   [ {type: String} ],
 });
 
-categorySchema.methods.isWordValid = function isWordValid(play) {
+categorySchema.methods.isWordValid = function isWordValid(word, category) {
   return true;//for now just a dummy
 }
-categorySchema.methods.setCategory = function setCategory(category) {
-  return this;//for now just a dummy
-}
+
 module.exports = mongoose.model('Category', categorySchema);
