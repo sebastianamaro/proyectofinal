@@ -1,4 +1,4 @@
-package com.example;
+package com.example.TuttiFruttiCore;
 
 /**
  * Created by Sebastian on 21/06/2014.

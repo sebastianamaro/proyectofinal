@@ -1,6 +1,5 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.TuttiFruttiCore;
 
-import com.example.Play;
 
 import java.util.Date;
 

@@ -1,33 +1,23 @@
 package com.example.tuttifrutti.app;
 
 import android.app.ProgressDialog;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.Line;
-import com.example.LinesCollection;
+import com.example.TuttiFruttiCore.Line;
 import com.example.Play;
 import com.example.TuttiFruttiAPI;
-import com.example.tuttifrutti.app.Classes.FilePlay;
-import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 import com.example.tuttifrutti.app.Classes.RoundResult;
-import com.example.tuttifrutti.app.R;
 
 import java.util.ArrayList;
 

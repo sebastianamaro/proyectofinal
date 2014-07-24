@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.TuttiFruttiCore;
 
 /**
  * Created by Sebastian on 24/06/2014.

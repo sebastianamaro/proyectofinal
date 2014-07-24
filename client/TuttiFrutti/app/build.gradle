@@ -31,11 +31,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':TuttiFruttiAPI')
-
-    // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:19.+'
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.android.gms:play-services:3.1.+'
+    compile project(':TuttiFruttiCore')
+    compile project(':TuttiFruttiAPI')
 }

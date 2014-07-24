@@ -105,4 +105,11 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+
+    public void viewGames(View view) {
+
+        Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
+        startActivity(intent);
+    }
+
 }

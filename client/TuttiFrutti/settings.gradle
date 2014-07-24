@@ -1,1 +1,1 @@
-include ':app', ':TuttiFruttiAPI'
+include ':app', ':TuttiFruttiAPI', ':TuttiFruttiCore'

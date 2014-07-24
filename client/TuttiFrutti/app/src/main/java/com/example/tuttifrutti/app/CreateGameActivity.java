@@ -12,9 +12,8 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.GameSettings;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.example.tuttifrutti.app.Classes.GameSettings;
 
 
 public class CreateGameActivity extends ActionBarActivity {
@@ -80,7 +79,6 @@ public class CreateGameActivity extends ActionBarActivity {
         protected Void doInBackground(GameSettings... settings) {
 
             GameSettings gs=settings[0];
-            TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
 
             PlayServicesHelper helper = new PlayServicesHelper();
             String regid = "";

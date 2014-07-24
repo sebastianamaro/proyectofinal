@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.content.IntentFilter;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -28,16 +26,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
-import com.example.FullRound;
-import com.example.Play;
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.FinishedRound;
+import com.example.TuttiFruttiCore.FullRound;
+import com.example.TuttiFruttiCore.Play;
+import com.example.TuttiFruttiCore.RoundResult;
 import com.example.tuttifrutti.app.Classes.FilePlay;
-import com.example.tuttifrutti.app.Classes.FinishedRound;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.example.tuttifrutti.app.Classes.RoundResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+
 
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {

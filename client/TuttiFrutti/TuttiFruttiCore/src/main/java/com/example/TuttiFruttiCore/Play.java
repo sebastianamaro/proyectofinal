@@ -1,4 +1,4 @@
-package com.example;
+package com.example.TuttiFruttiCore;
 
 import java.util.Date;
 

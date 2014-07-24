@@ -11,6 +11,16 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Ver partidas"
+        android:id="@+id/viewGames"
+        android:layout_below="@+id/showRoundResult"
+        android:onClick="viewGames" />
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Jugar Ronda"
         android:id="@+id/LaunchRound"
         android:onClick="launchRound" />

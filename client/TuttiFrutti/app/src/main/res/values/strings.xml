@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="server_url">http://192.168.1.145:8080/</string>
+    <string name="server_url">http://54.94.138.160:8080/</string>
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -8,5 +8,6 @@
     <string name="title_activity_create_game">CreateGameActivity</string>
     <string name="title_activity_show_round_result">ShowRoundResult</string>
     <string name="title_activity_choose_random_players_count">ChooseRandomPlayersCountActivity</string>
-
+    <string name="title_activity_view_game_status">Partidas</string>
+    <string name="welcome_message">Bienvenido!</string>
 </resources>
