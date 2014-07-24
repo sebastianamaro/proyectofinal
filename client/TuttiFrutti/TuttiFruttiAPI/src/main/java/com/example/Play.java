@@ -10,6 +10,12 @@ public class Play {
     private String word;
     private Date timeStamp;
 
+    public int getScore() { return score; }
+
+    public void setScore(int score) { this.score = score; }
+
+    private int score;
+
     public String getWord() {
         return word;
     }

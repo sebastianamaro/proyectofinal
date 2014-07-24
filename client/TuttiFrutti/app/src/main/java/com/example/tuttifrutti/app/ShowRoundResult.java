@@ -17,7 +17,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.Line;
 import com.example.LinesCollection;
+import com.example.Play;
 import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.FilePlay;
 import com.example.tuttifrutti.app.Classes.InternalFileHelper;
@@ -50,9 +52,12 @@ public class ShowRoundResult extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddTotalTextView(TableRow row, String p) {
+    private void AddTotalTextView(TableRow row, int p) {
         TextView text=new TextView(this.getApplicationContext());
-        text.setText(p);
+        if (p != -1)
+            text.setText(Integer.toString(p));
+        else
+            text.setText("TOTAL");
         text.setBackgroundResource(R.drawable.cell_shape);
         text.setPadding(50, 50, 50, 50);
         text.setTextColor(Color.parseColor("#10B51B"));
@@ -62,35 +67,41 @@ public class ShowRoundResult extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddContentTextView(TableRow row, String p, String PlayScore) {
+    private void AddContentTextView(TableRow row, String p, int PlayScore) {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setBackgroundResource(R.drawable.cell_shape);
 
         TextView text=new TextView(getApplicationContext());
         text.setText(p);
         text.setPadding(51, 51, 51, 51);
-        if (PlayScore == "0")
-            text.setTextColor(Color.parseColor("#ED020E"));
-        else if (PlayScore == "20")
-            text.setTextColor(Color.parseColor("#10B51B"));
-        else
-            text.setTextColor(Color.parseColor("#C96609"));
+        text.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
         text.setTextSize(15);
         text.setTypeface(null, Typeface.NORMAL);
         layout.addView(text);
 
         TextView score=new TextView(this.getApplicationContext());
-        score.setText( PlayScore);
+        score.setText(PlayScore);
         text.setPadding(50, 50, 3, 50);
-        if (PlayScore == "0")
-            score.setTextColor(Color.parseColor("#ED020E"));
-        else
-            score.setTextColor(Color.parseColor("#10B51B"));
+        score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
         score.setTextSize(10);
         score.setTypeface(null, Typeface.NORMAL);
         layout.addView(score);
 
         row.addView(layout);
+    }
+
+    private String getColorForScore(int playScore) {
+        String color = null;
+        if (playScore == ScoresForPlay.INVALID.getValue())
+            color = "#ED020E"; //rojo
+        else if (playScore == ScoresForPlay.ONLY.getValue())
+            color ="#10B51B";//verde
+        else if (playScore == ScoresForPlay.UNIQUE.getValue())
+            color = "#6B078F"; //violeta
+        else if (playScore == ScoresForPlay.REPEATED.getValue())
+            color = "#0000FF"; //azul
+
+        return color;
     }
 
 
@@ -123,67 +134,75 @@ public class ShowRoundResult extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(ArrayList result) {
-            String[] categories= new String[9];
-            categories[0] = "Animales";
-            categories[1] = "Colores";
-            categories[2] = "Marcas de Auto";
-            categories[3] = "Frutas";
-            categories[4] = "Paises";
-            categories[5] = "Nombres de Telo";
-            categories[6] = "Lagos de la Patagonia";
-            categories[7] = "Constelaciones";
-            categories[8] = "Tu vieja";
+            ArrayList<Line> lines = (ArrayList<Line>)result;
+            String[] categories = new String[((Line)lines.get(0)).getPlays().size()];
+
+            int k = 0;
+
+            for (Play onePlay:lines.get(0).getPlays())
+            {
+                categories[k] = onePlay.getCategory();
+                k++;
+            }
 
             TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
-
-            TableRow row=new TableRow(getApplicationContext());
             table.setGravity(Gravity.TOP);
 
-            table.addView(row);
-
+            TableRow contentRow;
             TableRow totalScoreRow=new TableRow(getApplicationContext());
             TableRow playersRow=new TableRow(getApplicationContext());
 
             AddHeaderTextView(playersRow, "Categorias");
-            AddTotalTextView(totalScoreRow, ""); //la primera es la columna de las categorias
+            AddTotalTextView(totalScoreRow, -1); //la primera es la columna de las categorias
 
             for (int i=0;i<categories.length;i++)
             {
-                row=new TableRow(getApplicationContext());
-                AddHeaderTextView(row, categories[i]);
-                //todo: recorrer las lines!!!!
-                //for (int j=0;j<lines.length;j++) {
-                for (int j=0;j<5;j++) {
-                    //todo: si i==0 llenar la fila de players:
-                    //todo: si i==0 llenar la fila de scores totales, que lo tiene cada line:
+                contentRow=new TableRow(getApplicationContext());
+                AddHeaderTextView(contentRow, categories[i]);
+                for (int j=0;j<lines.size();j++) {
+                    //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
                     if (i==0) {
-                        AddHeaderTextView(playersRow, "Nitu");
-                        //AddTotalTextView(totalScoreRow, line[j].player);
-                        AddTotalTextView(totalScoreRow, "180");
-                        //AddTotalTextView(totalScoreRow, line[j].totalScore);
+                        AddHeaderTextView(playersRow, lines.get(j).getPlayer().getName());
+                        AddTotalTextView(totalScoreRow, lines.get(j).getScore());
                     }
 
-                    if (j % 2 == 0)
-                        AddContentTextView(row, "valor", "0");
-                    else
-                        AddContentTextView(row, "valor", "20");
-
-                    //todo: AddContentTextView(row, line[j].plays[i].word, line[j].plays[i].score);
-                    //line[playerLine].plays[category]
+                    //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
+                    Play linePlayForCategory = lines.get(j).getPlays().get(i);
+                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScore());
                 }
 
+                //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
                 if (i==0)
                     table.addView(playersRow);
 
-                table.addView(row);
+                table.addView(contentRow);
             }
 
+            // la ultima fila que agrego es la de los puntajes
             table.addView(totalScoreRow);
         }
 
         @Override
         protected void onPreExecute() {
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+    }
+
+    public enum ScoresForPlay
+    {
+        INVALID(0),
+        REPEATED(5),
+        UNIQUE(10),
+        ONLY(20);
+
+        private final int value;
+
+        private ScoresForPlay(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 }
