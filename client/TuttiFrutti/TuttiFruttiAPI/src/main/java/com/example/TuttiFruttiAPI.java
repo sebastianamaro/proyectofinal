@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class TuttiFruttiAPI {
@@ -67,7 +68,7 @@ public class TuttiFruttiAPI {
             restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
             FullRound fr= new FullRound();
             fr.setStatus("PLAYING");
-            restTemplate.put(url,fr);
+            restTemplate.put(url, fr);
     }
 
     public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, Play[] plays)
@@ -99,14 +100,15 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,FullRound.class);
     }
 
-    public ArrayList getScores(int gameId, int roundId)
+    public ArrayList<Line> getScores(int gameId, int roundId)
     {
         String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        return restTemplate.getForObject(url,ArrayList.class);
+        Line[] lineArray= restTemplate.getForObject(url,Line[].class);
+        return new ArrayList<Line>(Arrays.asList(lineArray));
     }
 
 }
