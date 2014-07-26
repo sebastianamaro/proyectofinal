@@ -7,6 +7,7 @@ public class GameSettings {
     private Boolean mode;
     private Boolean opponents;
     private Boolean categories;
+    private int randomPlayersCount;
 
     public GameSettings(Boolean mode, Boolean opponents, Boolean categories) {
         this.mode = mode;
@@ -25,4 +26,6 @@ public class GameSettings {
     public Boolean getOpponents() {
         return opponents;
     }
+
+    public int getRandomPlayersCount() { return randomPlayersCount;}
 }

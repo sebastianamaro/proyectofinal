@@ -19,6 +19,10 @@ import com.example.tuttifrutti.app.Classes.GameSettings;
 
 public class CreateGameActivity extends ActionBarActivity {
 
+    public static final String MODE_EXTRA_MESSAGE = "MODE_EXTRA_MESSAGE";
+    public static final String OPONENTS_EXTRA_MESSAGE = "OPONENTS_EXTRA_MESSAGE";
+    public static final String CATEGORIES_EXTRA_MESSAGE = "CATEGORIES_EXTRA_MESSAGE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +55,23 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
         boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
-        GameSettings gs= new GameSettings(mode,oponents,categories);
-        CreateGameTask task= new CreateGameTask();
-        task.execute(gs);
 
-
+        if (oponents) {
+            Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
+            intent.putExtra(MODE_EXTRA_MESSAGE, mode);
+            intent.putExtra(OPONENTS_EXTRA_MESSAGE, oponents);
+            intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
+            startActivity(intent);
+        }else {
+            //todo: llamar a la actividad de elegir amigos
+            GameSettings gs = new GameSettings(mode, oponents, categories);
+            CreateGameTask task = new CreateGameTask();
+            task.execute(gs);
+        }
     }
 
-    private class CreateGameTask extends AsyncTask<GameSettings,Void, Void>{
+    //todo: meter esto en una clase
+    private class CreateGameTask extends AsyncTask<GameSettings,Void, Void> {
 
         AlertDialog ad;
         TuttiFruttiAPI api;
@@ -106,4 +119,5 @@ public class CreateGameActivity extends ActionBarActivity {
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
+
 }
