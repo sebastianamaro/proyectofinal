@@ -99,15 +99,14 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, registr
     });
 
     round.setNotificationSentForPlayer(player);
-    this.save(function(err) {
+    /*this.save(function(err) {
               if(!err) {
               console.log('Notifications sent ');
             } else {
               console.log('ERROR: ' + err);
               callback(new Error("Error on save game"));
             }
-          });
+          });*/
   }
 }
-
 module.exports = mongoose.model('Game', gameSchema);

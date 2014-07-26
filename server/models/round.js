@@ -17,14 +17,10 @@ roundSchema.methods.start = function start(letter) {
   this.status = 'PLAYING';
 }
 
-roundSchema.methods.finish = function finish() {
-  this.status = "CLOSED";
-}
-
 roundSchema.methods.addLine = function addLine(newLine) {
   var existingLine = this.lines.filter(function (line) {return line.player.registrationId == newLine.player.registrationId; }).pop();
   if (!existingLine){
-    var myLine = new Line();
+    var myLine = new Line;
     myLine.setValues(newLine);
     this.lines.push(myLine);
   }
@@ -40,16 +36,6 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
   return playersCount == linesCount;
 }
 
-roundSchema.methods.validatePlay = function validatePlay(play, game) {
-  if (play.word.charAt(0) !== this.letter){
-    return false;
-  } //for now it's almost a dummy
-  if (game.categoriesType == "FIXED"){
-    var categoryInstance = new Category();
-    return categoryInstance.isWordValid(play.word, play.category);
-  }
-  return true;
-}
 roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
 
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
@@ -85,7 +71,7 @@ roundSchema.methods.finish = function finish(game) {
       if (!play.result === undefined){
         continue;
       }
-      if (!this.validatePlay(play)){ //checks it's correct and accepted
+      if (!play.validate(game, this.letter)){ //checks it's correct and accepted
         play.setInvalidResult();
         continue;
       }
@@ -93,6 +79,7 @@ roundSchema.methods.finish = function finish(game) {
     };
     line.setTotalScore(game.gameId, this.roundId);
   };
+  console.log(this.lines);
 }
 
 roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){

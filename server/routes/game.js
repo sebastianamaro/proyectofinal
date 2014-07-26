@@ -4,6 +4,7 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
+  var Play = require('../models/play.js');
 
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
@@ -66,34 +67,32 @@ module.exports = function(app) {
           if (!currentRound) return res.send('Round not found', 404);
 
           if (currentRound.hasLineOfPlayer(reqRound.line.player)) {
-            return res.send('Round finished', 200)
+            return res.send('Added line to round', 200);
           }; 
 
           currentRound.addLine(reqRound.line);
-          game.save(function(err) {
-            if(!err) {
-              console.log('Finished round');
-            } else {
-              console.log('ERROR: ' + err);
-            }
-          });
-          game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
+          /*game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
             if(err) {
               console.log('ERROR: ' + err);
-            } else {
-              console.log('Notifications sent');
-            }
+            } 
           });
+          */
           if (currentRound.checkAllPlayersFinished(game)){
-            currentRound.finish();
-            currentRound.save(function(err) {
+            currentRound.finish(game);
+          }
+          console.log("vamos a guardar");
+          game.rounds[0].lines[0].plays = [];
+          //var aPlay=new Play();
+          //aPlay.category = 'category1';
+          //game.rounds[0].lines[0].plays.push(aPlay);
+          game.save(function(err) {
+            console.log("pasa por save");
             if(!err) {
               console.log('Finished round');
             } else {
               console.log('ERROR: ' + err);
             }
           });
-          }
           res.send('Round finished', 200);
         })
   }
@@ -108,7 +107,7 @@ module.exports = function(app) {
       var game = new Game();
       game.gameId = largerId;
       game.status = "PLAYING";
-      game.categories = ["ANIMALES", "COLORES", "LUGARES", "FRUTAS", "MARCAS DE AUTO"];
+      game.categories = ["ANIMALES", "COLORES"];
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {

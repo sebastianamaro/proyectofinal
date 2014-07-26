@@ -13,8 +13,8 @@ var lineSchema = new Schema({
 }, { _id : false });
 
 lineSchema.methods.setValues = function setValues(line) {
-  this.player = line.player;
-  this.startTimestamp = line.startTimestamp;
+  //this.player = line.player;
+  this.startTimestamp = line.startTimeStamp;
   this.addPlays(line.plays);
  }
 
