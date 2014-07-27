@@ -1,14 +1,21 @@
 package com.example.tuttifrutti.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 
+import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.GameSettings;
+import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import com.example.tuttifrutti.app.R;
 
 public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
@@ -25,10 +32,12 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         boolean oponents = intent.getBooleanExtra(CreateGameActivity.OPONENTS_EXTRA_MESSAGE, false);
         boolean categories = intent.getBooleanExtra(CreateGameActivity.CATEGORIES_EXTRA_MESSAGE, false);
 
-        gameSettings = new GameSettings(mode, oponents, categories);
+        gameSettings = new GameSettings(mode, oponents, categories,1);
 
-        EditText editText = (EditText)findViewById(R.id.randomPlayersCount);
-        editText.setText("3");
+        NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
+        np.setMaxValue(4);
+        np.setMinValue(1);
+        np.setWrapSelectorWheel(false);
     }
 
 
@@ -51,4 +60,63 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void createGame(View view) {
+        NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
+
+        gameSettings.setRandomPlayersCount(np.getValue());
+        CreateGameTask task = new CreateGameTask();
+        task.execute(gameSettings);
+    }
+
+    //todo: meter esto en una clase
+    private class CreateGameTask extends AsyncTask<GameSettings,Void, Void> {
+
+        AlertDialog ad;
+        TuttiFruttiAPI api;
+
+        @Override
+        protected Void doInBackground(GameSettings... settings) {
+
+            GameSettings gs=settings[0];
+            TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
+
+            PlayServicesHelper helper = new PlayServicesHelper();
+            String regid = "";
+            if (helper.checkPlayServices(ChooseRandomPlayersCountActivity.this))
+            {
+                regid = helper.getRegistrationId(getApplicationContext());
+                if (regid == "")
+                    helper.registerGCMInBackground(getApplicationContext());
+            }
+
+
+            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(),gs.getRandomPlayersCount(),regid);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            ad.setCancelable(false); // This blocks the 'BACK' button
+            ad.setMessage("Se ha creado la partida!");
+            ad.setButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+            ad.show();
+
+        }
+
+        @Override
+        protected void onPreExecute(){
+            ad=new AlertDialog.Builder(ChooseRandomPlayersCountActivity.this).create();
+
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+    }
+
 }

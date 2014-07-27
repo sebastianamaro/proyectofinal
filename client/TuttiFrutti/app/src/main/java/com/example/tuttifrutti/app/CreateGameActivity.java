@@ -64,7 +64,7 @@ public class CreateGameActivity extends ActionBarActivity {
             startActivity(intent);
         }else {
             //todo: llamar a la actividad de elegir amigos
-            GameSettings gs = new GameSettings(mode, oponents, categories);
+            GameSettings gs = new GameSettings(mode, oponents, categories,-1);
             CreateGameTask task = new CreateGameTask();
             task.execute(gs);
         }
@@ -92,7 +92,7 @@ public class CreateGameActivity extends ActionBarActivity {
             }
 
 
-            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(),regid);
+            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(), gs.getRandomPlayersCount(),regid);
             return null;
         }
 
