@@ -13,9 +13,16 @@ var playSchema = new Schema({
 
 
 playSchema.methods.setValues = function setValues(newPlay) {
+  
   this.category = newPlay.category;
   this.timeStamp = newPlay.timeStamp;
-  this.word = newPlay.word;
+  
+  if(newPlay.word == undefined) {
+  	this.word='';
+  } else {
+	  this.word = newPlay.word;
+  }
+
   return this;
 }
 

@@ -14,7 +14,6 @@ Notification.prototype.send =  function(callback){
 	var keys = Object.keys(this.values);
 	for (var i = keys.length - 1; i >= 0; i--) {
 		var key = keys[i];
-		console.log(key);
 		message[key] = this.values[key];
 	};
 	console.log(message);	

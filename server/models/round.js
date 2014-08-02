@@ -55,12 +55,18 @@ roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
   }
 }
 
-roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player) {
-  var lineOfPlayerExists = this.lines.filter(function (line) {return line.player == player; }).pop();
-  if (lineOfPlayerExists === undefined) return false;
-  return true;
+roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
+  var existingLine = this.lines.filter(function (line) {
+    return line.player.registrationId == player.registrationId; 
+  }).pop();  
+  return existingLine !== undefined;
 }
-
+roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player){
+  var existingLine = this.lines.filter(function (line) {
+    return line.player.registrationId == player.registrationId && line.plays.length>0; 
+  }).pop();  
+  return existingLine !== undefined;
+}
 roundSchema.methods.finish = function finish(game) {
   this.status = "FINISHED";
   //CALCULATES SCORES
@@ -82,12 +88,6 @@ roundSchema.methods.finish = function finish(game) {
   console.log(this.lines);
 }
 
-roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
-  var existingLine = this.lines.filter(function (line) {
-    return line.player.registrationId == player.registrationId; 
-  }).pop();  
-  return existingLine !== undefined;
-}
 
 roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
   var line = new Line();

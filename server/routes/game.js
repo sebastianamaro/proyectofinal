@@ -59,6 +59,7 @@ module.exports = function(app) {
   finishRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
           var reqRound = req.body;
+          console.log(reqRound.line.plays);
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
@@ -66,26 +67,31 @@ module.exports = function(app) {
 
           if (!currentRound) return res.send('Round not found', 404);
 
-          if (currentRound.hasLineOfPlayer(reqRound.line.player)) {
+          if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
             return res.send('Added line to round', 200);
           }; 
 
-          currentRound.addLine(reqRound.line);
-          
-          if (currentRound.checkAllPlayersFinished(game)){
-            currentRound.finish(game);
-          }
-
-          game.save(function(err) {
-            console.log("pasa por save");
-            if(!err) {
-              console.log('Finished round');
-            } else {
-              console.log('ERROR: ' + err);
+          game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
+            console.log("About to add line");
+            currentRound.addLine(reqRound.line);
+            
+            if (currentRound.checkAllPlayersFinished(game)){
+              console.log("checkAllPlayersFinished is true");
+              currentRound.finish(game);
             }
+
+            game.save(function(err) {
+              console.log("pasa por save");
+              if(!err) {
+                console.log('Finished round');
+              } else {
+                console.log('ERROR: ' + err);
+              }
+            });
           });
           res.send('Round finished', 200);
-        })
+            
+        });
   }
   createGame = function(req,res){
     Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
