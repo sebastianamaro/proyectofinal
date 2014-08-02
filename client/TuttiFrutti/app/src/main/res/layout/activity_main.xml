@@ -13,8 +13,6 @@
         android:layout_height="wrap_content"
         android:text="Jugar Ronda"
         android:id="@+id/LaunchRound"
-        android:layout_below="@+id/textView"
-        android:layout_toRightOf="@+id/textView"
         android:onClick="launchRound" />
 
     <Button
@@ -24,5 +22,13 @@
         android:id="@+id/createGame"
         android:layout_below="@+id/LaunchRound"
         android:onClick="createGame" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver resultados de ronda"
+        android:id="@+id/showRoundResult"
+        android:layout_below="@+id/createGame"
+        android:onClick="showRoundResult" />
 
 </RelativeLayout>

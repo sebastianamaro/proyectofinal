@@ -1,12 +1,23 @@
 package com.example;
 
-/**
- * Created by Nituguivi on 10/07/2014.
- */
+
 public class Player {
     private String registrationId;
+    private String name;
 
-    public void setRegistrationId(String registrationId){ this.registrationId = registrationId; }
+    public String getRegistrationId() {
+        return registrationId;
+    }
 
-    public String getRegistrationId() { return this.registrationId; }
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

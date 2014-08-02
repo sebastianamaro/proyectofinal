@@ -2,6 +2,7 @@ package com.example;
 
 import android.os.StrictMode;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -9,6 +10,8 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class TuttiFruttiAPI {
@@ -65,7 +68,7 @@ public class TuttiFruttiAPI {
             restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
             FullRound fr= new FullRound();
             fr.setStatus("PLAYING");
-            restTemplate.put(url,fr);
+            restTemplate.put(url, fr);
     }
 
     public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, Play[] plays)
@@ -95,6 +98,17 @@ public class TuttiFruttiAPI {
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         return restTemplate.getForObject(url,FullRound.class);
+    }
+
+    public ArrayList<Line> getScores(int gameId, int roundId)
+    {
+        String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        Line[] lineArray= restTemplate.getForObject(url,Line[].class);
+        return new ArrayList<Line>(Arrays.asList(lineArray));
     }
 
 }

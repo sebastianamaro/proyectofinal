@@ -117,16 +117,23 @@ module.exports = function(app) {
      });
   }
   getRoundScores = function(req, res){
+    console.log('');
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
-      var reqRound = req.body;
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
-      var currentRound = game.getRound(reqRound.roundId);
-      if (!currentRound) return res.send('Round not found with roundId '+reqRound.roundId, 404);
-      if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
+      var currentRound = game.getRound(req.params.roundId);
+      if (!currentRound) return res.send('Round not found with roundId '+req.params.roundId, 404);
+      //if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
       res.send(currentRound.lines, 200);            
+<<<<<<< HEAD
      });
     }
 
 }
 
+=======
+    });
+  }
+  
+}
+>>>>>>> Working API calls
