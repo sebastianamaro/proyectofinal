@@ -14,15 +14,16 @@ var lineSchema = new Schema({
 
 lineSchema.methods.setValues = function setValues(line) {
   this.player = line.player;
-  console.log("el timestamp de la ronda es: " + line.startTimestamp);
-  this.startTimestamp = line.startTimestamp;
+  this.startTimestamp = line.startTimeStamp;
   this.addPlays(line.plays);
  }
 
-lineSchema.methods.addPlays = function addPlays(plays) {
-  for (var i = plays.length - 1; i >= 0; i--) {
-    var newPlay = new Play();
-    newPlay.setValues(plays[i]);
+lineSchema.methods.addPlays = function addPlays(playsArray) {
+  for (var i = playsArray.length - 1; i >= 0; i--) {
+    var newPlay= new Play();
+
+    newPlay.setValues(playsArray[i]);
+    newPlay.setUniqueScore();
     this.plays.push(newPlay);
   };
 }

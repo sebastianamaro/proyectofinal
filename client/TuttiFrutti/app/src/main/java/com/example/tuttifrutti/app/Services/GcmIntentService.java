@@ -41,8 +41,10 @@ public class GcmIntentService extends IntentService {
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
-        if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
+        if (!extras.isEmpty()) {
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                //todo: sacar el gameId de lo q me manda el server
+                intent.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
                 sendBroadcast(new Intent("gcmLocalReceiver"));
             }
         }

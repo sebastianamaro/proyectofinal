@@ -13,7 +13,7 @@ var gameSchema = new Schema({
     mode : { type: String },
     categoriesType: { type: String },
     oponentsType: { type: String },
-    players: [ { type: String } ]
+    players: [ Player.schema ]
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
@@ -55,15 +55,29 @@ gameSchema.methods.setValues = function setValues(game){
   this.categoriesType = game.categoriesType;
   this.oponentsType = game.oponentsType;
   this.addPlayer(game.player);
-}
-
-gameSchema.methods.addPlayer = function addPlayer(player){
   var newPlayer = new Player();
-  newPlayer.setValues(player);
-  //TODO validate it doesn't already exist in game
-  this.players.push = newPlayer;
+  newPlayer.setValues(game.player);
+  this.players.push(newPlayer);
 }
 
+gameSchema.methods.addPlayer = function addPlayer(registrationId){
+  var gameId = this.gameId;
+  Player.findOne({ 'registrationId': registrationId}, function (err, foundPlayer){
+    if (!foundPlayer){
+      foundPlayer = new Player();
+    }
+    //TODO validate it doesn't already exist in game
+    foundPlayer.setValues(registrationId);
+    foundPlayer.games.push(gameId);
+    foundPlayer.save(function(err) {
+          if(!err) {
+            console.log('Inserted new player with registrationId '+foundPlayer.registrationId);
+          } else {
+            console.log('ERROR: ' + err);
+          }
+        });
+  });
+}
 
 gameSchema.methods.sendNotifications = function sendNotifications(round, registrationId, callback){
     console.log("entra a send");
@@ -85,15 +99,14 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, registr
     });
 
     round.setNotificationSentForPlayer(player);
-    this.save(function(err) {
+    /*this.save(function(err) {
               if(!err) {
               console.log('Notifications sent ');
             } else {
               console.log('ERROR: ' + err);
               callback(new Error("Error on save game"));
             }
-          });
+          });*/
   }
 }
-
 module.exports = mongoose.model('Game', gameSchema);

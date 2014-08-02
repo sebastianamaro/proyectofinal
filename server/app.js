@@ -15,10 +15,9 @@ app.configure(function () {
 app.put('/game/:id/round', alterRound); 
 app.get('/game/:id/round', getRound);
 app.post('/game', createGame); 
-app.get('/test/:id', sendNotifications); 
 app.get('/game/:id/round/scores', getRoundScores);
 
-mongoose.connect('mongodb://localhost:30000', function(err, res) {
+var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
     console.log('ERROR: connecting to Database. ' + err);
   } else {

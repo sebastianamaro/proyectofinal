@@ -16,26 +16,6 @@ import java.util.Date;
  * Created by Nituguivi on 21/06/2014.
  */
 public class InternalFileHelper {
-    public void startRound(FilePlay filePlay)
-    {
-        File file = new File(filePlay.getFileName());
-        Gson gson = new Gson();
-
-        RoundResult currentRoundResult = new RoundResult();
-        currentRoundResult.RoundId = filePlay.getRoundId();
-        currentRoundResult.StartTime = new Date();
-
-        String json = gson.toJson(currentRoundResult);
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(file);
-            writer.write(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
     public RoundResult saveCategoryValue(FilePlay filePlay) {
         RoundResult currentRoundResult = null;
 
@@ -44,7 +24,6 @@ public class InternalFileHelper {
         Gson gson = new Gson();
 
         try {
-            //deberia existir siempre, pero por las dudas...
             if (file.exists()) {
                 InputStream inputStream = new FileInputStream(file);
                 Reader reader = new InputStreamReader(inputStream);

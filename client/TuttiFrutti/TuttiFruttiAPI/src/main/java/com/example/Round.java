@@ -8,7 +8,6 @@ public abstract class Round {
     private Integer roundId;
     private Integer gameId;
 
-
     public void setGameId(Integer gameId)
     {
         this.gameId=gameId;
