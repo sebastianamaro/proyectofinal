@@ -71,20 +71,11 @@ module.exports = function(app) {
           }; 
 
           currentRound.addLine(reqRound.line);
-          /*game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
-            if(err) {
-              console.log('ERROR: ' + err);
-            } 
-          });
-          */
+          
           if (currentRound.checkAllPlayersFinished(game)){
             currentRound.finish(game);
           }
-          console.log("vamos a guardar");
-          game.rounds[0].lines[0].plays = [];
-          //var aPlay=new Play();
-          //aPlay.category = 'category1';
-          //game.rounds[0].lines[0].plays.push(aPlay);
+
           game.save(function(err) {
             console.log("pasa por save");
             if(!err) {

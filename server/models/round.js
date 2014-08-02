@@ -20,7 +20,7 @@ roundSchema.methods.start = function start(letter) {
 roundSchema.methods.addLine = function addLine(newLine) {
   var existingLine = this.lines.filter(function (line) {return line.player.registrationId == newLine.player.registrationId; }).pop();
   if (!existingLine){
-    var myLine = new Line;
+    var myLine = new Line();
     myLine.setValues(newLine);
     this.lines.push(myLine);
   }
@@ -71,7 +71,7 @@ roundSchema.methods.finish = function finish(game) {
       if (!play.result === undefined){
         continue;
       }
-      if (!play.validate(game, this.letter)){ //checks it's correct and accepted
+      if (!play.validatePlay(game, this.letter)){ //checks it's correct and accepted
         play.setInvalidResult();
         continue;
       }
