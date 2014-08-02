@@ -24,9 +24,7 @@ public class GenericFocusChangeListener implements View.OnFocusChangeListener {
     public void onFocusChange(View v, boolean hasFocus) {
         if (!hasFocus) {
             String enteredString = ((EditText) v).getText().toString();
-            if (enteredString.isEmpty())
-                return;
-
+            
             new SaveFilePlayTask().execute(new FilePlay(fileName, this.Category, enteredString, TotalCategories, RoundId));
         }
 

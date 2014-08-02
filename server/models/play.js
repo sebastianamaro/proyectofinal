@@ -11,7 +11,8 @@ var playSchema = new Schema({
 
 playSchema.methods.setValues = function setValues(play) {
   this.category = play.category;
-  this.timestamp = play.timestamp;
+  console.log("el timestamp de la play es: " + play.timeStamp);
+  this.timestamp = play.timeStamp;
   this.word = play.word;
   return this;
 }
