@@ -1,5 +1,6 @@
 package com.example.tuttifrutti.app;
 
+import android.app.ProgressDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -10,8 +11,10 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -40,18 +43,6 @@ public class ShowRoundResult extends ActionBarActivity {
        new GetScoresAsyncTask().execute();
     }
 
-    private void AddHeaderTextView(TableRow row, String p) {
-        TextView text=new TextView(this.getApplicationContext());
-        text.setText(p);
-        text.setBackgroundResource(R.drawable.cell_shape);
-        text.setPadding(50, 50, 50, 50);
-        text.setTextColor(Color.parseColor("#C96609"));
-        text.setTextSize(15);
-        text.setTypeface(null, Typeface.BOLD);
-
-        row.addView(text);
-    }
-
     private void AddTotalTextView(TableRow row, int p) {
         TextView text=new TextView(this.getApplicationContext());
         if (p != -1)
@@ -61,7 +52,21 @@ public class ShowRoundResult extends ActionBarActivity {
         text.setBackgroundResource(R.drawable.cell_shape);
         text.setPadding(50, 50, 50, 50);
         text.setTextColor(Color.parseColor("#10B51B"));
-        text.setTextSize(15);
+        text.setTextSize(20);
+        text.setTypeface(null, Typeface.BOLD);
+        text.setGravity(Gravity.CENTER);
+
+        row.addView(text);
+    }
+
+    private void AddHeaderTextView(TableRow row, String p) {
+        TextView text=new TextView(this.getApplicationContext());
+        text.setText(p);
+        text.setGravity(Gravity.CENTER);
+        text.setBackgroundResource(R.drawable.cell_shape);
+        text.setPadding(40, 40, 40, 40);
+        text.setTextColor(Color.parseColor("#C96609"));
+        text.setTextSize(20);
         text.setTypeface(null, Typeface.BOLD);
 
         row.addView(text);
@@ -69,21 +74,28 @@ public class ShowRoundResult extends ActionBarActivity {
 
     private void AddContentTextView(TableRow row, String p, int PlayScore) {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
+        layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
 
         TextView text=new TextView(getApplicationContext());
-        text.setText(p);
-        text.setPadding(51, 51, 51, 51);
+        if (p.isEmpty()) {
+            text.setGravity(Gravity.CENTER);
+            text.setText("-");
+        }
+        else
+            text.setText(p);
+        text.setPadding(33, 33, 10, 33);
         text.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
-        text.setTextSize(15);
+        text.setTextSize(25);
         text.setTypeface(null, Typeface.NORMAL);
         layout.addView(text);
 
         TextView score=new TextView(this.getApplicationContext());
-        score.setText(PlayScore);
-        text.setPadding(50, 50, 3, 50);
+        if (!p.isEmpty())
+            score.setText(Integer.toString(PlayScore));
+        score.setPadding(10, 40, 33, 26);
         score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
-        score.setTextSize(10);
+        score.setTextSize(15);
         score.setTypeface(null, Typeface.NORMAL);
         layout.addView(score);
 
@@ -125,8 +137,9 @@ public class ShowRoundResult extends ActionBarActivity {
     }
 
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, ArrayList> {
-
+        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResult.this);
         TuttiFruttiAPI api;
+
         @Override
         protected ArrayList doInBackground(Void... filePlays) {
             return api.getScores(gameId, roundId);
@@ -180,10 +193,14 @@ public class ShowRoundResult extends ActionBarActivity {
 
             // la ultima fila que agrego es la de los puntajes
             table.addView(totalScoreRow);
+
+            Dialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
+            Dialog.setMessage("Calculando resultados...");
+            Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
