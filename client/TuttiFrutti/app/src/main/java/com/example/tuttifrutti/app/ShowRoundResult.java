@@ -15,9 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiCore.Line;
-import com.example.Play;
 import com.example.TuttiFruttiAPI;
-import com.example.tuttifrutti.app.Classes.RoundResult;
+import com.example.TuttiFruttiCore.Play;
 
 import java.util.ArrayList;
 

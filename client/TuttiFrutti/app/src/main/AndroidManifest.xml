@@ -79,5 +79,4 @@
         android:label="@string/title_activity_view_game_status" >
     </activity>
     </application>
-
 </manifest>
