@@ -78,5 +78,9 @@
         android:name=".ViewGameStatusActivity"
         android:label="@string/title_activity_view_game_status" >
     </activity>
+        <activity
+            android:name=".ShowGameResultActivity"
+            android:label="@string/title_activity_show_game_result" >
+        </activity>
     </application>
 </manifest>
