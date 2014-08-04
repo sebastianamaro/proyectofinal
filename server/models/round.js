@@ -36,25 +36,6 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
   return playersCount == linesCount;
 }
 
-roundSchema.methods.setValidScore = function setValidScore(play, iLineMyLine) {
-
-  for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
-    if (iLine == iLineMyLine){
-      continue;
-    }
-    var line = this.lines[iLine];
-    var repeatedPlay = line.getPlaySimilarTo(play);
-    if (repeatedPlay){
-      repeatedPlay.setRepeatedResult();
-      play.setRepeatedResult();
-      continue;
-    }
-  };
-  if (!play.result){ //it's not repeated, neither invalid
-    play.setUniqueScore();
-  }
-}
-
 roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
   var existingLine = this.lines.filter(function (line) {
     return line.player.registrationId == player.registrationId; 
@@ -67,27 +48,85 @@ roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player)
   }).pop();  
   return existingLine !== undefined;
 }
-roundSchema.methods.finish = function finish(game) {
-  this.status = "FINISHED";
-  //CALCULATES SCORES
+roundSchema.methods.createScoresMap = function createScoresMap(game){
+  var scoresMap = [];
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
     var line = this.lines[iLine];
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
-      if (!play.result === undefined){
-        continue;
-      }
       if (!play.validatePlay(game, this.letter)){ //checks it's correct and accepted
         play.setInvalidResult();
         continue;
       }
-      this.setValidScore(play, iLine); // sets either OK or REPEATED
+      this.addToScoresMap(scoresMap, play, iLine, iPlay); 
     };
-    line.setTotalScore(game.gameId, this.roundId);
   };
-  console.log(this.lines);
+  return scoresMap;
+}
+roundSchema.methods.finish = function finish(game) {
+  this.status = "FINISHED";
+  var scoresMap = this.createScoresMap(game);
+  this.calculateAndSetPartialScores(scoresMap);
+  this.calculateAndSetTotalScores();
+}
+roundSchema.methods.calculateAndSetTotalScores = function calculateAndSetTotalScores(){
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    var totalScore = 0;
+    for (var j = line.plays.length - 1; j >= 0; j--) {
+      var play = line.plays[j];
+      totalScore += play.score;
+    };
+    line.score = totalScore;
+  };
 }
 
+roundSchema.methods.calculateAndSetPartialScores = function calculateAndSetPartialScores(scoresMap){
+  for (var category in scoresMap) {
+    var words = scoresMap[category];
+    if (Object.keys(words).length == 1){ //only one word was set for this category, means it's repeated or only
+      var theWord = Object.keys(words)[0]; 
+      var dataForPlays = words[theWord]; //array of objects that have iLine and iPlay
+      
+      if (dataForPlays.length == 1){ //only one player chose this word, it's only
+        var playToScore = this.getPlay(dataForPlays, 0);
+        playToScore.setOnlyScore();
+      } else { //more than a player chose this word, they are all repeated
+        this.setAllRepeated(dataForPlays);
+      }
+    } else { //more than one word, each of them can be either repeated or unique
+      for (var word in words){
+        var dataForPlays = words[word];
+        if (dataForPlays.length == 1){ //only one player chose this word, it's only
+          var playToScore = this.getPlay(dataForPlays, 0);
+          playToScore.setUniqueScore();
+        } else { //more than a player chose this word, they are all repeated
+          this.setAllRepeated(dataForPlays);
+        }
+      }
+    } 
+  }
+}
+roundSchema.methods.setAllRepeated = function setAllRepeated(dataForPlays){
+  for (var i = dataForPlays.length - 1; i >= 0; i--) {
+    var playToScore = this.getPlay(dataForPlays, i);
+    playToScore.setRepeatedScore();
+  }
+}
+roundSchema.methods.getPlay = function getPlay(dataForPlays, iData){
+  var iLine = dataForPlays[iData].iLine;
+  var iPlay = dataForPlays[iData].iPlay;
+  return this.lines[iLine].plays[iPlay];
+}
+roundSchema.methods.addToScoresMap = function addToScoresMap(scoresMap, play, iLine, iPlay){
+  if (!(play.category in scoresMap)){
+    scoresMap[play.category] = [];
+  }
+  if (!(play.word in scoresMap[play.category] )){
+    scoresMap[play.category][play.word] = [];
+  }
+  scoresMap[play.category][play.word].push({'iLine':iLine, 'iPlay':iPlay});
+}
 
 roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
   var line = new Line();

@@ -59,7 +59,6 @@ module.exports = function(app) {
   finishRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
           var reqRound = req.body;
-          console.log(reqRound.line.plays);
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
@@ -72,11 +71,9 @@ module.exports = function(app) {
           }; 
 
           game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
-            console.log("About to add line");
             currentRound.addLine(reqRound.line);
             
             if (currentRound.checkAllPlayersFinished(game)){
-              console.log("checkAllPlayersFinished is true");
               currentRound.finish(game);
             }
 
@@ -125,15 +122,9 @@ module.exports = function(app) {
       if (!currentRound) return res.send('Round not found with roundId '+req.params.roundId, 404);
       //if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
       res.send(currentRound.lines, 200);            
-<<<<<<< HEAD
      });
-    }
-
-}
-
-=======
-    });
   }
-  
+
 }
->>>>>>> Working API calls
+
+ 
