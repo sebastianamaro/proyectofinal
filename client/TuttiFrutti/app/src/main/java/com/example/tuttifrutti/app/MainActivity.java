@@ -3,23 +3,15 @@ package com.example.tuttifrutti.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends ActionBarActivity {
@@ -92,11 +84,17 @@ public class MainActivity extends ActionBarActivity {
 
     public void showRoundResult(View view) {
 
-        Intent intent = new Intent(getApplicationContext(), ShowRoundResult.class);
+        Intent intent = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
 
         startActivity(intent);
     }
 
+    public void showGameResult(View view) {
+
+        Intent intent = new Intent(getApplicationContext(), ShowGameResultActivity.class);
+
+        startActivity(intent);
+    }
 
     public void createGame(View view) {
 

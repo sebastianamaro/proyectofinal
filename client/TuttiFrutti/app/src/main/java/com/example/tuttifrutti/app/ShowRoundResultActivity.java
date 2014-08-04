@@ -20,7 +20,7 @@ import com.example.TuttiFruttiCore.Play;
 
 import java.util.ArrayList;
 
-public class ShowRoundResult extends ActionBarActivity {
+public class ShowRoundResultActivity extends ActionBarActivity {
 
     int gameId=1;
     int roundId=1;
@@ -30,6 +30,94 @@ public class ShowRoundResult extends ActionBarActivity {
         setContentView(R.layout.activity_show_round_result);
 
        new GetScoresAsyncTask().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.show_round_result, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class GetScoresAsyncTask extends AsyncTask<Void,Void, ArrayList> {
+        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
+        TuttiFruttiAPI api;
+
+        @Override
+        protected ArrayList doInBackground(Void... filePlays) {
+            return api.getScores(gameId, roundId);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList result) {
+            ArrayList<Line> lines = (ArrayList<Line>)result;
+            String[] categories = new String[((Line)lines.get(0)).getPlays().size()];
+
+            int k = 0;
+
+            for (Play onePlay:lines.get(0).getPlays())
+            {
+                categories[k] = onePlay.getCategory();
+                k++;
+            }
+
+            TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
+            table.setGravity(Gravity.TOP);
+
+            TableRow contentRow;
+            TableRow totalScoreRow=new TableRow(getApplicationContext());
+            TableRow playersRow=new TableRow(getApplicationContext());
+
+            AddHeaderTextView(playersRow, "Categorias");
+            AddTotalTextView(totalScoreRow, -1); //la primera es la columna de las categorias
+
+            for (int i=0;i<categories.length;i++)
+            {
+                contentRow=new TableRow(getApplicationContext());
+                AddHeaderTextView(contentRow, categories[i]);
+                for (int j=0;j<lines.size();j++) {
+                    //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
+                    if (i==0) {
+                        AddHeaderTextView(playersRow, lines.get(j).getPlayer().getName());
+                        AddTotalTextView(totalScoreRow, lines.get(j).getScore());
+                    }
+
+                    //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
+                    Play linePlayForCategory = lines.get(j).getPlays().get(i);
+                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScore());
+                }
+
+                //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
+                if (i==0)
+                    table.addView(playersRow);
+
+                table.addView(contentRow);
+            }
+
+            // la ultima fila que agrego es la de los puntajes
+            table.addView(totalScoreRow);
+
+            Dialog.dismiss();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Dialog.setMessage("Calculando resultados...");
+            Dialog.show();
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
     }
 
     private void AddTotalTextView(TableRow row, int p) {
@@ -103,95 +191,6 @@ public class ShowRoundResult extends ActionBarActivity {
             color = "#0000FF"; //azul
 
         return color;
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.show_round_result, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public class GetScoresAsyncTask extends AsyncTask<Void,Void, ArrayList> {
-        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResult.this);
-        TuttiFruttiAPI api;
-
-        @Override
-        protected ArrayList doInBackground(Void... filePlays) {
-            return api.getScores(gameId, roundId);
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList result) {
-            ArrayList<Line> lines = (ArrayList<Line>)result;
-            String[] categories = new String[((Line)lines.get(0)).getPlays().size()];
-
-            int k = 0;
-
-            for (Play onePlay:lines.get(0).getPlays())
-            {
-                categories[k] = onePlay.getCategory();
-                k++;
-            }
-
-            TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
-            table.setGravity(Gravity.TOP);
-
-            TableRow contentRow;
-            TableRow totalScoreRow=new TableRow(getApplicationContext());
-            TableRow playersRow=new TableRow(getApplicationContext());
-
-            AddHeaderTextView(playersRow, "Categorias");
-            AddTotalTextView(totalScoreRow, -1); //la primera es la columna de las categorias
-
-            for (int i=0;i<categories.length;i++)
-            {
-                contentRow=new TableRow(getApplicationContext());
-                AddHeaderTextView(contentRow, categories[i]);
-                for (int j=0;j<lines.size();j++) {
-                    //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
-                    if (i==0) {
-                        AddHeaderTextView(playersRow, lines.get(j).getPlayer().getName());
-                        AddTotalTextView(totalScoreRow, lines.get(j).getScore());
-                    }
-
-                    //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
-                    Play linePlayForCategory = lines.get(j).getPlays().get(i);
-                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScore());
-                }
-
-                //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
-                if (i==0)
-                    table.addView(playersRow);
-
-                table.addView(contentRow);
-            }
-
-            // la ultima fila que agrego es la de los puntajes
-            table.addView(totalScoreRow);
-
-            Dialog.dismiss();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            Dialog.setMessage("Calculando resultados...");
-            Dialog.show();
-            api=new TuttiFruttiAPI(getString(R.string.server_url));
-        }
     }
 
     public enum ScoresForPlay
