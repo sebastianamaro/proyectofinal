@@ -125,8 +125,6 @@ module.exports = function(app) {
      });
   }
 
-
-
   getGamesForPlayer = function(req, res) {
     var numId =  parseInt(req.params.id);
     console.log(numId);
