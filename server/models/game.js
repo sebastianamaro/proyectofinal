@@ -14,6 +14,7 @@ var gameSchema = new Schema({
     categoriesType: { type: String },
     oponentsType: { type: String },
     players: [ Player.schema ]
+    randomPlayersCount: { type: Number }
 });
 
 gameSchema.methods.getRound = function getRound(roundId) {
@@ -54,6 +55,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.mode = game.mode;
   this.categoriesType = game.categoriesType;
   this.oponentsType = game.oponentsType;
+  this.randomPlayersCount = game.randomPlayersCount;
   this.addPlayer(game.player);
   var newPlayer = new Player();
   newPlayer.setValues(game.player);

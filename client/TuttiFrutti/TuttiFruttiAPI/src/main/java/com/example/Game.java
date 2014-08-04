@@ -8,6 +8,7 @@ public class Game {
     private String categoriesType;
     private String opponentsType;
     private String player;
+    private int randomPlayersCount;
 
     public String getMode(){return mode;}
     public void setMode(String mode){this.mode=mode;}
@@ -23,5 +24,9 @@ public class Game {
 
     public void setOpponentsType(String opponentsType) {
         this.opponentsType = opponentsType;
+    }
+
+    public void setRandomPlayersCount(int randomPlayersCount) {
+        this.randomPlayersCount = randomPlayersCount;
     }
 }

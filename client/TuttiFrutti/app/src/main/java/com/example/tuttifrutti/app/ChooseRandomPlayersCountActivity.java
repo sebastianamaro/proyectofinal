@@ -3,38 +3,49 @@ package com.example.tuttifrutti.app;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
+import android.widget.EditText;
+import android.widget.NumberPicker;
 
 import com.example.TuttiFruttiAPI;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.example.tuttifrutti.app.Classes.GameSettings;
+import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.tuttifrutti.app.R;
 
+public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
-public class CreateGameActivity extends ActionBarActivity {
-
-    public static final String MODE_EXTRA_MESSAGE = "MODE_EXTRA_MESSAGE";
-    public static final String OPONENTS_EXTRA_MESSAGE = "OPONENTS_EXTRA_MESSAGE";
-    public static final String CATEGORIES_EXTRA_MESSAGE = "CATEGORIES_EXTRA_MESSAGE";
-
+    public GameSettings gameSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_game);
+        setContentView(R.layout.activity_choose_random_players_count);
+
+        Intent intent = getIntent();
+
+        boolean mode = intent.getBooleanExtra(CreateGameActivity.MODE_EXTRA_MESSAGE, false);
+        boolean oponents = intent.getBooleanExtra(CreateGameActivity.OPONENTS_EXTRA_MESSAGE, false);
+        boolean categories = intent.getBooleanExtra(CreateGameActivity.CATEGORIES_EXTRA_MESSAGE, false);
+
+        gameSettings = new GameSettings(mode, oponents, categories,1);
+
+        NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
+        np.setMaxValue(4);
+        np.setMinValue(1);
+        np.setWrapSelectorWheel(false);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.create_game, menu);
+        getMenuInflater().inflate(R.menu.choose_random_players_count, menu);
+
         return true;
     }
 
@@ -51,23 +62,11 @@ public class CreateGameActivity extends ActionBarActivity {
     }
 
     public void createGame(View view) {
+        NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
 
-        boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
-        boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
-        boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
-
-        if (oponents) {
-            Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
-            intent.putExtra(MODE_EXTRA_MESSAGE, mode);
-            intent.putExtra(OPONENTS_EXTRA_MESSAGE, oponents);
-            intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
-            startActivity(intent);
-        }else {
-            //todo: llamar a la actividad de elegir amigos
-            GameSettings gs = new GameSettings(mode, oponents, categories,-1);
-            CreateGameTask task = new CreateGameTask();
-            task.execute(gs);
-        }
+        gameSettings.setRandomPlayersCount(np.getValue());
+        CreateGameTask task = new CreateGameTask();
+        task.execute(gameSettings);
     }
 
     //todo: meter esto en una clase
@@ -84,7 +83,7 @@ public class CreateGameActivity extends ActionBarActivity {
 
             PlayServicesHelper helper = new PlayServicesHelper();
             String regid = "";
-            if (helper.checkPlayServices(CreateGameActivity.this))
+            if (helper.checkPlayServices(ChooseRandomPlayersCountActivity.this))
             {
                 regid = helper.getRegistrationId(getApplicationContext());
                 if (regid == "")
@@ -92,7 +91,7 @@ public class CreateGameActivity extends ActionBarActivity {
             }
 
 
-            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(), gs.getRandomPlayersCount(),regid);
+            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(),gs.getRandomPlayersCount(),regid);
             return null;
         }
 
@@ -114,7 +113,7 @@ public class CreateGameActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute(){
-            ad=new AlertDialog.Builder(CreateGameActivity.this).create();
+            ad=new AlertDialog.Builder(ChooseRandomPlayersCountActivity.this).create();
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }

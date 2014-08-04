@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.tuttifrutti.app.ChooseRandomPlayersCountActivity">
+
+    <TextView
+        android:text="Elegí la cantidad de jugadores aleatorios para jugar!"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="46dp"
+        android:id="@+id/title"
+        android:gravity="center"/>
+
+    <NumberPicker
+        android:id="@+id/randomPlayersCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" ></NumberPicker>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aceptar"
+        android:id="@+id/create"
+        android:onClick="createGame"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/randomPlayersCount"
+        android:layout_alignStart="@+id/randomPlayersCount"
+        android:layout_marginBottom="63dp" />
+
+</RelativeLayout>
