@@ -13,7 +13,7 @@ var gameSchema = new Schema({
     mode : { type: String },
     categoriesType: { type: String },
     oponentsType: { type: String },
-    players: [ Player.schema ]
+    players: [ Player.schema ],
     randomPlayersCount: { type: Number }
 });
 
