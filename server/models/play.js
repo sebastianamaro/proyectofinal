@@ -67,4 +67,11 @@ playSchema.methods.validatePlay = function validatePlay(game, letter) {
   return true;
 }
 
+playSchema.methods.asSummarized = function asSummarized() {
+  return {'result': this.result,
+          'score': this.score,
+          'word': this.word,
+          'category':this.category,
+          'best':false};
+}
 module.exports = mongoose.model('Play', playSchema);

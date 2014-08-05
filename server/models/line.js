@@ -42,5 +42,11 @@ lineSchema.methods.setTotalScore = function setTotalScore(gameId, roundId) {
   };
   this.score = totalScore;
 }
-
+lineSchema.methods.getSummarizedPlays = function getSummarizedPlays(){
+  var summarizedPlays = [];
+  for (var i = this.plays.length - 1; i >= 0; i--) {
+    summarizedPlays.push( this.plays[i].asSummarized() );
+  };
+  return summarizedPlays;
+}
 module.exports = mongoose.model('Line', lineSchema);

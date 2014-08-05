@@ -109,7 +109,7 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, registr
 gameSchema.methods.getPlayerNames = function(){
   var playerNames = [];
   for (var i = this.players.length - 1; i >= 0; i--) {
-    playerNames.push( this.players[i].registrationId.substr(0,4));
+    playerNames.push( this.players[i].getName() );
   };
   return playerNames;
 }
@@ -119,7 +119,7 @@ gameSchema.methods.getRoundResults = function(){
     var aRound = this.rounds[i];
     roundResults.push( {
                       'roundId' : aRound.roundId, 
-                      'scores' : aRound.getScoresForPlayers(this.players)
+                      'scores' : aRound.getSummarizedScoresForPlayers(this.players)
                     });
   };
   return roundResults;

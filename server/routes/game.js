@@ -120,7 +120,7 @@ module.exports = function(app) {
       var currentRound = game.getRound(req.params.roundId);
       if (!currentRound) return res.send('Round not found with roundId '+req.params.roundId, 404);
       //if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
-      res.send(currentRound.lines, 200);            
+      res.send(currentRound.getScores(game.players), 200);            
      });
   }
   getGamesForPlayer = function(req, res) {

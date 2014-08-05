@@ -134,7 +134,7 @@ roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentF
   this.addLine(line);
 }
 
-roundSchema.methods.getScoresForPlayers = function getScoresForPlayers(players){
+roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScoresForPlayers(players){
   var scores = [];
   var bestScore = 0;
   for (var i = players.length - 1; i >= 0; i--) {
@@ -154,5 +154,48 @@ roundSchema.methods.getScoresForPlayers = function getScoresForPlayers(players){
   }
   return scores;
 }
+roundSchema.methods.getScores = function getScores(players){
+  var scores = [];
+  var bestLineScore = 0; 
+  for (var i = players.length - 1; i >= 0; i--) {
+    var aPlayer = players[i];
+    var lineForPlayer = this.lines.filter(function (line) 
+      {return line.player.registrationId == aPlayer.registrationId; }).pop();
+    if (lineForPlayer.score > bestLineScore){
+      bestLineScore = lineForPlayer.score;
+    } 
+    scores.push({ 'player' : lineForPlayer.player,
+                  'score' : lineForPlayer.score,
+                  'best' : false,
+                  'plays' : lineForPlayer.getSummarizedPlays() });
+  }
+  var bestOfCategory = [];
+  for(var scoreI in scores){
+    var score = scores[scoreI];
+    for(var playI in score.plays){
+      var play = score.plays[playI];
+      if (bestOfCategory[play.category] == undefined){
+        bestOfCategory[play.category] = play.score;
+      } else {
+        if (play.score > bestOfCategory[play.category]){
+          bestOfCategory[play.category] = play.score;
+        }  
+      }
+    }
+  }
+  for(var scoreI in scores){
+    var score = scores[scoreI];
+    if (score.score == bestLineScore){
+      score.best = true;
+    }
+    for(var playI in score.plays){
+      var play = score.plays[playI];
+      if (play.score == bestOfCategory[play.category]){
+        play.best = true;
+      } 
+    }
+  }
 
+  return scores;
+}
 module.exports = mongoose.model('Round', roundSchema);

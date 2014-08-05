@@ -23,6 +23,10 @@ playerSchema.methods.getGames = function () {
 		games.push(gameToReturn);
 	};
 }
+playerSchema.methods.getName = function () {
+	if (this.registrationId.length <=3 ) return this.registrationId;
+	return this.registrationId.substr(0,4);
+}
 
 module.exports = mongoose.model('Player', playerSchema);
 
