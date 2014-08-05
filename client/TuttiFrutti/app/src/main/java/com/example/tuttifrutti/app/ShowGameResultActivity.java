@@ -9,21 +9,18 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.GameResult;
+import com.example.TuttiFruttiCore.GameResult;
 import com.example.Line;
 import com.example.Play;
 import com.example.Player;
-import com.example.RoundScore;
+import com.example.TuttiFruttiCore.RoundResult;
+import com.example.TuttiFruttiCore.RoundScore;
 import com.example.TuttiFruttiAPI;
 import com.example.tuttifrutti.app.Classes.RoundResult;
-import com.example.tuttifrutti.app.R;
-
-import java.util.ArrayList;
 
 public class ShowGameResultActivity extends ActionBarActivity {
 
@@ -69,7 +66,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
             TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
             table.setGravity(Gravity.TOP);
 
-            com.example.RoundResult roundRes;
+            RoundResult roundRes;
 
             TableRow contentRow;
             TableRow totalScoreRow=new TableRow(getApplicationContext());

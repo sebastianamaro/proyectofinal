@@ -1,6 +1,4 @@
-package com.example;
-
-import com.example.TuttiFruttiCore.Player;
+package com.example.TuttiFruttiCore;
 
 import java.util.ArrayList;
 
@@ -9,7 +7,7 @@ import java.util.ArrayList;
  */
 public class GameResult {
     private ArrayList<Player> players;
-    private ArrayList<RoundResult> roundsResult;
+    private ArrayList<PlayedRoundResult> roundsResult;
     private ArrayList<PlayerResult> playerResult;
 
     public ArrayList<Player> getPlayers() {
@@ -20,11 +18,11 @@ public class GameResult {
         this.players = players;
     }
 
-    public ArrayList<RoundResult> getRoundsResult() {
+    public ArrayList<PlayedRoundResult> getRoundsResult() {
         return roundsResult;
     }
 
-    public void setRoundsResult(ArrayList<RoundResult> roundsResult) {
+    public void setRoundsResult(ArrayList<PlayedRoundResult> roundsResult) {
         this.roundsResult = roundsResult;
     }
     public ArrayList<PlayerResult> getPlayerResult() {
@@ -34,5 +32,4 @@ public class GameResult {
     public void setPlayerResult(ArrayList<PlayerResult> playerResult) {
         this.playerResult = playerResult;
     }
-
 }

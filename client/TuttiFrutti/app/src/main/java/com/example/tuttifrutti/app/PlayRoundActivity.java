@@ -30,7 +30,7 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.FinishedRound;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Play;
-import com.example.TuttiFruttiCore.RoundResult;
+import com.example.TuttiFruttiCore.PlayedRoundResult;
 import com.example.tuttifrutti.app.Classes.FilePlay;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import java.util.ArrayList;
@@ -323,7 +323,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     private class SaveFilePlayStartRoundTask extends SaveFilePlayTask{
 
         @Override
-        protected void onPostExecute(RoundResult result) {
+        protected void onPostExecute(PlayedRoundResult result) {
 
             // 120000 = 2 min
             timer = new CountDownTimer(60000, 1000) {
@@ -378,13 +378,13 @@ public class PlayRoundActivity extends FragmentActivity implements
             this.validateAllCategoriesPresent=validateAllCategoriesPresent;
             this.messageToShow=messageToShow;
         }
-       protected void onPostExecute(RoundResult currentRoundResult){
+       protected void onPostExecute(PlayedRoundResult currentPlayedRoundResult){
            //TODO refact
            boolean complete = true;
            if (validateAllCategoriesPresent) {
                int i = 0;
                while (complete && i < currentRound.getCategories().length) {
-                   if (currentRoundResult.CategoriesValues[i] == null || currentRoundResult.CategoriesValues[i] == "")
+                   if (currentPlayedRoundResult.CategoriesValues[i] == null || currentPlayedRoundResult.CategoriesValues[i] == "")
                        complete = false;
 
                    i++;
@@ -401,15 +401,15 @@ public class PlayRoundActivity extends FragmentActivity implements
                for (int index = 0; index < currentRound.getCategories().length; index++) {
                    Play play = new Play();
                    play.setCategory(currentRound.getCategories()[index]);
-                   play.setWord(currentRoundResult.CategoriesValues[index]);
-                   play.setTimeStamp(currentRoundResult.CategoriesTimeStamp[index]);
+                   play.setWord(currentPlayedRoundResult.CategoriesValues[index]);
+                   play.setTimeStamp(currentPlayedRoundResult.CategoriesTimeStamp[index]);
                    plays.add(play);
                }
                
                Play[] playArray=new Play[plays.size()];
                plays.toArray(playArray);
 
-                new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(),currentRoundResult.StartTime,playArray));
+                new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(), currentPlayedRoundResult.StartTime,playArray));
                File file = new File(fileName);
                try {
                    file.getCanonicalFile().delete();

@@ -1,6 +1,6 @@
 package com.example.tuttifrutti.app.Classes;
 
-import com.example.TuttiFruttiCore.RoundResult;
+import com.example.TuttiFruttiCore.PlayedRoundResult;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -16,8 +16,8 @@ import java.util.Date;
  * Created by Nituguivi on 21/06/2014.
  */
 public class InternalFileHelper {
-    public RoundResult saveCategoryValue(FilePlay filePlay) {
-        RoundResult currentRoundResult = null;
+    public PlayedRoundResult saveCategoryValue(FilePlay filePlay) {
+        PlayedRoundResult currentPlayedRoundResult = null;
 
         File file = new File(filePlay.getFileName());
         Boolean writeFile=false;
@@ -27,36 +27,36 @@ public class InternalFileHelper {
             if (file.exists()) {
                 InputStream inputStream = new FileInputStream(file);
                 Reader reader = new InputStreamReader(inputStream);
-                currentRoundResult = gson.fromJson(reader, RoundResult.class);
+                currentPlayedRoundResult = gson.fromJson(reader, PlayedRoundResult.class);
 
-                if (currentRoundResult == null) {
-                    currentRoundResult = new RoundResult();
-                    currentRoundResult.RoundId = filePlay.getRoundId();
-                    currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
-                    currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
-                }else if (currentRoundResult.CategoriesTimeStamp == null)
+                if (currentPlayedRoundResult == null) {
+                    currentPlayedRoundResult = new PlayedRoundResult();
+                    currentPlayedRoundResult.RoundId = filePlay.getRoundId();
+                    currentPlayedRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
+                    currentPlayedRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
+                }else if (currentPlayedRoundResult.CategoriesTimeStamp == null)
                 {
-                    currentRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
-                    currentRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
+                    currentPlayedRoundResult.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
+                    currentPlayedRoundResult.CategoriesValues = new String[filePlay.getCategoriesLength()];
                 }
 
 
                 // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-                if (currentRoundResult.CategoriesValues[filePlay.getCategoryPosition()] != filePlay.getCategoryValue()) {
-                    currentRoundResult.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
-                    currentRoundResult.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
+                if (currentPlayedRoundResult.CategoriesValues[filePlay.getCategoryPosition()] != filePlay.getCategoryValue()) {
+                    currentPlayedRoundResult.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
+                    currentPlayedRoundResult.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
                     writeFile=true;
                 }
 
             } else {
-                currentRoundResult = new RoundResult();
-                currentRoundResult.RoundId = filePlay.getRoundId();
-                currentRoundResult.StartTime = new Date();
+                currentPlayedRoundResult = new PlayedRoundResult();
+                currentPlayedRoundResult.RoundId = filePlay.getRoundId();
+                currentPlayedRoundResult.StartTime = new Date();
                 writeFile=true;
             }
 
             if(writeFile)
-                writeRoundResult(currentRoundResult,gson,file);
+                writeRoundResult(currentPlayedRoundResult,gson,file);
 
 
 
@@ -64,12 +64,12 @@ public class InternalFileHelper {
             e.printStackTrace();
         }
 
-        return currentRoundResult;
+        return currentPlayedRoundResult;
     }
 
-    private void writeRoundResult(RoundResult currentRoundResult, Gson gson, File file){
+    private void writeRoundResult(PlayedRoundResult currentPlayedRoundResult, Gson gson, File file){
 
-        String json = gson.toJson(currentRoundResult);
+        String json = gson.toJson(currentPlayedRoundResult);
         try {
             FileWriter writer = new FileWriter(file);
 

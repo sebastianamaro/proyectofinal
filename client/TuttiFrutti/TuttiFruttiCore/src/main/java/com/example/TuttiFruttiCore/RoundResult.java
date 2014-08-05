@@ -1,13 +1,30 @@
 package com.example.TuttiFruttiCore;
 
-import java.util.Date;
+import com.example.TuttiFruttiCore.RoundScore;
+
+import java.util.ArrayList;
 
 /**
- * Created by Nituguivi on 07/06/2014.
+ * Created by Nituguivi on 03/08/2014.
  */
 public class RoundResult {
-    public int RoundId;
-    public Date[] CategoriesTimeStamp;
-    public String[] CategoriesValues;
-    public Date StartTime;
+    private ArrayList<RoundScore> scores;
+    private int roundId;
+
+
+    public int getRoundId() {
+        return roundId;
+    }
+
+    public void setRoundId(int roundId) {
+        this.roundId = roundId;
+    }
+
+    public ArrayList<RoundScore> getScores() {
+        return scores;
+    }
+
+    public void setScores(ArrayList<RoundScore> scores) {
+        this.scores = scores;
+    }
 }

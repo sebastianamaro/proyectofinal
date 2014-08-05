@@ -4,6 +4,7 @@ import android.os.StrictMode;
 
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.GameResult;
 import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
