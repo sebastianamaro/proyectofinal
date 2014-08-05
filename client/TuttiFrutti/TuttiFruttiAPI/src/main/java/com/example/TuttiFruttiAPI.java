@@ -86,13 +86,23 @@ public class TuttiFruttiAPI {
 
     public void startRound(int gameId)
     {
-            String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-            FullRound fr= new FullRound();
-            fr.setStatus("PLAYING");
-            restTemplate.put(url, fr);
+        String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        FullRound fr= new FullRound();
+        fr.setStatus("PLAYING");
+        restTemplate.put(url, fr);
+    }
+
+    public GameResult getGameScores(int gameId)
+    {
+        String url= serverURL+"game/"+gameId+"/scores";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        return restTemplate.getForObject(url,GameResult.class);
     }
 
     public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, Play[] plays)
@@ -124,7 +134,7 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,FullRound.class);
     }
 
-    public ArrayList<Line> getScores(int gameId, int roundId)
+    public ArrayList<Line> getRoundScore(int gameId, int roundId)
     {
         String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
         RestTemplate restTemplate = new RestTemplate();

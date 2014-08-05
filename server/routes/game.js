@@ -114,7 +114,6 @@ module.exports = function(app) {
      });
   }
   getRoundScores = function(req, res){
-    console.log('');
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
@@ -124,17 +123,24 @@ module.exports = function(app) {
       res.send(currentRound.lines, 200);            
      });
   }
-
-
-
   getGamesForPlayer = function(req, res) {
     var numId =  parseInt(req.params.id);
     console.log(numId);
     Player.findOne({}, function (err, player){
       if (err) return res.send(err, 500);
-
       if (!player) return res.send('Player not found', 404);     
       res.send(player.getGames(), 200); //add error manipulation
     });
   } 
+  getGameScores = function(req,res){
+    Game.findOne({ 'gameId': req.params.id }, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);          
+      var roundResults = game.getRoundResults();
+      var gameScoresMap = { 'players': game.getPlayerNames(),
+                            'roundsResult': roundResults,
+                            'playerResult': game.getPlayerResults(roundResults) };
+      res.send(gameScoresMap, 200);            
+     });
+  }
 }

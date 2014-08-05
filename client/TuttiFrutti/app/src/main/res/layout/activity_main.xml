@@ -41,4 +41,12 @@
         android:layout_below="@+id/createGame"
         android:onClick="showRoundResult" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver resultados de partida"
+        android:id="@+id/showGameResult"
+        android:layout_below="@+id/showRoundResult"
+        android:onClick="showGameResult" />
+
 </RelativeLayout>

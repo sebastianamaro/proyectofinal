@@ -18,6 +18,7 @@ app.get('/game/:id/round', getRound);
 app.post('/game', createGame); 
 app.get('/game/:id/round/:roundId/scores', getRoundScores);
 app.get('/player/:id/game', getGamesForPlayer);
+app.get('/game/:id/scores', getGameScores);
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {

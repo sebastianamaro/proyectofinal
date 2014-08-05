@@ -106,4 +106,52 @@ gameSchema.methods.sendNotifications = function sendNotifications(round, registr
   }
   callback();
 }
+gameSchema.methods.getPlayerNames = function(){
+  var playerNames = [];
+  for (var i = this.players.length - 1; i >= 0; i--) {
+    playerNames.push( this.players[i].registrationId.substr(0,4));
+  };
+  return playerNames;
+}
+gameSchema.methods.getRoundResults = function(){
+  var roundResults = [];
+  for (var i = this.rounds.length - 1; i >= 0; i--) {
+    var aRound = this.rounds[i];
+    roundResults.push( {
+                      'roundId' : aRound.roundId, 
+                      'scores' : aRound.getScoresForPlayers(this.players)
+                    });
+  };
+  return roundResults;
+}
+gameSchema.methods.getPlayerResults = function(partialScores){
+  var playerPartialResults = [];
+  for (var iPartialScore in partialScores){
+    var partialScore = partialScores[iPartialScore];
+    for (var i = partialScore.scores.length - 1; i >= 0; i--) {
+      if (playerPartialResults[i] == undefined){
+        playerPartialResults[i] = partialScore.scores[i].score;
+      } else {
+        playerPartialResults[i] += partialScore.scores[i].score;
+      }
+    };
+  }
+  var playerResults = [];
+  var bestScore = 0 ;
+  for (var i = playerPartialResults.length - 1; i >= 0; i--) {
+    var playerPartialResult = playerPartialResults[i];
+    if (playerPartialResult > bestScore){
+      bestScore = playerPartialResult;
+    } 
+    playerResults.push({'score': playerPartialResult, "best": false});
+  };
+  
+  for(var iPlayerResult in playerResults){
+    if (playerResults[iPlayerResult].score == bestScore){
+      playerResults[iPlayerResult].best = true;
+    }
+  }
+  return playerResults;
+}
+
 module.exports = mongoose.model('Game', gameSchema);
