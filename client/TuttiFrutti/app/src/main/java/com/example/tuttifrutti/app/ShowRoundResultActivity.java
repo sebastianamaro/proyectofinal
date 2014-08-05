@@ -57,7 +57,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList doInBackground(Void... filePlays) {
-            return api.getScores(gameId, roundId);
+            return api.getRoundScore(gameId, roundId);
         }
 
         @Override

@@ -60,9 +60,8 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
         @Override
         protected GameResult doInBackground(Void... filePlays) {
-            //return api.getScores(gameId, roundId);
-            GameResult game = new GameResult();
-            return game;
+            //return api.getRoundScore(gameId, roundId);
+            return api.getGameScores(1);
         }
 
         @Override
