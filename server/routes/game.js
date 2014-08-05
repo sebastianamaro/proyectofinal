@@ -125,6 +125,16 @@ module.exports = function(app) {
      });
   }
 
-}
 
- 
+
+  getGamesForPlayer = function(req, res) {
+    var numId =  parseInt(req.params.id);
+    console.log(numId);
+    Player.findOne({}, function (err, player){
+      if (err) return res.send(err, 500);
+
+      if (!player) return res.send('Player not found', 404);     
+      res.send(player.getGames(), 200); //add error manipulation
+    });
+  } 
+}

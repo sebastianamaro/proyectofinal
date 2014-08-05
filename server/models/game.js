@@ -13,7 +13,7 @@ var gameSchema = new Schema({
     mode : { type: String },
     categoriesType: { type: String },
     oponentsType: { type: String },
-    players: [ Player.schema ]
+    players: [ Player.schema ],
     randomPlayersCount: { type: Number }
 });
 
@@ -57,9 +57,6 @@ gameSchema.methods.setValues = function setValues(game){
   this.oponentsType = game.oponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.addPlayer(game.player);
-  var newPlayer = new Player();
-  newPlayer.setValues(game.player);
-  this.players.push(newPlayer);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(registrationId){

@@ -1,1 +1,0 @@
-mongod --dbpath "C:\Users\Nituguivi\Documents\Facultad\Proyecto Final\Repo\proyectofinal\server\db" --journal --port 30000 --logpath "C:\Users\Nituguivi\Documents\Facultad\Proyecto Final\Repo\proyectofinal\server\logs"

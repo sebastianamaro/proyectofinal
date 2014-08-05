@@ -2,14 +2,18 @@ package com.example;
 
 import android.os.StrictMode;
 
-import org.springframework.http.HttpMethod;
+import com.example.TuttiFruttiCore.FullRound;
+import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Line;
+import com.example.TuttiFruttiCore.Play;
+import com.example.TuttiFruttiCore.PlayedRound;
+import com.example.TuttiFruttiCore.RoundLine;
+import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +31,22 @@ public class TuttiFruttiAPI {
         }
 
     }
+
+    public ArrayList<UserGame> getGames(String registrationId)
+    {
+        ArrayList<UserGame> games;
+
+        String url= serverURL+"player/"+registrationId+"/game";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        UserGame[] gamesArray= restTemplate.getForObject(url,UserGame[].class);
+
+        games=new ArrayList<UserGame>(Arrays.asList(gamesArray));
+
+        return games;
+    }
+
 
     public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode, int randomPlayersCount ,String registrationId)
     {

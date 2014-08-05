@@ -28,12 +28,17 @@ android {
     }
 }
 
+
+
 dependencies {
-    compile('org.springframework.android:spring-android-auth:1.+') {
-        exclude group :'org.springframework', module: 'commons-logging'
-        exclude group :'org.springframework', module: 'spring-core'
-        exclude group :'org.springframework', module: 'spring-web'
-    }
+    compile 'org.springframework.android:spring-android-auth:1.+'
     compile 'org.springframework.android:spring-android-core:1.+'
     compile 'org.springframework.android:spring-android-rest-template:1.+'
+    compile project(':TuttiFruttiCore')
+
+    configurations.compile {
+        exclude module: 'spring-core'
+        exclude module: 'spring-web'
+        exclude module: 'commons-logging'
+    }
 }

@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import com.example.TuttiFruttiAPI;
-import com.example.tuttifrutti.app.Classes.GameSettings;
+import com.example.TuttiFruttiCore.GameSettings;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import com.example.tuttifrutti.app.R;
 

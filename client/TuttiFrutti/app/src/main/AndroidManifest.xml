@@ -68,11 +68,15 @@
         <activity
             android:name=".ShowRoundResult"
             android:label="@string/title_activity_show_round_result" >
+
         </activity>
         <activity
         android:name=".ChooseRandomPlayersCountActivity"
         android:label="@string/title_activity_choose_random_players_count" >
     </activity>
+        <activity
+        android:name=".ViewGameStatusActivity"
+        android:label="@string/title_activity_view_game_status" >
+    </activity>
     </application>
-
 </manifest>
