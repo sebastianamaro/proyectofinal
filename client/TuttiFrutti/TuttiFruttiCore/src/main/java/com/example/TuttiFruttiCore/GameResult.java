@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class GameResult {
     private ArrayList<Player> players;
-    private ArrayList<PlayedRoundResult> roundsResult;
+    private ArrayList<RoundResult> roundsResult;
     private ArrayList<PlayerResult> playerResult;
 
     public ArrayList<Player> getPlayers() {
@@ -18,11 +18,11 @@ public class GameResult {
         this.players = players;
     }
 
-    public ArrayList<PlayedRoundResult> getRoundsResult() {
+    public ArrayList<RoundResult> getRoundsResult() {
         return roundsResult;
     }
 
-    public void setRoundsResult(ArrayList<PlayedRoundResult> roundsResult) {
+    public void setRoundsResult(ArrayList<RoundResult> roundsResult) {
         this.roundsResult = roundsResult;
     }
     public ArrayList<PlayerResult> getPlayerResult() {

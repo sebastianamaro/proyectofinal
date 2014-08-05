@@ -3,6 +3,10 @@ package com.example.TuttiFruttiCore;
 /**
  * Created by Sebastian on 21/06/2014.
  */
+/*
+*
+* Clase basica de ronda
+* */
 public abstract class Round {
     private String status;
     private Integer roundId;
