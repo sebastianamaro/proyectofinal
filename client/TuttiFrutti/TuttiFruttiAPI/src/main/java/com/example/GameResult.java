@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class GameResult {
     private ArrayList<Player> players;
     private ArrayList<RoundResult> roundsResult;
+    private ArrayList<PlayerResult> playerResult;
 
     public ArrayList<Player> getPlayers() {
         return players;
@@ -24,4 +25,12 @@ public class GameResult {
     public void setRoundsResult(ArrayList<RoundResult> roundsResult) {
         this.roundsResult = roundsResult;
     }
+    public ArrayList<PlayerResult> getPlayerResult() {
+        return playerResult;
+    }
+
+    public void setPlayerResult(ArrayList<PlayerResult> playerResult) {
+        this.playerResult = playerResult;
+    }
+
 }

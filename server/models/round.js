@@ -134,4 +134,25 @@ roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentF
   this.addLine(line);
 }
 
+roundSchema.methods.getScoresForPlayers = function getScoresForPlayers(players){
+  var scores = [];
+  var bestScore = 0;
+  for (var i = players.length - 1; i >= 0; i--) {
+    var aPlayer = players[i];
+    var lineForPlayer = this.lines.filter(function (line) 
+      {return line.player.registrationId == aPlayer.registrationId; }).pop();
+    scores.push({ 'score': lineForPlayer.score, 'best' : false });
+
+    if (lineForPlayer.score > bestScore){
+      bestScore = lineForPlayer.score;
+    } 
+  }
+  for(var scoreI in scores){
+    if (scores[scoreI].score == bestScore){
+      scores[scoreI].best = true;
+    }
+  }
+  return scores;
+}
+
 module.exports = mongoose.model('Round', roundSchema);
