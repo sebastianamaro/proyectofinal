@@ -58,7 +58,6 @@ gameSchema.methods.setValues = function setValues(game){
   this.randomPlayersCount = game.randomPlayersCount;
   this.addPlayer(game.player);
 
-  console.log('agregando : ' + this.players);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(registrationId){
