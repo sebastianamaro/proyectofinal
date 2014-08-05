@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Play;
+import com.example.TuttiFruttiCore.RoundScoreSummary;
+import com.example.TuttiFruttiCore.SummarizedPlay;
 
 import java.util.ArrayList;
 
@@ -51,23 +53,23 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class GetScoresAsyncTask extends AsyncTask<Void,Void, ArrayList> {
+    public class GetScoresAsyncTask extends AsyncTask<Void,Void, ArrayList<RoundScoreSummary>> {
         private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
         TuttiFruttiAPI api;
 
         @Override
-        protected ArrayList doInBackground(Void... filePlays) {
+        protected ArrayList<RoundScoreSummary> doInBackground(Void... filePlays) {
             return api.getRoundScore(gameId, roundId);
         }
 
         @Override
-        protected void onPostExecute(ArrayList result) {
-            ArrayList<Line> lines = (ArrayList<Line>)result;
-            String[] categories = new String[((Line)lines.get(0)).getPlays().size()];
+        protected void onPostExecute(ArrayList<RoundScoreSummary> result) {
+
+            String[] categories = new String[result.get(0).getPlays().size()];
 
             int k = 0;
 
-            for (Play onePlay:lines.get(0).getPlays())
+            for (SummarizedPlay onePlay:result.get(0).getPlays())
             {
                 categories[k] = onePlay.getCategory();
                 k++;
@@ -87,15 +89,15 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             {
                 contentRow=new TableRow(getApplicationContext());
                 AddHeaderTextView(contentRow, categories[i]);
-                for (int j=0;j<lines.size();j++) {
+                for (int j=0;j<result.size();j++) {
                     //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
                     if (i==0) {
-                        AddHeaderTextView(playersRow, lines.get(j).getPlayer().getName());
-                        AddTotalTextView(totalScoreRow, lines.get(j).getScore());
+                        AddHeaderTextView(playersRow, result.get(j).getPlayer().getName());
+                        AddTotalTextView(totalScoreRow, result.get(j).getScore());
                     }
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
-                    Play linePlayForCategory = lines.get(j).getPlays().get(i);
+                    SummarizedPlay linePlayForCategory = result.get(j).getPlays().get(i);
                     AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScore());
                 }
 

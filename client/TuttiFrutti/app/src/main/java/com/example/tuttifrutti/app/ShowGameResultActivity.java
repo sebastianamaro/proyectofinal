@@ -14,13 +14,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiCore.GameResult;
-import com.example.Line;
-import com.example.Play;
-import com.example.Player;
+
+import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.RoundResult;
 import com.example.TuttiFruttiCore.RoundScore;
 import com.example.TuttiFruttiAPI;
-import com.example.tuttifrutti.app.Classes.RoundResult;
 
 public class ShowGameResultActivity extends ActionBarActivity {
 

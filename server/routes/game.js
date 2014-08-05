@@ -74,6 +74,7 @@ module.exports = function(app) {
             currentRound.addLine(reqRound.line);
             
             if (currentRound.checkAllPlayersFinished(game)){
+              console.log('terminando ronda');
               currentRound.finish(game);
             }
 

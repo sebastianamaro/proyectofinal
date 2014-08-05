@@ -9,6 +9,7 @@ import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
 import com.example.TuttiFruttiCore.RoundLine;
+import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -135,15 +136,15 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,FullRound.class);
     }
 
-    public ArrayList<Line> getRoundScore(int gameId, int roundId)
+    public ArrayList<RoundScoreSummary> getRoundScore(int gameId, int roundId)
     {
         String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        Line[] lineArray= restTemplate.getForObject(url,Line[].class);
-        return new ArrayList<Line>(Arrays.asList(lineArray));
+        RoundScoreSummary[] lineArray= restTemplate.getForObject(url,RoundScoreSummary[].class);
+        return new ArrayList<RoundScoreSummary>(Arrays.asList(lineArray));
     }
 
 }

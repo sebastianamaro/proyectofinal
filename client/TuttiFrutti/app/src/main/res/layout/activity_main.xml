@@ -8,13 +8,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.tuttifrutti.app.MainActivity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ver partidas"
-        android:id="@+id/viewGames"
-        android:layout_below="@+id/showRoundResult"
-        android:onClick="viewGames" />
+
 
 
 
@@ -40,6 +34,14 @@
         android:id="@+id/showRoundResult"
         android:layout_below="@+id/createGame"
         android:onClick="showRoundResult" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver partidas"
+        android:id="@+id/viewGames"
+        android:layout_below="@+id/showGameResult"
+        android:onClick="viewGames" />
 
     <Button
         android:layout_width="wrap_content"

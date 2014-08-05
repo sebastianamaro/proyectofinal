@@ -57,6 +57,8 @@ gameSchema.methods.setValues = function setValues(game){
   this.oponentsType = game.oponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.addPlayer(game.player);
+
+  console.log('agregando : ' + this.players);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(registrationId){
@@ -75,7 +77,11 @@ gameSchema.methods.addPlayer = function addPlayer(registrationId){
             console.log('ERROR: ' + err);
           }
         });
+
   });
+  foundPlayer = new Player();
+  foundPlayer.setValues(registrationId);
+  this.players.push(foundPlayer);
 }
 
 gameSchema.methods.sendNotifications = function sendNotifications(round, registrationId, callback){
