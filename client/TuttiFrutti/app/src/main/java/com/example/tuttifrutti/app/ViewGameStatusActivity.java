@@ -34,10 +34,15 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.list);
 
-
+       setActivityBackgroundColor(android.R.color.black);
 
         new ViewGameStatusAsyncTaks().execute();
 
+    }
+
+    public void setActivityBackgroundColor(int color) {
+        View view = this.getWindow().getDecorView();
+        view.setBackgroundColor(color);
     }
 
     @Override
