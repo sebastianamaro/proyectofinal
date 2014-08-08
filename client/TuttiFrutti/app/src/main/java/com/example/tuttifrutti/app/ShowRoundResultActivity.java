@@ -14,11 +14,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiAPI;
-import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
-import com.example.TuttiFruttiCore.SummarizedPlay;
+import com.example.TuttiFruttiCore.PlayScoreSummary;
 
 import java.util.ArrayList;
 
@@ -69,7 +67,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
             int k = 0;
 
-            for (SummarizedPlay onePlay:result.get(0).getPlays())
+            for (PlayScoreSummary onePlay:result.get(0).getPlays())
             {
                 categories[k] = onePlay.getCategory();
                 k++;
@@ -97,8 +95,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                     }
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
-                    SummarizedPlay linePlayForCategory = result.get(j).getPlays().get(i);
-                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScore());
+                    PlayScoreSummary linePlayForCategory = result.get(j).getPlays().get(i);
+                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScoreInfo().getScore());
                 }
 
                 //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores

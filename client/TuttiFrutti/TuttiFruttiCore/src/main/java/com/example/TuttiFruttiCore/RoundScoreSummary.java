@@ -9,14 +9,13 @@ public class RoundScoreSummary {
     private Player player;
     private Integer score;
     private Boolean best;
-    private ArrayList<SummarizedPlay> plays;
+    private ArrayList<PlayScoreSummary> plays;
 
-
-    public ArrayList<SummarizedPlay> getPlays() {
+    public ArrayList<PlayScoreSummary> getPlays() {
         return plays;
     }
 
-    public void setPlays(ArrayList<SummarizedPlay> plays) {
+    public void setPlays(ArrayList<PlayScoreSummary> plays) {
         this.plays = plays;
     }
 

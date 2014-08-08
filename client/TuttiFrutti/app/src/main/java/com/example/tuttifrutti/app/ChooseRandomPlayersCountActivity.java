@@ -3,24 +3,21 @@ package com.example.tuttifrutti.app;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import com.example.TuttiFruttiAPI;
-import com.example.TuttiFruttiCore.GameSettings;
+import com.example.TuttiFruttiCore.Game;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.example.tuttifrutti.app.R;
 
 public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
-    public GameSettings gameSettings;
+    public Game gameSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +29,26 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         boolean oponents = intent.getBooleanExtra(CreateGameActivity.OPONENTS_EXTRA_MESSAGE, false);
         boolean categories = intent.getBooleanExtra(CreateGameActivity.CATEGORIES_EXTRA_MESSAGE, false);
 
-        gameSettings = new GameSettings(mode, oponents, categories,1);
+        String modeString;
+        String oponentsString;
+        String categoriesString;
+
+        if(mode)
+            modeString="ONLINE";
+        else
+            modeString="OFFLINE";
+
+        if(oponents)
+            oponentsString="RANDOM";
+        else
+            oponentsString="FRIENDS";
+
+        if(categories)
+            categoriesString="FIXED";
+        else
+            categoriesString="FREE";
+
+        gameSettings = new Game(modeString, oponentsString, categoriesString,1);
 
         NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
         np.setMaxValue(4);
@@ -70,15 +86,15 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
     }
 
     //todo: meter esto en una clase
-    private class CreateGameTask extends AsyncTask<GameSettings,Void, Void> {
+    private class CreateGameTask extends AsyncTask<Game,Void, Void> {
 
         AlertDialog ad;
         TuttiFruttiAPI api;
 
         @Override
-        protected Void doInBackground(GameSettings... settings) {
+        protected Void doInBackground(Game... settings) {
 
-            GameSettings gs=settings[0];
+            Game gs=settings[0];
             TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
 
             PlayServicesHelper helper = new PlayServicesHelper();
@@ -91,7 +107,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
             }
 
 
-            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(),gs.getRandomPlayersCount(),regid);
+            api.createGame(gs.getMode(),gs.getOpponentsType(),gs.getCategoriesType(),gs.getRandomPlayersCount(),regid);
             return null;
         }
 

@@ -13,11 +13,11 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.TuttiFruttiCore.GameResult;
+import com.example.TuttiFruttiCore.GameScoreSummary;
 
 import com.example.TuttiFruttiCore.Player;
-import com.example.TuttiFruttiCore.RoundResult;
-import com.example.TuttiFruttiCore.RoundScore;
+import com.example.TuttiFruttiCore.GameRoundScoreSummary;
+import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiAPI;
 
 public class ShowGameResultActivity extends ActionBarActivity {
@@ -49,22 +49,22 @@ public class ShowGameResultActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameResult> {
+    public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameScoreSummary> {
         private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
         TuttiFruttiAPI api;
 
         @Override
-        protected GameResult doInBackground(Void... filePlays) {
+        protected GameScoreSummary doInBackground(Void... filePlays) {
             //return api.getRoundScore(gameId, roundId);
             return api.getGameScores(1);
         }
 
         @Override
-        protected void onPostExecute(GameResult result) {
+        protected void onPostExecute(GameScoreSummary result) {
             TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
             table.setGravity(Gravity.TOP);
 
-            RoundResult roundRes;
+            GameRoundScoreSummary roundRes;
 
             TableRow contentRow;
             TableRow totalScoreRow=new TableRow(getApplicationContext());
@@ -87,7 +87,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 AddHeaderTextView(contentRow, "Ronda " + Integer.toString(i+1));
 
                 for (int j=0;j<roundRes.getScores().size();j++) {
-                    RoundScore score = roundRes.getScores().get(j);
+                    ScoreInfo score = roundRes.getScores().get(j);
                     AddContentTextView(contentRow, score);
                 }
 
@@ -114,7 +114,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
         }
     }
 
-    private void AddTotalTextView(TableRow row, RoundScore p) {
+    private void AddTotalTextView(TableRow row, ScoreInfo p) {
         TextView text=new TextView(this.getApplicationContext());
         if (p==null)
             text.setText("TOTAL");
@@ -146,7 +146,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddContentTextView(TableRow row, RoundScore p) {
+    private void AddContentTextView(TableRow row, ScoreInfo p) {
         TextView text=new TextView(getApplicationContext());
 
         if (p==null)

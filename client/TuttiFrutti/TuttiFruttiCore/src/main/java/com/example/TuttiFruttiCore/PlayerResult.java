@@ -6,13 +6,13 @@ import java.util.ArrayList;
  * Created by root on 8/4/14.
  */
 public class PlayerResult {
-    private ArrayList<RoundScore> scores;
+    private ArrayList<ScoreInfo> scores;
 
-    public ArrayList<RoundScore> getScores() {
+    public ArrayList<ScoreInfo> getScores() {
         return scores;
     }
 
-    public void setScores(ArrayList<RoundScore> scores) {
+    public void setScores(ArrayList<ScoreInfo> scores) {
         this.scores = scores;
     }
 

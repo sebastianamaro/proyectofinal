@@ -5,9 +5,9 @@ import java.util.ArrayList;
 /**
  * Created by Nituguivi on 03/08/2014.
  */
-public class GameResult {
+public class GameScoreSummary {
     private ArrayList<Player> players;
-    private ArrayList<RoundResult> roundsResult;
+    private ArrayList<GameRoundScoreSummary> roundsResult;
     private ArrayList<PlayerResult> playerResult;
 
     public ArrayList<Player> getPlayers() {
@@ -18,11 +18,11 @@ public class GameResult {
         this.players = players;
     }
 
-    public ArrayList<RoundResult> getRoundsResult() {
+    public ArrayList<GameRoundScoreSummary> getRoundsResult() {
         return roundsResult;
     }
 
-    public void setRoundsResult(ArrayList<RoundResult> roundsResult) {
+    public void setRoundsResult(ArrayList<GameRoundScoreSummary> roundsResult) {
         this.roundsResult = roundsResult;
     }
     public ArrayList<PlayerResult> getPlayerResult() {

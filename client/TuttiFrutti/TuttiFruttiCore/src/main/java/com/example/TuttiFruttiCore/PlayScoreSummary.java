@@ -3,21 +3,13 @@ package com.example.TuttiFruttiCore;
 /**
  * Created by Sebastian on 04/08/2014.
  */
-public class SummarizedPlay {
+
+public class PlayScoreSummary {
     private String result;
-    private Integer score;
+    private ScoreInfo scoreInfo;
     private String word;
     private String category;
-    private Boolean best;
 
-
-    public Boolean getBest() {
-        return best;
-    }
-
-    public void setBest(Boolean best) {
-        this.best = best;
-    }
 
     public String getCategory() {
         return category;
@@ -35,12 +27,12 @@ public class SummarizedPlay {
         this.word = word;
     }
 
-    public Integer getScore() {
-        return score;
+    public ScoreInfo getScoreInfo() {
+        return scoreInfo;
     }
 
-    public void setScore(Integer score) {
-        this.score = score;
+    public void setScoreInfo(ScoreInfo score) {
+        this.scoreInfo = score;
     }
 
     public String getResult() {

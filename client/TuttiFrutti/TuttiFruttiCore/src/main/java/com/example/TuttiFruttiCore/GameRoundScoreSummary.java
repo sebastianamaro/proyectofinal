@@ -1,14 +1,12 @@
 package com.example.TuttiFruttiCore;
 
-import com.example.TuttiFruttiCore.RoundScore;
-
 import java.util.ArrayList;
 
 /**
  * Created by Nituguivi on 03/08/2014.
  */
-public class RoundResult {
-    private ArrayList<RoundScore> scores;
+public class GameRoundScoreSummary{
+    private ArrayList<ScoreInfo> scores;
     private int roundId;
 
 
@@ -20,11 +18,11 @@ public class RoundResult {
         this.roundId = roundId;
     }
 
-    public ArrayList<RoundScore> getScores() {
+    public ArrayList<ScoreInfo> getScores() {
         return scores;
     }
 
-    public void setScores(ArrayList<RoundScore> scores) {
+    public void setScores(ArrayList<ScoreInfo> scores) {
         this.scores = scores;
     }
 }

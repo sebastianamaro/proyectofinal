@@ -1,6 +1,7 @@
 package com.example.TuttiFruttiCore;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -10,9 +11,9 @@ public class FinishedRound {
     private int gameId;
     private int roundId;
     private Date startTime;
-    private Play[] plays;
+    private ArrayList<Play> plays;
 
-    public FinishedRound(int gameId, int roundId, Date startTime, Play[] plays){
+    public FinishedRound(int gameId, int roundId, Date startTime, ArrayList<Play> plays){
         this.gameId=gameId;
         this.roundId=roundId;
         this.startTime=startTime;
@@ -31,7 +32,7 @@ public class FinishedRound {
         return startTime;
     }
 
-    public Play[] getPlays() {
+    public ArrayList<Play> getPlays() {
         return plays;
     }
 }

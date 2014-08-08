@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.example.TuttiFruttiAPI;
-import com.example.TuttiFruttiCore.GameSettings;
+import com.example.TuttiFruttiCore.Game;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 
 
@@ -62,23 +62,27 @@ public class CreateGameActivity extends ActionBarActivity {
             intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
             startActivity(intent);
         }else {
+
+
+
             //todo: llamar a la actividad de elegir amigos
-            GameSettings gs = new GameSettings(mode, oponents, categories,-1);
+            Game gs = new Game();
+            gs.setSettings(mode, oponents, categories);
             CreateGameTask task = new CreateGameTask();
             task.execute(gs);
         }
     }
 
     //todo: meter esto en una clase
-    private class CreateGameTask extends AsyncTask<GameSettings,Void, Void> {
+    private class CreateGameTask extends AsyncTask<Game,Void, Void> {
 
         AlertDialog ad;
         TuttiFruttiAPI api;
 
         @Override
-        protected Void doInBackground(GameSettings... settings) {
+        protected Void doInBackground(Game... settings) {
 
-            GameSettings gs=settings[0];
+            Game gs=settings[0];
 
             PlayServicesHelper helper = new PlayServicesHelper();
             String regid = "";
@@ -90,7 +94,7 @@ public class CreateGameActivity extends ActionBarActivity {
             }
 
 
-            api.createGame(gs.getMode(),gs.getOpponents(),gs.getCategories(), gs.getRandomPlayersCount(),regid);
+            api.createGame(gs.getMode(),gs.getOpponentsType(),gs.getCategoriesType(), gs.getRandomPlayersCount(),regid);
             return null;
         }
 

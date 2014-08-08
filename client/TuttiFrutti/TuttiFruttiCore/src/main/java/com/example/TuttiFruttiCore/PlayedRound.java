@@ -4,13 +4,13 @@ package com.example.TuttiFruttiCore;
  * Created by Sebastian on 21/06/2014.
  */
 public class PlayedRound extends Round {
-    private RoundLine line;
+    private Line line;
 
-    public RoundLine getLine() {
+    public Line getLine() {
         return line;
     }
 
-    public void setLine(RoundLine line) {
+    public void setLine(Line line) {
         this.line = line;
     }
 }

@@ -3,7 +3,7 @@ package com.example.TuttiFruttiCore;
 /**
  * Created by Nituguivi on 03/08/2014.
  */
-public class RoundScore {
+public class ScoreInfo {
     private int score;
     private boolean best;
 

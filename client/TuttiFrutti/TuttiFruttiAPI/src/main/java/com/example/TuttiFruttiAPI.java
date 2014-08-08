@@ -4,11 +4,11 @@ import android.os.StrictMode;
 
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Game;
-import com.example.TuttiFruttiCore.GameResult;
+import com.example.TuttiFruttiCore.GameScoreSummary;
 import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
-import com.example.TuttiFruttiCore.RoundLine;
+import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +50,7 @@ public class TuttiFruttiAPI {
     }
 
 
-    public void createGame(boolean gameMode, boolean opponentsMode, boolean categoriesMode, int randomPlayersCount ,String registrationId)
+    public void createGame(String gameMode, String opponentsMode, String categoriesMode, int randomPlayersCount ,String registrationId)
     {
         String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
@@ -58,25 +58,8 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-        Game g= new Game();
-        g.setPlayer(registrationId);
-
-        if(gameMode)
-            g.setMode("ONLINE");
-        else
-            g.setMode("OFFLINE");
-
-        if(opponentsMode)
-            g.setOpponentsType("RANDOM");
-        else
-            g.setOpponentsType("FRIENDS");
-
-        if(categoriesMode)
-            g.setCategoriesType("FIXED");
-        else
-            g.setCategoriesType("FREE");
-
-        g.setRandomPlayersCount(randomPlayersCount);
+        Game g= new Game(gameMode,opponentsMode,categoriesMode,randomPlayersCount);
+        g.setOwner(registrationId);
 
         ResponseEntity<String> resp=null;
         try {
@@ -97,17 +80,17 @@ public class TuttiFruttiAPI {
         restTemplate.put(url, fr);
     }
 
-    public GameResult getGameScores(int gameId)
+    public GameScoreSummary getGameScores(int gameId)
     {
         String url= serverURL+"game/"+gameId+"/scores";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        return restTemplate.getForObject(url,GameResult.class);
+        return restTemplate.getForObject(url,GameScoreSummary.class);
     }
 
-    public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, Play[] plays)
+    public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, ArrayList<Play> plays)
     {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
@@ -117,9 +100,12 @@ public class TuttiFruttiAPI {
         pr.setStatus("CLOSED");
         pr.setRoundId(roundId);
 
-        RoundLine rl= new RoundLine();
-        rl.setPlayer(playerId);
-        rl.setStartTimestamp(startTimeStamp);
+        Player p=new Player();
+        p.setRegistrationId(playerId);
+
+        Line rl= new Line();
+        rl.setPlayer(p);
+        rl.setTimestamp(startTimeStamp);
         rl.setPlays(plays);
 
         pr.setLine(rl);
