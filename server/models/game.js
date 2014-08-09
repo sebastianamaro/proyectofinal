@@ -127,6 +127,7 @@ gameSchema.methods.getRoundResults = function(){
                       'scores' : aRound.getSummarizedScoresForPlayers(this.players)
                     });
   };
+  
   return roundResults;
 }
 gameSchema.methods.getPlayerResults = function(partialScores){

@@ -72,15 +72,14 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
             AddHeaderTextView(playersRow, "Rondas");
 
-            for (Player p : result.getPlayers())
+            for (String p : result.getPlayersName())
             {
-                AddHeaderTextView(playersRow, p.getName());
+                AddHeaderTextView(playersRow, p);
             }
 
             table.addView(playersRow);
 
-            //-1 porque la ultima son los scores totales
-            for (int i=0;i<result.getRoundsResult().size()-1;i++)
+            for (int i=0;i<result.getRoundsResult().size();i++)
             {
                 contentRow=new TableRow(getApplicationContext());
                 roundRes = result.getRoundsResult().get(i);
