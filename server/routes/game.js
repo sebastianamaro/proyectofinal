@@ -107,8 +107,13 @@ module.exports = function(app) {
       game.save(function(err) {
         if(!err) {
           console.log('Created game with gameId '+largerId);
+          game.sendInvitations( function(err){
+            if (err){
+              console.log('ERROR: ' + err);
+            }    
+          });
         } else {
-          console.log('ERROR: ' + err);
+          console.log('ERROR en createGame: ' + err);
         }
       });
       return res.send('Game started with gameId '+largerId, 200);

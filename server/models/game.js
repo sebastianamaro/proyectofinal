@@ -12,8 +12,9 @@ var gameSchema = new Schema({
   	categories: [ { type: String } ],
     mode : { type: String },
     categoriesType: { type: String },
-    oponentsType: { type: String },
+    opponentsType: { type: String },
     players: [ Player.schema ],
+    creator: [ Player.schema ],
     randomPlayersCount: { type: Number }
 });
 
@@ -54,21 +55,23 @@ gameSchema.methods.addRound = function addRound(round){
 gameSchema.methods.setValues = function setValues(game){
   this.mode = game.mode;
   this.categoriesType = game.categoriesType;
-  this.oponentsType = game.oponentsType;
+  this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.addPlayer(game.player);
-
 }
 
 gameSchema.methods.addPlayer = function addPlayer(registrationId){
   var gameId = this.gameId;
   Player.findOne({ 'registrationId': registrationId}, function (err, foundPlayer){
+    if (err){
+      console.log('ERROR: ' + err);
+      return err;
+    } 
     if (!foundPlayer){
       foundPlayer = new Player();
     }
-    //TODO validate it doesn't already exist in game
     foundPlayer.setValues(registrationId);
-    foundPlayer.games.push(gameId);
+    foundPlayer.addGame(gameId);
     foundPlayer.save(function(err) {
           if(!err) {
             console.log('Inserted new player with registrationId '+foundPlayer.registrationId);
@@ -81,9 +84,10 @@ gameSchema.methods.addPlayer = function addPlayer(registrationId){
   foundPlayer = new Player();
   foundPlayer.setValues(registrationId);
   this.players.push(foundPlayer);
+  this.creator.push(foundPlayer);
 }
 
-gameSchema.methods.sendNotifications = function sendNotifications(round, registrationId, callback){
+gameSchema.methods.sendNotifications = function (round, registrationId, callback){
     console.log("entra a send");
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
@@ -157,6 +161,22 @@ gameSchema.methods.getPlayerResults = function(partialScores){
     }
   }
   return playerResults;
+}
+gameSchema.methods.sendInvitations = function(callback){
+  if (this.opponentsType !== 'RANDOM'){
+    callback();
+  } else {
+    var gameId = this.gameId;
+    var creator = this.creator[0];
+    Player.find({}, function (err, players){
+      console.log(players);
+      for(var iPlayer in players ){
+        var player = players[iPlayer];
+        player.sendInvitationToGameIfPossible(gameId, creator);
+      }
+    });
+    callback();
+  }
 }
 
 module.exports = mongoose.model('Game', gameSchema);
