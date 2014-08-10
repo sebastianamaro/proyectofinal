@@ -261,4 +261,5 @@ gameSchema.methods.asSummarized = function(){
       'selectedCategories':  this.selectedCategories
   };
 }
+
 module.exports = mongoose.model('Game', gameSchema);
