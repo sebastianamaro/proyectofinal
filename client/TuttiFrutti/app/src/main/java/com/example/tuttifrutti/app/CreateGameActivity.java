@@ -51,9 +51,9 @@ public class CreateGameActivity extends ActionBarActivity {
 
     public void createGame(View view) {
 
-        boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
-        boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
-        boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
+        boolean mode = ((Switch) findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
+        boolean oponents = ((Switch) findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
+        boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
 
         if (oponents) {
             Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
@@ -61,10 +61,14 @@ public class CreateGameActivity extends ActionBarActivity {
             intent.putExtra(OPONENTS_EXTRA_MESSAGE, oponents);
             intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
             startActivity(intent);
-        }else {
-
-
-
+        } else if (categories){
+            Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+            intent.putExtra(MODE_EXTRA_MESSAGE, mode);
+            intent.putExtra(OPONENTS_EXTRA_MESSAGE, oponents);
+            intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
+            startActivity(intent);
+        }
+        else{
             //todo: llamar a la actividad de elegir amigos
             Game gs = new Game();
             gs.setSettings(mode, oponents, categories);
