@@ -16,6 +16,7 @@ app.configure(function () {
 app.put('/game/:id/round', alterRound); 
 app.get('/game/:id/round', getRound);
 app.post('/game', createGame); 
+app.put('/game/:id', respondInvitation); 
 app.get('/game/:id/round/:roundId/scores', getRoundScores);
 app.get('/player/:id/game', getGamesForPlayer);
 app.get('/game/:id/scores', getGameScores);

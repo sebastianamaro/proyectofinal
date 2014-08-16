@@ -108,13 +108,13 @@ gameSchema.methods.sendNotifications = function (round, registrationId, callback
     notification.send(function(err){
       if (err){
         console.log("Error when sendNotifications");
-        callback(new Error("Error when sendNotifications"));
+        return callback("Error when sendNotifications");
       } else {
         round.setNotificationSentForPlayer(player);
       }
     });
   }
-  callback();
+  return callback();
 }
 gameSchema.methods.getPlayerNames = function(){
   var playerNames = [];
@@ -166,7 +166,7 @@ gameSchema.methods.getPlayerResults = function(partialScores){
 }
 gameSchema.methods.sendInvitations = function(callback){
   if (this.opponentsType !== 'RANDOM'){
-    callback();
+    return callback();
   } else {
     var gameId = this.gameId;
     var creator = this.creator[0];
@@ -177,8 +177,77 @@ gameSchema.methods.sendInvitations = function(callback){
         player.sendInvitationToGameIfPossible(gameId, creator);
       }
     });
-    callback();
+    return callback();
   }
 }
-
+gameSchema.methods.removeAllInvitations = function(){
+  var gameId = this.gameId;
+  Player.find({ invitations: gameId }, function (err, players){
+    for(var iPlayer in players ){
+      var player = players[iPlayer];
+      player.removeInvitation(gameId);
+      player.save(function(err) {
+        if(err) {
+          console.log("ERROR: save player failed when removeAllInvitations. "+err);
+        } 
+      });
+    }
+  });
+}
+gameSchema.methods.acceptInvitation = function(request, callback){
+  var game = this;
+  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+    if (err) {
+      console.log("ERROR: find player failed. "+err);
+      return callback("ERROR: find player failed. "+err);
+    }
+    if (!player){
+      console.log("ERROR: player not found");
+      return callback("ERROR: player not found"); 
+    }
+    if (game.opponentsType == 'RANDOM'){
+      game.players.push(player);
+      if (game.randomPlayersCount + 1 == game.players.length){
+        game.status = "PLAYING";  
+        game.removeAllInvitations();        
+      }
+      player.removeInvitation(game.gameId);
+      game.save(function(err) {
+        if(err) {
+          return callback("ERROR: save game failed. "+err);
+        } 
+      });
+      player.save(function(err) {
+        if(err) {
+          return callback("ERROR: save player failed after removeInvitation. "+err);
+        } 
+      });
+      console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
+      return callback();
+    }
+  });
+}
+gameSchema.methods.rejectInvitation = function(request, callback){
+  var game = this;
+  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+    if (err) {
+      console.log("ERROR: find player failed. "+err);
+      return callback("ERROR: find player failed. "+err);
+    }
+    if (!player){
+      console.log("ERROR: player not found");
+      return callback("ERROR: player not found"); 
+    }
+    if (game.opponentsType == 'RANDOM'){
+      player.removeInvitation(game.gameId);
+      player.save(function(err) {
+        if(err) {
+          return callback("ERROR: save player failed. "+err);
+        } 
+        console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
+      });
+      return callback();
+    }
+  });  
+}
 module.exports = mongoose.model('Game', gameSchema);
