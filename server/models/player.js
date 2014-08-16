@@ -67,5 +67,11 @@ playerSchema.methods.setNotificationSentForGame = function(gameId){
 playerSchema.methods.addGame = function(gameId){
 	this.games.push(gameId);
 }
+playerSchema.methods.removeInvitation = function(gameId){
+	var index = this.invitations.indexOf(gameId);
+    if (index > -1) {
+        this.invitations.splice(index, 1);
+    }
+}
 module.exports = mongoose.model('Player', playerSchema);
 
