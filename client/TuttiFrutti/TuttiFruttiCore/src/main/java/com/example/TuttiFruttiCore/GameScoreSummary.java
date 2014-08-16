@@ -10,11 +10,12 @@ public class GameScoreSummary {
     private ArrayList<GameRoundScoreSummary> roundsResult;
     private ArrayList<PlayerResult> playerResult;
 
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
+    public void setPlayersName(ArrayList<Player> players) {
         this.players = players;
     }
 

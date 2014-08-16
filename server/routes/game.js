@@ -140,9 +140,10 @@ module.exports = function(app) {
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
       var roundResults = game.getRoundResults();
-      var gameScoresMap = { 'players': game.getPlayerNames(),
+      var gameScoresMap = { 'playersName': game.getPlayerNames(),
                             'roundsResult': roundResults,
                             'playerResult': game.getPlayerResults(roundResults) };
+
       res.send(gameScoresMap, 200);            
      });
   }
