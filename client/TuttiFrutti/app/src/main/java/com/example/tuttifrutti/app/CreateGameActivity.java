@@ -57,6 +57,7 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
 
         Game gs = new Game();
+        gs.setSettings(mode, oponents, categories);
 
         if (oponents) {
             Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
@@ -70,7 +71,7 @@ public class CreateGameActivity extends ActionBarActivity {
         }
         else{
             //todo: llamar a la actividad de elegir amigos
-            gs.setSettings(mode, oponents, categories);
+
             CreateGameTask task = new CreateGameTask();
             task.execute(gs);
         }
