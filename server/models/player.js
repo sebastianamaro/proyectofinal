@@ -77,7 +77,5 @@ playerSchema.methods.removeInvitation = function(gameId){
     }
 }
 
-
-
 module.exports = mongoose.model('Player', playerSchema);
 
