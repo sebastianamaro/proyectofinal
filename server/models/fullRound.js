@@ -18,7 +18,7 @@ fullRoundSchema.methods.fillData = function fillData(game, round) {
   this.gameId = game.gameId;
   this.categories = game.categories;
   this.gameStatus = game.status;
-
+  console.log('categories: ' + this.categories);
 }
 
 module.exports = mongoose.model('FullRound', fullRoundSchema);

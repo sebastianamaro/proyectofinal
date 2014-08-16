@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:text="Ver partidas"
         android:id="@+id/viewGames"
-        android:layout_below="@+id/showGameResult"
+        android:layout_below="@+id/showRoundResult"
         android:onClick="viewGames" />
 
     <Button
@@ -48,7 +48,9 @@
         android:layout_height="wrap_content"
         android:text="Ver resultados de partida"
         android:id="@+id/showGameResult"
-        android:layout_below="@+id/showRoundResult"
+        android:layout_below="@+id/viewGames"
         android:onClick="showGameResult" />
+
+
 
 </RelativeLayout>

@@ -50,7 +50,7 @@ public class TuttiFruttiAPI {
     }
 
 
-    public void createGame(String gameMode, String opponentsMode, String categoriesMode, int randomPlayersCount ,String registrationId)
+    public void createGame(Game game)
     {
         String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
@@ -58,12 +58,10 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-        Game g= new Game(gameMode,opponentsMode,categoriesMode,randomPlayersCount);
-        g.setOwner(registrationId);
 
         ResponseEntity<String> resp=null;
         try {
-           resp=restTemplate.postForEntity(url, g, null);
+           resp=restTemplate.postForEntity(url, game, null);
         } catch (Exception e) {
             e.printStackTrace();
         }

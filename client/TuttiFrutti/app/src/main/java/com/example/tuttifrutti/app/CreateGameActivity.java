@@ -4,13 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
-
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
@@ -51,23 +52,26 @@ public class CreateGameActivity extends ActionBarActivity {
 
     public void createGame(View view) {
 
-        boolean mode = ((Switch)findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
-        boolean oponents = ((Switch)findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
-        boolean categories = ((Switch)findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
+        boolean mode = ((Switch) findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
+        boolean oponents = ((Switch) findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
+        boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
+
+        Game gs = new Game();
+        gs.setSettings(mode, oponents, categories);
 
         if (oponents) {
             Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
-            intent.putExtra(MODE_EXTRA_MESSAGE, mode);
-            intent.putExtra(OPONENTS_EXTRA_MESSAGE, oponents);
-            intent.putExtra(CATEGORIES_EXTRA_MESSAGE, categories);
+            intent.putExtra("gameSettings", gs);
             startActivity(intent);
-        }else {
-
-
-
+        } else if (categories){
+            //todo: esto no deberia estar aca, se debe llamar desde la actividad de elegir amigos
+            Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+            intent.putExtra("gameSettings", gs);
+            startActivity(intent);
+        }
+        else{
             //todo: llamar a la actividad de elegir amigos
-            Game gs = new Game();
-            gs.setSettings(mode, oponents, categories);
+
             CreateGameTask task = new CreateGameTask();
             task.execute(gs);
         }
@@ -94,7 +98,8 @@ public class CreateGameActivity extends ActionBarActivity {
             }
 
 
-            api.createGame(gs.getMode(),gs.getOpponentsType(),gs.getCategoriesType(), gs.getRandomPlayersCount(),regid);
+            gs.setOwner(regid);
+            api.createGame(gs);
             return null;
         }
 
