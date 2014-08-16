@@ -79,7 +79,6 @@ module.exports = function(app) {
             }
 
             game.save(function(err) {
-              console.log("pasa por save");
               if(!err) {
                 console.log('Finished round');
               } else {
@@ -101,18 +100,50 @@ module.exports = function(app) {
       }
       var game = new Game();
       game.gameId = largerId;
-      game.status = "PLAYING";
       game.categories = ["ANIMALES", "COLORES"];
+      game.status = 'WAITINGFORPLAYERS';
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {
           console.log('Created game with gameId '+largerId);
+          game.sendInvitations( function(err){
+            if (err){
+              console.log('ERROR en sendInvitations: ' + err);
+            }    
+          });
         } else {
-          console.log('ERROR: ' + err);
+          console.log('ERROR en createGame: ' + err);
         }
       });
       return res.send('Game started with gameId '+largerId, 200);
      });
+  }
+  respondInvitation = function(req, res){
+    Game.findOne({ 'gameId': req.params.id , status: 'WAITINGFORPLAYERS'}, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);                
+      var response = req.body.response;
+      if (response == 'ACCEPTED'){
+        game.acceptInvitation(req.body, function(err){
+          if (err){
+            console.log(err);
+            res.send('Invitation cant be accepted',500);
+          } else{
+            res.send('Invitation accepted',200);
+          }
+        });
+      } else if (response == 'REJECTED'){
+        game.rejectInvitation(req.body, function(err){
+          if (err){
+            console.log(err);
+          } 
+          res.send('Invitation rejected',200);
+        });
+      } else{
+        res.send('Incomplete request',500);
+      }
+
+    });
   }
   getRoundScores = function(req, res){
     Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
