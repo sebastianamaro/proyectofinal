@@ -25,30 +25,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
 
-        boolean mode = intent.getBooleanExtra(CreateGameActivity.MODE_EXTRA_MESSAGE, false);
-        boolean oponents = intent.getBooleanExtra(CreateGameActivity.OPONENTS_EXTRA_MESSAGE, false);
-        boolean categories = intent.getBooleanExtra(CreateGameActivity.CATEGORIES_EXTRA_MESSAGE, false);
-
-        String modeString;
-        String oponentsString;
-        String categoriesString;
-
-        if(mode)
-            modeString="ONLINE";
-        else
-            modeString="OFFLINE";
-
-        if(oponents)
-            oponentsString="RANDOM";
-        else
-            oponentsString="FRIENDS";
-
-        if(categories)
-            categoriesString="FIXED";
-        else
-            categoriesString="FREE";
-
-        gameSettings = new Game(modeString, oponentsString, categoriesString,1);
+        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
 
         NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
         np.setMaxValue(4);
@@ -81,58 +58,11 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
 
         gameSettings.setRandomPlayersCount(np.getValue());
-        CreateGameTask task = new CreateGameTask();
-        task.execute(gameSettings);
+
+        if (gameSettings.getCategoriesType()=="FIXED") {
+            Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+            intent.putExtra("gameSettings", gameSettings);
+            startActivity(intent);
+        }//else: llamar a choose free categories
     }
-
-    //todo: meter esto en una clase
-    private class CreateGameTask extends AsyncTask<Game,Void, Void> {
-
-        AlertDialog ad;
-        TuttiFruttiAPI api;
-
-        @Override
-        protected Void doInBackground(Game... settings) {
-
-            Game gs=settings[0];
-            TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
-
-            PlayServicesHelper helper = new PlayServicesHelper();
-            String regid = "";
-            if (helper.checkPlayServices(ChooseRandomPlayersCountActivity.this))
-            {
-                regid = helper.getRegistrationId(getApplicationContext());
-                if (regid == "")
-                    helper.registerGCMInBackground(getApplicationContext());
-            }
-
-
-            api.createGame(gs.getMode(),gs.getOpponentsType(),gs.getCategoriesType(),gs.getRandomPlayersCount(),regid);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-
-            ad.setCancelable(false); // This blocks the 'BACK' button
-            ad.setMessage("Se ha creado la partida!");
-            ad.setButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                }
-            });
-            ad.show();
-
-        }
-
-        @Override
-        protected void onPreExecute(){
-            ad=new AlertDialog.Builder(ChooseRandomPlayersCountActivity.this).create();
-
-            api=new TuttiFruttiAPI(getString(R.string.server_url));
-        }
-    }
-
 }

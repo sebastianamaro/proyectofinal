@@ -56,6 +56,8 @@ gameSchema.methods.setValues = function setValues(game){
   this.categoriesType = game.categoriesType;
   this.oponentsType = game.oponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
+  console.log("set values: " + game.selectedCategories);
+  this.categories = game.selectedCategories;
   this.addPlayer(game.owner);
 
 }

@@ -72,9 +72,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
             AddHeaderTextView(playersRow, "Rondas");
 
-            for (String p : result.getPlayersName())
+            for (Player p : result.getPlayers())
             {
-                AddHeaderTextView(playersRow, p);
+                AddHeaderTextView(playersRow, p.getName());
             }
 
             table.addView(playersRow);

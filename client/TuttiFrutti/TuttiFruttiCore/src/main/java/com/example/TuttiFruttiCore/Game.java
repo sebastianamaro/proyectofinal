@@ -1,14 +1,18 @@
 package com.example.TuttiFruttiCore;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by Sebastian on 21/06/2014.
  */
-public class Game {
+public class Game implements Serializable {
     private String mode;
     private String categoriesType;
     private String opponentsType;
     private String owner;
     private int randomPlayersCount;
+    private ArrayList<String> selectedCategories;
 
     public Game(){}
     public Game(String mode, String categoriesType, String opponentsType, int randomPlayersCount){
@@ -59,4 +63,11 @@ public class Game {
     }
 
     public int getRandomPlayersCount() { return randomPlayersCount;}
+    public ArrayList<String> getSelectedCategories() {
+        return selectedCategories;
+    }
+
+    public void setSelectedCategories(ArrayList<String> selectedCategories) {
+        this.selectedCategories = selectedCategories;
+    }
 }

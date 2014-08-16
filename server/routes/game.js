@@ -102,7 +102,7 @@ module.exports = function(app) {
       var game = new Game();
       game.gameId = largerId;
       game.status = "PLAYING";
-      game.categories = ["ANIMALES", "COLORES"];
+      console.log("req.body " + req.body);
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {

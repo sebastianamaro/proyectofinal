@@ -1,7 +1,11 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +21,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Game;
+import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import com.example.tuttifrutti.app.R;
 
 import java.util.ArrayList;
@@ -24,17 +31,17 @@ import java.util.List;
 
 public class ChooseControlledCategoriesActivity extends Activity {
     MyCustomAdapter dataAdapter = null;
-
+    Game gameSettings;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_controlled_categories);
 
+        Intent intent = getIntent();
+        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
+
         //Generate list View from ArrayList
         displayListView();
-
-        checkButtonClick();
-
     }
 
     private void displayListView() {
@@ -63,19 +70,6 @@ public class ChooseControlledCategoriesActivity extends Activity {
         ListView listView = (ListView) findViewById(R.id.categoryList);
         // Assign adapter to ListView
         listView.setAdapter(dataAdapter);
-
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                // When clicked, show a toast with the TextView text
-                Category category = (Category) parent.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(),
-                        "Clicked on Row: " + category,
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-
     }
 
     private class MyCustomAdapter extends ArrayAdapter<Category> {
@@ -113,10 +107,6 @@ public class ChooseControlledCategoriesActivity extends Activity {
                     public void onClick(View v) {
                         CheckBox cb = (CheckBox) v ;
                         Category category = (Category) cb.getTag();
-                        Toast.makeText(getApplicationContext(),
-                                "Clicked on Checkbox: " + cb.getText() +
-                                        " is " + cb.isChecked(),
-                                Toast.LENGTH_LONG).show();
                         category.setSelected(cb.isChecked());
                     }
                 });
@@ -136,32 +126,26 @@ public class ChooseControlledCategoriesActivity extends Activity {
 
     }
 
-    private void checkButtonClick() {
-
-
-        Button myButton = (Button) findViewById(R.id.findSelected);
-        myButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                StringBuffer responseText = new StringBuffer();
-                responseText.append("The following were selected...\n");
-
-                ArrayList<Category> categoryList = dataAdapter.categoryList;
-                for(int i=0;i<categoryList.size();i++){
-                    Category category = categoryList.get(i);
-                    if(category.isSelected()){
-                        responseText.append("\n" + category.getName());
-                    }
-                }
-
-                Toast.makeText(getApplicationContext(),
-                        responseText, Toast.LENGTH_LONG).show();
-
+     public void addCategoriesToGame(View v)
+    {
+        ArrayList<String> selectedCategories = new ArrayList<String>();
+        ArrayList<Category> categoryList = dataAdapter.categoryList;
+        for(int i=0;i<categoryList.size();i++){
+            Category category = categoryList.get(i);
+            if(category.isSelected()){
+                selectedCategories.add(category.getName());
             }
-        });
+        }
 
+        if (selectedCategories.size() >= 4) {
+            gameSettings.setSelectedCategories(selectedCategories);
+
+            CreateGameTask task = new CreateGameTask();
+            task.execute(gameSettings);
+        }else
+            Toast.makeText(getApplicationContext(),
+                    "Debe seleccionar al menos 4 categorias",
+                    Toast.LENGTH_LONG).show();
     }
 
     public class Category {
@@ -189,5 +173,55 @@ public class ChooseControlledCategoriesActivity extends Activity {
             this.selected = selected;
         }
 
+    }
+
+    //todo: meter esto en una clase
+    private class CreateGameTask extends AsyncTask<Game,Void, Void> {
+
+        AlertDialog ad;
+        TuttiFruttiAPI api;
+
+        @Override
+        protected Void doInBackground(Game... settings) {
+
+            Game gs=settings[0];
+            TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
+
+            PlayServicesHelper helper = new PlayServicesHelper();
+            String regid = "";
+            if (helper.checkPlayServices(ChooseControlledCategoriesActivity.this))
+            {
+                regid = helper.getRegistrationId(getApplicationContext());
+                if (regid == "")
+                    helper.registerGCMInBackground(getApplicationContext());
+            }
+
+            gs.setOwner(regid);
+            api.createGame(gs);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            ad.setCancelable(false); // This blocks the 'BACK' button
+            ad.setMessage("Se ha creado la partida!");
+            ad.setButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+            ad.show();
+
+        }
+
+        @Override
+        protected void onPreExecute(){
+            ad=new AlertDialog.Builder(ChooseControlledCategoriesActivity.this).create();
+
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
     }
 }
