@@ -70,7 +70,7 @@ module.exports = function(app) {
             return res.send('Added line to round', 200);
           }; 
 
-          game.sendNotifications(currentRound, reqRound.line.player.registrationId, function(err){
+          game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.registrationId, function(err){
             currentRound.addLine(reqRound.line);
             
             if (currentRound.checkAllPlayersFinished(game)){

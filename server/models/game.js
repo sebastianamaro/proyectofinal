@@ -88,31 +88,41 @@ gameSchema.methods.addPlayer = function addPlayer(registrationId){
   this.creator.push(foundPlayer);
 }
 
-gameSchema.methods.sendNotifications = function (round, registrationId, callback){
-    console.log("entra a send");
+gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationId, callback){
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
     if (player.registrationId == registrationId){
-      console.log("Es el player que corto entonces no lo mando "+player.registrationId);
+      console.log("Wont send notification to stop player: "+player.registrationId);
       continue;
     }
     if (round.hasLineOfPlayer(player)) { // if it has a line of the player it means he has already sent me his line OR i have sent him notification
-      console.log("Ya tiene line el player entonces no lo mando "+player.registrationId);
+      console.log("Wont send notification to a player that has already been notified or sent line "+player.registrationId);
       continue;
     }
-    console.log("Voy a mandarle al player "+player.registrationId);
+    console.log("Will send to notify this player: "+player.registrationId);
 
+    var gameId =this.gameId;
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    notification.setValues({'gameId':this.gameId, 'roundId':round.roundId, 'status' : 'FINISHED'});
-    notification.send(function(err){
-      if (err){
-        console.log("Error when sendNotifications");
-        return callback("Error when sendNotifications");
-      } else {
-        round.setNotificationSentForPlayer(player);
+    Player.findOne({registrationId: request.player.registrationId }, function (err, foundPlayer){
+      if (err) {
+        console.log("ERROR: find player failed. "+err);
+        return callback("ERROR: find player failed. "+err);
       }
-    });
+      if (!player){
+        console.log("ERROR: player not found");
+        return callback("ERROR: player not found"); 
+      }
+      notification.setValues({'gameId':this.gameId, 'roundId':round.roundId, 'status' : 'FINISHED', 'player': foundPlayer.getName()});
+      notification.send(function(err){
+        if (err){
+          console.log("Error when sendNotifications");
+          return callback("Error when sendNotifications");
+        } else {
+          round.setNotificationSentForPlayer(player);
+        }
+      });
+  });
   }
   return callback();
 }
