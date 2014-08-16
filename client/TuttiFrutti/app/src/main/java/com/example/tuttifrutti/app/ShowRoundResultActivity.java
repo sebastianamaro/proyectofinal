@@ -91,7 +91,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                     //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
                     if (i==0) {
                         AddHeaderTextView(playersRow, result.get(j).getPlayer().getName());
-                        AddTotalTextView(totalScoreRow, result.get(j).getScore());
+                        AddTotalTextView(totalScoreRow, result.get(j).getScoreInfo().getScore());
                     }
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)

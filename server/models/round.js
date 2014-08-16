@@ -167,8 +167,8 @@ roundSchema.methods.getScores = function getScores(players){
       bestLineScore = lineForPlayer.score;
     } 
     scores.push({ 'player' : lineForPlayer.player,
-                  'score' : lineForPlayer.score,
-                  'best' : false,
+                  'scoreInfo' : { 'score' : lineForPlayer.score,
+                              'best'  : false},
                   'plays' : lineForPlayer.getSummarizedPlays() });
   }
   var bestOfCategory = [];
@@ -177,23 +177,23 @@ roundSchema.methods.getScores = function getScores(players){
     for(var playI in score.plays){
       var play = score.plays[playI];
       if (bestOfCategory[play.category] == undefined){
-        bestOfCategory[play.category] = play.score;
+        bestOfCategory[play.category] = play.scoreInfo.score;
       } else {
-        if (play.score > bestOfCategory[play.category]){
-          bestOfCategory[play.category] = play.score;
+        if (play.scoreInfo.score > bestOfCategory[play.category]){
+          bestOfCategory[play.category] = play.scoreInfo.score;
         }  
       }
     }
   }
   for(var scoreI in scores){
-    var score = scores[scoreI];
-    if (score.score == bestLineScore){
-      score.best = true;
+    var scoreObject = scores[scoreI];
+    if (scoreObject.scoreInfo.score == bestLineScore){
+      scoreObject.scoreInfo.best = true;
     }
-    for(var playI in score.plays){
-      var play = score.plays[playI];
-      if (play.score == bestOfCategory[play.category]){
-        play.best = true;
+    for(var playI in scoreObject.plays){
+      var play = scoreObject.plays[playI];
+      if (play.scoreInfo.score == bestOfCategory[play.category]){
+        play.scoreInfo.best = true;
       } 
     }
   }

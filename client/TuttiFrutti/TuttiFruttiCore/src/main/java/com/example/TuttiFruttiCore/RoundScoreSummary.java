@@ -7,8 +7,7 @@ import java.util.ArrayList;
  */
 public class RoundScoreSummary {
     private Player player;
-    private Integer score;
-    private Boolean best;
+    private ScoreInfo scoreInfo;
     private ArrayList<PlayScoreSummary> plays;
 
     public ArrayList<PlayScoreSummary> getPlays() {
@@ -19,20 +18,12 @@ public class RoundScoreSummary {
         this.plays = plays;
     }
 
-    public Boolean getBest() {
-        return best;
+    public ScoreInfo getScoreInfo() {
+        return scoreInfo;
     }
 
-    public void setBest(Boolean best) {
-        this.best = best;
-    }
-
-    public Integer getScore() {
-        return score;
-    }
-
-    public void setScore(Integer score) {
-        this.score = score;
+    public void setScoreInfo(ScoreInfo scoreInfo) {
+        this.scoreInfo = scoreInfo;
     }
 
     public Player getPlayer() {
