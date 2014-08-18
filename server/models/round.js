@@ -33,8 +33,6 @@ roundSchema.methods.isPlaying = function isPlaying() {
 roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(game) {
   var playersCount = game.players.length;
   var linesCount = this.lines.length;
-  console.log('players count: '+ playersCount);
-  console.log('lines count: '+ linesCount);
   return playersCount == linesCount;
 }
 

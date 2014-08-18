@@ -59,6 +59,8 @@ module.exports = function(app) {
   finishRound = function(req, res) {
         Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
           var reqRound = req.body;
+
+          console.log(reqRound);
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
@@ -69,12 +71,11 @@ module.exports = function(app) {
           if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
             return res.send('Added line to round', 200);
           }; 
-
+          console.log("The player who stopped is "+reqRound.line.player.registrationId);
           game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.registrationId, function(err){
             currentRound.addLine(reqRound.line);
             
             if (currentRound.checkAllPlayersFinished(game)){
-              console.log('terminando ronda');
               currentRound.finish(game);
             }
 

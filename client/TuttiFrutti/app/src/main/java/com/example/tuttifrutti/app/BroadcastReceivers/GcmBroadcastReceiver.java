@@ -5,9 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import com.example.tuttifrutti.app.Classes.StopNotificationData;
+import com.example.tuttifrutti.app.MainActivity;
 import com.example.tuttifrutti.app.Services.GcmIntentService;
+import com.google.gson.Gson;
+
+import java.util.Iterator;
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     public GcmBroadcastReceiver() {
@@ -16,10 +22,6 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String regId = intent.getExtras().getString("registration_id");
-        if(regId != null && !regId.equals("")) {
-            String hola = "hola";
-        }
         // Explicitly specify that GcmIntentService will handle the intent.
         ComponentName comp = new ComponentName(context.getPackageName(),
                 GcmIntentService.class.getName());

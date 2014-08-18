@@ -88,10 +88,10 @@ gameSchema.methods.addPlayer = function addPlayer(registrationId){
   this.creator.push(foundPlayer);
 }
 
-gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationId, callback){
+gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationIdStopPlayer, callback){
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
-    if (player.registrationId == registrationId){
+    if (player.registrationId == registrationIdStopPlayer){
       console.log("Wont send notification to stop player: "+player.registrationId);
       continue;
     }
@@ -104,16 +104,16 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, registratio
     var gameId =this.gameId;
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    Player.findOne({registrationId: request.player.registrationId }, function (err, foundPlayer){
+    Player.findOne({registrationId: registrationIdStopPlayer }, function (err, foundPlayer){
       if (err) {
         console.log("ERROR: find player failed. "+err);
         return callback("ERROR: find player failed. "+err);
       }
-      if (!player){
+      if (!foundPlayer){
         console.log("ERROR: player not found");
         return callback("ERROR: player not found"); 
       }
-      notification.setValues({'gameId':this.gameId, 'roundId':round.roundId, 'status' : 'FINISHED', 'player': foundPlayer.getName()});
+      notification.setValues({'game_id':gameId, 'round_id':round.roundId, 'status' : 'FINISHED', 'player': foundPlayer.getName()});
       notification.send(function(err){
         if (err){
           console.log("Error when sendNotifications");
