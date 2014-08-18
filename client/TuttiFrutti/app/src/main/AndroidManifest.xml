@@ -85,6 +85,11 @@
             android:name=".ChooseControlledCategoriesActivity"
             android:label="@string/title_activity_choose_controlled_categories" >
         </activity>
+        <activity
+            android:name=".ManageInvitationActivity"
+            android:label="@string/title_activity_manage_invitation" >
+        </activity>
+
     </application>
 
 </manifest>

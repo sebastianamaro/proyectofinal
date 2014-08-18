@@ -250,4 +250,14 @@ gameSchema.methods.rejectInvitation = function(request, callback){
     }
   });  
 }
+gameSchema.methods.asSummarized = function(){
+  return {
+      'mode': this.mode,
+      'categoriesType': this.categoriesType,
+      'opponentsType': this.opponentsType ,
+      'owner': this.owner[0],
+      'randomPlayersCount': randomPlayersCount ,
+      'selectedCategories':  selectedCategories
+  };
+}
 module.exports = mongoose.model('Game', gameSchema);

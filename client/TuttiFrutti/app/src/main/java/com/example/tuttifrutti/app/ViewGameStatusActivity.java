@@ -1,27 +1,33 @@
 package com.example.tuttifrutti.app;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 public class ViewGameStatusActivity extends ActionBarActivity {
 
-    ListView listView ;
+    ListView listViewGames ;
+    ListView listViewInvitations ;
     PlayServicesHelper helper;
     String registrationId;
     @Override
@@ -32,11 +38,12 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         helper= new PlayServicesHelper();
         registrationId=helper.getRegistrationId(getApplicationContext());
         // Get ListView object from xml
-        listView = (ListView) findViewById(R.id.list);
+        listViewGames = (ListView) findViewById(R.id.listGames);
+        listViewInvitations = (ListView) findViewById(R.id.listInvitations);
 
-       setActivityBackgroundColor(android.R.color.black);
 
         new ViewGameStatusAsyncTaks().execute();
+        new ViewPendingInvitationsAsyncTaks().execute();
 
     }
 
@@ -80,20 +87,16 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(ArrayList<UserGame> result) {
 
-            String[] values= new String[result.size()];
-            int i=0;
-            for(UserGame userGame : result) {
-               values[i]=userGame.getGameId()+ " - " + userGame.getStatus();
-            }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+           UserGameAdapter adapter = new UserGameAdapter(getApplicationContext(), android.R.layout.simple_list_item_2,  android.R.id.text1, result);
 
 
             // Assign adapter to ListView
-            listView.setAdapter(adapter);
+            listViewGames.setAdapter(adapter);
 
             // ListView Item Click Listener
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            listViewGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -103,16 +106,136 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     int itemPosition     = position;
 
                     // ListView Clicked item value
-                    String  itemValue    = (String) listView.getItemAtPosition(position);
+                    UserGame  itemValue    = (UserGame) listViewGames.getItemAtPosition(position);
 
                     // Show Alert
                     Toast.makeText(getApplicationContext(),
-                            "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                            "Position :"+itemPosition+"  ListItem : " +itemValue.getStatus() , Toast.LENGTH_LONG)
                             .show();
 
                 }
 
             });
         }
+    }
+
+    public class ViewPendingInvitationsAsyncTaks extends AsyncTask<Void,Void, ArrayList<Game>>
+    {
+        TuttiFruttiAPI api;
+
+        @Override
+        protected ArrayList<Game> doInBackground(Void... filePlays) {
+
+            return api.getPendingInvitations(registrationId);
+        }
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Game> result) {
+
+
+           GameAdapter adapter = new GameAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, result);
+
+
+            // Assign adapter to ListView
+            listViewInvitations.setAdapter(adapter);
+
+            // ListView Item Click Listener
+            listViewInvitations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    int itemPosition     = position;
+
+                    // ListView Clicked item value
+                    Game  itemValue    = (Game) listViewInvitations.getItemAtPosition(position);
+
+                    // Show Alert
+                    Toast.makeText(getApplicationContext(),
+                            "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                            .show();
+
+
+                    Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
+                    intent.putExtra("gameSettings", itemValue);
+                    startActivity(intent);
+
+                    // ListView Clicked item index
+
+                }
+
+            });
+        }
+    }
+
+    private class GameAdapter extends ArrayAdapter<Game> {
+
+        private ArrayList<Game> gameList;
+
+        public GameAdapter(Context context, int resourceId, int textViewResourceId,
+                               ArrayList<Game> categoryList) {
+            super(context, resourceId,textViewResourceId, categoryList);
+            this.gameList = new ArrayList<Game>();
+            this.gameList.addAll(categoryList);
+        }
+
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.listview_row_category, null);
+
+
+            }
+
+            Game game = gameList.get(position);
+            ((TextView)convertView.findViewById(android.R.id.text1)).setText(game.getOwner().getName());
+            ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getMode());
+
+            return convertView;
+
+        }
+
+    }
+
+    private class UserGameAdapter extends ArrayAdapter<UserGame> {
+
+        private ArrayList<UserGame> userGameList;
+
+        public UserGameAdapter(Context context,int resourceId, int textViewResourceId,
+                           ArrayList<UserGame> categoryList) {
+            super(context, resourceId,textViewResourceId, categoryList);
+            this.userGameList = new ArrayList<UserGame>();
+            this.userGameList.addAll(categoryList);
+        }
+
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.listview_row_category, null);
+
+
+            }
+
+            UserGame game = userGameList.get(position);
+            ((TextView)convertView.findViewById(android.R.id.text1)).setText(game.getGameId());
+            ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getStatus());
+
+            return convertView;
+
+        }
+
     }
 }

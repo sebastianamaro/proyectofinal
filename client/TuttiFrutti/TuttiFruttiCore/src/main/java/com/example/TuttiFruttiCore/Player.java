@@ -5,6 +5,11 @@ public class Player {
     private String registrationId;
     private String name;
 
+    public Player(){}
+    public Player(String registrationId) {
+        this.registrationId=registrationId;
+    }
+
     public String getRegistrationId() {
         return registrationId;
     }

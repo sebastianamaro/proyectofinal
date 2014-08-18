@@ -23,4 +23,13 @@ module.exports = function(app) {
 	    });
     });
   }
+
+  getInvitationsForPlayer = function(req, res) {
+      Player.findOne({ registrationId: req.params.id }, function (err, player){
+          if (err) return res.send(err, 500);
+          if (!player) return res.send('Player not found', 404);   
+          console.log(player);
+          res.send(player.invitations, 200); //add error manipulation
+      });
+    }
 }

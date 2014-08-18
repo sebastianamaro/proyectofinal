@@ -177,4 +177,12 @@ module.exports = function(app) {
       res.send(gameScoresMap, 200);            
      });
   }
+  getGame = function(req, res) {
+    Game.findOne({ 'gameId': req.params.id}, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+     
+      res.send(game.asSummarized(),200);      
+    })
+  }
 }

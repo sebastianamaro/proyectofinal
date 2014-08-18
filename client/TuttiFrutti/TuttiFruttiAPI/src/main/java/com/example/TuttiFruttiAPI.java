@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.GameScoreSummary;
+import com.example.TuttiFruttiCore.InvitationResponse;
 import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
@@ -47,6 +48,40 @@ public class TuttiFruttiAPI {
         games=new ArrayList<UserGame>(Arrays.asList(gamesArray));
 
         return games;
+    }
+
+    public Game getGame(int gameId)
+    {
+        String url= serverURL+"game/"+gameId;
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        Game game= restTemplate.getForObject(url,Game.class);
+        return game;
+    }
+
+    public ArrayList<Game> getPendingInvitations(String registrationId){
+        ArrayList<Game> invitations;
+
+        String url= serverURL+"player/"+registrationId+"/invitations";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        Game[] invitationsArray= restTemplate.getForObject(url,Game[].class);
+
+        invitations=new ArrayList<Game>(Arrays.asList(invitationsArray));
+
+        return invitations;
+    }
+
+    public void respondInvitation(int gameId, InvitationResponse response){
+
+        String url= serverURL+"game/"+gameId+"/invitation";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.put(url,response);
+
     }
 
 
