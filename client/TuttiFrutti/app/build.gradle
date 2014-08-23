@@ -33,6 +33,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':TuttiFruttiCore')
     compile project(':TuttiFruttiAPI')
+    compile project(':facebook')
+
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:19.+'
     compile 'com.android.support:appcompat-v7:19.+'
