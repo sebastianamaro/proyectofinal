@@ -10,7 +10,7 @@ public class Game implements Serializable {
     private String mode;
     private String categoriesType;
     private String opponentsType;
-    private String owner;
+    private Player owner;
     private int randomPlayersCount;
     private ArrayList<String> selectedCategories;
 
@@ -46,9 +46,9 @@ public class Game implements Serializable {
     public String getCategoriesType(){return categoriesType;}
     public void setCategoriesType(String categoriesType){this.categoriesType=categoriesType;}
 
-    public void setOwner(String owner){this.owner = owner;}
+    public void setOwner(Player owner){this.owner = owner;}
 
-    public String getOwner(){return this.owner;}
+    public Player getOwner(){return this.owner;}
 
     public String getOpponentsType() {
         return opponentsType;

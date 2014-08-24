@@ -1,9 +1,16 @@
 package com.example.TuttiFruttiCore;
 
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable{
     private String registrationId;
     private String name;
+
+    public Player(){}
+    public Player(String registrationId) {
+        this.registrationId=registrationId;
+    }
 
     public String getRegistrationId() {
         return registrationId;
@@ -14,6 +21,9 @@ public class Player {
     }
 
     public String getName() {
+       if(name == null)
+        return registrationId.substring(0,3);
+
         return name;
     }
 

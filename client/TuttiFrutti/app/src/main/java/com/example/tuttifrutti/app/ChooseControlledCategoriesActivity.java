@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Player;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 import com.example.tuttifrutti.app.R;
 
@@ -196,7 +197,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
                     helper.registerGCMInBackground(getApplicationContext());
             }
 
-            gs.setOwner(regid);
+            gs.setOwner(new Player(regid));
             api.createGame(gs);
             return null;
         }

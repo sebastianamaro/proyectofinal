@@ -13,12 +13,15 @@ app.configure(function () {
   app.use(app.router);
 });
 
+app.post('/game', createGame); 
+app.put('/game/:id/invitation', respondInvitation); 
+app.get('/game/:id', getGame);
+app.get('/game/:id/scores', getGameScores);
 app.put('/game/:id/round', alterRound); 
 app.get('/game/:id/round', getRound);
-app.post('/game', createGame); 
 app.get('/game/:id/round/:roundId/scores', getRoundScores);
 app.get('/player/:id/game', getGamesForPlayer);
-app.get('/game/:id/scores', getGameScores);
+app.get('/player/:id/invitations', getInvitationsForPlayer);
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {

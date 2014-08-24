@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Switch;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Player;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 
 
@@ -98,7 +99,7 @@ public class CreateGameActivity extends ActionBarActivity {
             }
 
 
-            gs.setOwner(regid);
+            gs.setOwner(new Player(regid));
             api.createGame(gs);
             return null;
         }
