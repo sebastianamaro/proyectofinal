@@ -15,8 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TwoLineListItem;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
@@ -119,12 +121,12 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         }
     }
 
-    public class ViewPendingInvitationsAsyncTaks extends AsyncTask<Void,Void, ArrayList<Game>>
+    public class ViewPendingInvitationsAsyncTaks extends AsyncTask<Void,Void, ArrayList<FullGame>>
     {
         TuttiFruttiAPI api;
 
         @Override
-        protected ArrayList<Game> doInBackground(Void... filePlays) {
+        protected ArrayList<FullGame> doInBackground(Void... filePlays) {
 
             return api.getPendingInvitations(registrationId);
         }
@@ -134,10 +136,10 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Game> result) {
+        protected void onPostExecute(ArrayList<FullGame> result) {
 
 
-           GameAdapter adapter = new GameAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, result);
+           GameAdapter adapter = new GameAdapter(getApplicationContext(), android.R.layout.simple_list_item_2, android.R.id.text1, result);
 
 
             // Assign adapter to ListView
@@ -153,7 +155,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     int itemPosition     = position;
 
                     // ListView Clicked item value
-                    Game  itemValue    = (Game) listViewInvitations.getItemAtPosition(position);
+                    FullGame  itemValue    = (FullGame) listViewInvitations.getItemAtPosition(position);
 
                     // Show Alert
                     Toast.makeText(getApplicationContext(),
@@ -173,14 +175,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         }
     }
 
-    private class GameAdapter extends ArrayAdapter<Game> {
+    private class GameAdapter extends ArrayAdapter<FullGame> {
 
-        private ArrayList<Game> gameList;
+        private ArrayList<FullGame> gameList;
 
         public GameAdapter(Context context, int resourceId, int textViewResourceId,
-                               ArrayList<Game> categoryList) {
+                               ArrayList<FullGame> categoryList) {
             super(context, resourceId,textViewResourceId, categoryList);
-            this.gameList = new ArrayList<Game>();
+            this.gameList = new ArrayList<FullGame>();
             this.gameList.addAll(categoryList);
         }
 
@@ -190,12 +192,9 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             if (convertView == null) {
-                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.listview_row_category, null);
-
+                convertView = super.getView(position, convertView, parent);
 
             }
-
             Game game = gameList.get(position);
             ((TextView)convertView.findViewById(android.R.id.text1)).setText(game.getOwner().getName());
             ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getMode());
@@ -223,14 +222,12 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             if (convertView == null) {
-                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.listview_row_category, null);
-
+                convertView = super.getView(position, convertView, parent);
 
             }
 
             UserGame game = userGameList.get(position);
-            ((TextView)convertView.findViewById(android.R.id.text1)).setText(game.getGameId());
+            ((TextView)convertView.findViewById(android.R.id.text1)).setText(String.valueOf(game.getGameId()));
             ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getStatus());
 
             return convertView;

@@ -14,7 +14,7 @@ app.configure(function () {
 });
 
 app.post('/game', createGame); 
-app.put('/game/:id', respondInvitation); 
+app.put('/game/:id/invitation', respondInvitation); 
 app.get('/game/:id', getGame);
 app.get('/game/:id/scores', getGameScores);
 app.put('/game/:id/round', alterRound); 

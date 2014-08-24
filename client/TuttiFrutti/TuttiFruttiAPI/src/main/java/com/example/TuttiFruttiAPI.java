@@ -2,6 +2,7 @@ package com.example;
 
 import android.os.StrictMode;
 
+import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.GameScoreSummary;
@@ -60,16 +61,16 @@ public class TuttiFruttiAPI {
         return game;
     }
 
-    public ArrayList<Game> getPendingInvitations(String registrationId){
-        ArrayList<Game> invitations;
+    public ArrayList<FullGame> getPendingInvitations(String registrationId){
+        ArrayList<FullGame> invitations;
 
         String url= serverURL+"player/"+registrationId+"/invitations";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        Game[] invitationsArray= restTemplate.getForObject(url,Game[].class);
+        FullGame[] invitationsArray= restTemplate.getForObject(url,FullGame[].class);
 
-        invitations=new ArrayList<Game>(Arrays.asList(invitationsArray));
+        invitations=new ArrayList<FullGame>(Arrays.asList(invitationsArray));
 
         return invitations;
     }

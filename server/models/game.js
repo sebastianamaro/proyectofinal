@@ -58,7 +58,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
-  this.addPlayer(game.owner);
+  this.addPlayer(game.owner.registrationId);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(registrationId){
@@ -252,12 +252,13 @@ gameSchema.methods.rejectInvitation = function(request, callback){
 }
 gameSchema.methods.asSummarized = function(){
   return {
+      'gameId': this.gameId,
       'mode': this.mode,
       'categoriesType': this.categoriesType,
       'opponentsType': this.opponentsType ,
-      'owner': this.owner[0],
-      'randomPlayersCount': randomPlayersCount ,
-      'selectedCategories':  selectedCategories
+      'owner': this.creator[0],
+      'randomPlayersCount': this.randomPlayersCount ,
+      'selectedCategories':  this.selectedCategories
   };
 }
 module.exports = mongoose.model('Game', gameSchema);

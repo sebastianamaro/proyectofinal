@@ -28,8 +28,20 @@ module.exports = function(app) {
       Player.findOne({ registrationId: req.params.id }, function (err, player){
           if (err) return res.send(err, 500);
           if (!player) return res.send('Player not found', 404);   
-          console.log(player);
-          res.send(player.invitations, 200); //add error manipulation
+
+          Game.find({ gameId: { $in : player.invitations } }, function(err, games) {
+          var gamesToReturn = [];
+          if (games){
+            for (var i = games.length - 1; i >= 0; i--) {
+              var game = games[i];
+
+              gamesToReturn.push(game.asSummarized());
+            };
+          }
+
+          res.send(gamesToReturn, 200); //add error manipulation
+          });
+
       });
     }
 }

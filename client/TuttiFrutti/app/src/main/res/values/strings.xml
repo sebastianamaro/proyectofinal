@@ -13,6 +13,4 @@
     <string name="title_activity_show_game_result">ShowGameResultActivity</string>
     <string name="title_activity_choose_controlled_categories">ChooseControlledCategoriesActivity</string>
     <string name="title_activity_manage_invitation">ManageInvitationActivity</string>
->>>>>>> Stashed changes
-
 </resources>
