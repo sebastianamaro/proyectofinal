@@ -54,6 +54,7 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
       }
     });
 }
+
 playerSchema.methods.setNotificationSentForGame = function(gameId){
   var registrationId=this.registrationId;
   this.invitations.push(gameId);
@@ -75,7 +76,6 @@ playerSchema.methods.removeInvitation = function(gameId){
         this.invitations.splice(index, 1);
     }
 }
-
 
 module.exports = mongoose.model('Player', playerSchema);
 

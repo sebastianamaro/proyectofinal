@@ -7,14 +7,16 @@ Notification.prototype.send =  function(callback){
 	//TODO validate all required attributes are set
 	var GCM = require('gcm').GCM;
 	var gcm = new GCM(this.apiKey);
-
-	var message = {
-	    registration_id: this.registrationId
-	};
 	var keys = Object.keys(this.values);
+	var body = {};
+
 	for (var i = keys.length - 1; i >= 0; i--) {
 		var key = keys[i];
-		message[key] = this.values[key];
+		body[key] = this.values[key];
+	};
+	var message = {
+	    registration_id: this.registrationId,
+	    data: JSON.stringify(body)
 	};
 	console.log(message);	
 	gcm.send(message, function(err, messageId){

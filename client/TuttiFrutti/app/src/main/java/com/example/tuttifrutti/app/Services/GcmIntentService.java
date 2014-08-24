@@ -12,10 +12,15 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
+import com.example.tuttifrutti.app.Classes.StopNotificationData;
 import com.example.tuttifrutti.app.MainActivity;
 import com.example.tuttifrutti.app.PlayRoundActivity;
 import com.example.tuttifrutti.app.R;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.util.Iterator;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -35,17 +40,26 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Intent intentActivity = new Intent("gcmLocalReceiver");
         Bundle extras = intent.getExtras();
+        if (extras.containsKey("data")){
+            String dataJson;
+            dataJson = extras.getString("data");
+            StopNotificationData stopNotificationData = new Gson().fromJson(dataJson, StopNotificationData.class);
+            intentActivity.putExtra(PlayRoundActivity.STOP_NOTIFICATION_DATA, stopNotificationData);
+        }
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+
         // The getMessageType() intent parameter must be the intent you received
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
+
         if (!extras.isEmpty()) {
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 //todo: sacar el gameId de lo q me manda el server
-                intent.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
-                sendBroadcast(new Intent("gcmLocalReceiver"));
+                intentActivity.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
+                sendBroadcast(intentActivity);
             }
         }
 

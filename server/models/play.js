@@ -29,13 +29,11 @@ playSchema.methods.setValues = function setValues(newPlay) {
 playSchema.methods.setOnlyScore = function setOnlyScore() {
   this.score = 20;
   this.result = 'ONLY';
-  console.log(this.result);
 }
 
 playSchema.methods.setUniqueScore = function setUniqueScore() {
   this.score = 10;
   this.result = 'UNIQUE';
-  console.log(this.result);
 }
 
 playSchema.methods.isSimilarTo = function isSimilarTo(similarPlay) {

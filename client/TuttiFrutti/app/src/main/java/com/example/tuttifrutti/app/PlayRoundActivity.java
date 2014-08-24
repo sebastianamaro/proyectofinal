@@ -32,6 +32,8 @@ import com.example.TuttiFruttiCore.FinishedRound;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Play;
 import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.StopNotificationData;
+
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
+    public final static String STOP_NOTIFICATION_DATA = "com.example.tuttifrutti.STOP_NOTIFICATION_DATA";
     private String fileName;
     private FullRound currentRound;
     private CountDownTimer timer;
@@ -61,12 +64,13 @@ public class PlayRoundActivity extends FragmentActivity implements
     private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            StopNotificationData stopNotificationData = (StopNotificationData) intent.getSerializableExtra(PlayRoundActivity.STOP_NOTIFICATION_DATA);
             if (currentRound == null) {
                 TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                 int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
-            EndRoundAndSendData(false, "MONGUITO hizo basta para mi basta para todos!!");
+            EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!");
 
         }
     };
