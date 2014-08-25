@@ -58,34 +58,35 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
-  this.addPlayer(game.owner.registrationId);
+  this.addPlayer(game.owner);
 }
 
-gameSchema.methods.addPlayer = function addPlayer(registrationId){
-  var gameId = this.gameId;
-  Player.findOne({ 'registrationId': registrationId}, function (err, foundPlayer){
+gameSchema.methods.addPlayer = function addPlayer(player){
+  var thisGame = this;
+  Player.findOne({ 'registrationId': player.registrationId}, function (err, foundPlayer){
     if (err){
       console.log('ERROR: ' + err);
       return err;
     } 
     if (!foundPlayer){
-      foundPlayer = new Player();
+      console.log('ERROR: user does not exists');
+      return "404";
     }
-    foundPlayer.setValues(registrationId);
-    foundPlayer.addGame(gameId);
+    
+    thisGame.players.push(foundPlayer);
+    thisGame.creator.push(foundPlayer);
+
+    foundPlayer.addGame(thisGame.gameId);
     foundPlayer.save(function(err) {
           if(!err) {
-            console.log('Inserted new player with registrationId '+foundPlayer.registrationId);
+            console.log('Inserted new game to player with name '+foundPlayer.getName());
           } else {
             console.log('ERROR: ' + err);
           }
         });
 
   });
-  foundPlayer = new Player();
-  foundPlayer.setValues(registrationId);
-  this.players.push(foundPlayer);
-  this.creator.push(foundPlayer);
+
 }
 
 gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationIdStopPlayer, callback){

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TwoLineListItem;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
 
 import java.util.ArrayList;
 
@@ -37,7 +35,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_game_status);
 
-        helper= new PlayServicesHelper();
+        helper= new PlayServicesHelper(MainActivity.class.getSimpleName());
         registrationId=helper.getRegistrationId(getApplicationContext());
         // Get ListView object from xml
         listViewGames = (ListView) findViewById(R.id.listGames);

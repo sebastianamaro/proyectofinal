@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,7 +13,7 @@ import android.widget.Switch;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
 
 
 public class CreateGameActivity extends ActionBarActivity {
@@ -89,7 +87,7 @@ public class CreateGameActivity extends ActionBarActivity {
 
             Game gs=settings[0];
 
-            PlayServicesHelper helper = new PlayServicesHelper();
+            PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
             String regid = "";
             if (helper.checkPlayServices(CreateGameActivity.this))
             {

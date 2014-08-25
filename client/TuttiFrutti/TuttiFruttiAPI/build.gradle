@@ -36,6 +36,7 @@ dependencies {
     compile 'org.springframework.android:spring-android-rest-template:1.+'
     compile project(':TuttiFruttiCore')
 
+
     configurations.compile {
         exclude module: 'spring-core'
         exclude module: 'spring-web'

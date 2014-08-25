@@ -167,5 +167,15 @@ public class TuttiFruttiAPI {
         return new ArrayList<RoundScoreSummary>(Arrays.asList(lineArray));
     }
 
+    public void AddPlayer(Player newPlayer)
+    {
+        String url= serverURL+"player"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        restTemplate.postForEntity(url, newPlayer, null);
+    }
+
 }
 

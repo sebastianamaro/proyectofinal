@@ -44,4 +44,21 @@ module.exports = function(app) {
 
       });
     }
+
+    createPlayer = function(req, res)
+    {
+        console.log('createPlayer');
+          var player = new Player();
+          player.setValues(req.body);
+
+          player.save(function(err) {
+            if(!err) {
+              console.log('Player '+player.getName()+' inserted');
+            } else {
+              console.log('ERROR en createPlayer: ' + err);
+            }
+          });
+
+          return res.send('Player '+player.getName()+' inserted', 200);
+    }
 }

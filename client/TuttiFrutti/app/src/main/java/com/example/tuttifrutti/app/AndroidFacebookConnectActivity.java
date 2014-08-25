@@ -1,30 +1,23 @@
-package com.example.facebookconnect.facebookconnect;
+package com.example.tuttifrutti.app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
-import com.facebook.FacebookException;
+import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.TuttiFruttiCore.Player;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 
@@ -35,24 +28,35 @@ import java.util.Arrays;
 
 
 public class AndroidFacebookConnectActivity extends Activity {
-    private String TAG = "MainActivity";
-
     private TextView lblEmail;
     private UiLifecycleHelper uiHelper;
+    String regid = "";
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
             if (session.isOpened()) {
-                Log.i(TAG, "Access Token" + session.getAccessToken());
                 Request.newMeRequest(session,
                         new Request.GraphUserCallback() {
                             @Override
                             public void onCompleted(GraphUser user, Response response) {
                                 if (user != null) {
-                                    Log.i(TAG, "User ID " + user.getId());
-                                    Log.i(TAG, "Email " + user.asMap().get("email"));
-                                    lblEmail.setText(user.asMap().get("email").toString());
+                                    PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
+                                    if (helper.checkPlayServices(AndroidFacebookConnectActivity.this))
+                                    {
+                                        regid = helper.getRegistrationId(getApplicationContext());
+                                        if (regid == "")
+                                            helper.registerGCMInBackground(getApplicationContext());
+                                    }
+
+                                    Player newPlayer = new Player();
+                                    newPlayer.setEmail(user.asMap().get("email").toString());
+                                    newPlayer.setName(user.getName());
+                                    newPlayer.setFbId(user.getId());
+                                    newPlayer.setRegistrationId(regid);
+
+                                    TuttiFruttiAPI api=new TuttiFruttiAPI(getString(R.string.server_url));
+                                    api.AddPlayer(newPlayer);
                                 }
                             }
                         }
@@ -72,12 +76,10 @@ public class AndroidFacebookConnectActivity extends Activity {
 
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-
-            //todo: llamar a la main activity
+            //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            //startActivity(intent);
         }
         else {
-            lblEmail = (TextView) findViewById(R.id.lblEmail);
-
             LoginButton authButton = (LoginButton) findViewById(R.id.authButton);
             // set permission list, Don't foeget to add email
             authButton.setReadPermissions(Arrays.asList("public_profile", "email"));
@@ -103,7 +105,7 @@ public class AndroidFacebookConnectActivity extends Activity {
     {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.example.facebookconnect.facebookconnect",
+                    "com.example.tuttifrutti.app",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");

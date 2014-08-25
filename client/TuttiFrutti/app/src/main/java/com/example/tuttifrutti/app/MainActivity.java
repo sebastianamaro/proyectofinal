@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        PlayServicesHelper helper = new PlayServicesHelper();
+        PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
         String regid = "";
         if (helper.checkPlayServices(this))
         {
