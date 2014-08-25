@@ -10,8 +10,8 @@ public class Player implements Serializable{
     private String email;
 
     public Player(){}
-    public Player(String registrationId) {
-        this.registrationId=registrationId;
+    public Player(String userId) {
+        this.setFbId(userId);
     }
 
     public String getRegistrationId() {

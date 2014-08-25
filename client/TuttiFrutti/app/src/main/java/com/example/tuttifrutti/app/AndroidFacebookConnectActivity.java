@@ -76,8 +76,8 @@ public class AndroidFacebookConnectActivity extends Activity {
 
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-            //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
         }
         else {
             LoginButton authButton = (LoginButton) findViewById(R.id.authButton);

@@ -20,6 +20,7 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -181,16 +182,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
             Game gs=settings[0];
             TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
 
-            PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
-            String regid = "";
-            if (helper.checkPlayServices(ChooseControlledCategoriesActivity.this))
-            {
-                regid = helper.getRegistrationId(getApplicationContext());
-                if (regid == "")
-                    helper.registerGCMInBackground(getApplicationContext());
-            }
-
-            gs.setOwner(new Player(regid));
+            gs.setOwner(new Player(FacebookHelper.getUserId()));
             api.createGame(gs);
             return null;
         }

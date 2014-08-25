@@ -106,11 +106,10 @@ module.exports = function(app) {
       game.save(function(err) {
         if(!err) {
           console.log('Created game with gameId '+largerId);
-          game.sendInvitations( function(err){
-            if (err){
-              console.log('ERROR en sendInvitations: ' + err);
-            }    
-          });
+
+          game.addPlayer(req.body.owner);
+          
+          
         } else {
           console.log('ERROR en createGame: ' + err);
         }

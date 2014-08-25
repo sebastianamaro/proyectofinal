@@ -58,12 +58,12 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
-  this.addPlayer(game.owner);
 }
 
 gameSchema.methods.addPlayer = function addPlayer(player){
   var thisGame = this;
-  Player.findOne({ 'registrationId': player.registrationId}, function (err, foundPlayer){
+
+  Player.findOne({ 'fbId': player.fbId}, function (err, foundPlayer){
     if (err){
       console.log('ERROR: ' + err);
       return err;
@@ -72,10 +72,23 @@ gameSchema.methods.addPlayer = function addPlayer(player){
       console.log('ERROR: user does not exists');
       return "404";
     }
-    
+
     thisGame.players.push(foundPlayer);
     thisGame.creator.push(foundPlayer);
 
+    thisGame.save(function(err) {
+      if(!err) {
+        thisGame.sendInvitations(function(errInvitation){
+          if (errInvitation){
+            console.log('ERROR en sendInvitations: ' + errInvitation);
+          }    
+        });
+        console.log('Added players to game');
+      } else {
+        console.log('ERROR: ' + err);
+      }
+    });
+    
     foundPlayer.addGame(thisGame.gameId);
     foundPlayer.save(function(err) {
           if(!err) {
@@ -84,9 +97,7 @@ gameSchema.methods.addPlayer = function addPlayer(player){
             console.log('ERROR: ' + err);
           }
         });
-
-  });
-
+  });  
 }
 
 gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationIdStopPlayer, callback){
@@ -181,6 +192,9 @@ gameSchema.methods.sendInvitations = function(callback){
   } else {
     var gameId = this.gameId;
     var creator = this.creator[0];
+    console.log("this GAME " + this);
+    console.log("this.creator " + this.creator);
+    console.log("recien imprimi el creator");
     Player.find({}, function (err, players){
       console.log(players);
       for(var iPlayer in players ){

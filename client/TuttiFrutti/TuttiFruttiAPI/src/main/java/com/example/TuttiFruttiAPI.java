@@ -94,7 +94,6 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-
         ResponseEntity<String> resp=null;
         try {
            resp=restTemplate.postForEntity(url, game, null);

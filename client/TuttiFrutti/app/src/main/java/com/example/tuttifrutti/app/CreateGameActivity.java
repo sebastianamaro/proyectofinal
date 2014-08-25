@@ -14,6 +14,7 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 
 public class CreateGameActivity extends ActionBarActivity {
@@ -96,8 +97,7 @@ public class CreateGameActivity extends ActionBarActivity {
                     helper.registerGCMInBackground(getApplicationContext());
             }
 
-
-            gs.setOwner(new Player(regid));
+            gs.setOwner(new Player(FacebookHelper.getUserId()));
             api.createGame(gs);
             return null;
         }
