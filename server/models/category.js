@@ -15,4 +15,21 @@ categorySchema.methods.isWordValid = function isWordValid(word, category) {
   return true;//for now just a dummy
 }
 
+categorySchema.methods.setValues = function setValues(category) {
+	this.name=category.name;
+	this.acceptedWords=category.acceptedWords;
+	this.isStared=category.isStared;
+	this.isReported=category.isReported;
+	this.isFixed=category.isFixed;
+}
+
+categorySchema.methods.asSummarized = function asSummarized() {
+	return {
+		'name': this.name,
+		'isReported': this.isReported,
+		'isFixed': this.isFixed
+	};
+}
+
+
 module.exports = mongoose.model('Category', categorySchema);
