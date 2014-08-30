@@ -1,9 +1,11 @@
 package com.example.TuttiFruttiCore;
 
+import java.io.Serializable;
+
 /**
  * Created by Sebastian on 24/08/2014.
  */
-public class Category {
+public class Category implements Serializable{
     String name;
     boolean isStared;
     boolean isReported;
@@ -39,5 +41,15 @@ public class Category {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return ((Category)o).getName().equals(getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return 19 * name.hashCode();
     }
 }

@@ -9,21 +9,14 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dip">
         <TextView
-            android:id="@+id/Text1"
+            android:id="@+id/categoryListText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FF7F3300"
             android:textSize="20sp"
             android:textStyle="italic"/>
     </LinearLayout>
-    <ImageView
-        android:id="@+id/ImageStar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:padding="5dp"
-        android:src="@drawable/icon_star"
-        android:layout_alignParentRight="true"
-        android:onClick="starCategory"/>
+
     <ImageView
         android:id="@+id/ImageReport"
         android:layout_toStartOf="@+id/ImageStar"
@@ -31,6 +24,14 @@
         android:layout_height="48dp"
         android:padding="5dp"
         android:src="@drawable/attention2"
-        android:onClick="reportCategory"
+
        />
+    <ImageView
+        android:id="@+id/ImageStar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="5dp"
+        android:src="@drawable/icon_star"
+        android:layout_alignParentRight="true"
+        />
 </RelativeLayout >
