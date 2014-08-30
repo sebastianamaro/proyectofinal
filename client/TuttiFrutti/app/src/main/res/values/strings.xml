@@ -17,4 +17,5 @@
     <string name="title_activity_choose_friends">ChooseFriendsActivity</string>
     <string name="error_dialog_title">Error</string>
     <string name="error_dialog_button_text">OK</string>
+    <string name="title_activity_view_categories">ViewCategoriesActivity</string>
 </resources>

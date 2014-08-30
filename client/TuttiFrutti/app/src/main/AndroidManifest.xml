@@ -94,17 +94,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.facebook.LoginActivity"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/app_id" />
-
-        <activity
             android:name=".ChooseFriendsActivity"
             android:label="@string/title_activity_choose_friends" >
+        </activity>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
+        <activity
+            android:name=".ViewCategoriesActivity"
+            android:label="@string/title_activity_view_categories" >
         </activity>
     </application>
 
