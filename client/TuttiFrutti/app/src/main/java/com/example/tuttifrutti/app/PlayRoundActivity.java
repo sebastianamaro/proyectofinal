@@ -32,6 +32,7 @@ import com.example.TuttiFruttiCore.FinishedRound;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.example.tuttifrutti.app.Classes.StopNotificationData;
 
 import java.util.ArrayList;
@@ -312,7 +313,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected Void doInBackground(FinishedRound... finishedRounds) {
             String regid = new PlayServicesHelper(MainActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
-            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),regid,finishedRounds[0].getStartTime(), finishedRounds[0].getPlays());
+            String fbId=FacebookHelper.getUserId();
+            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(), finishedRounds[0].getPlays());
             return null;
         }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="server_url">http://192.168.1.145:8080/</string>
+    <string name="server_url">http://192.168.1.104:8080/</string>
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -14,5 +14,5 @@
     <string name="title_activity_show_game_result">ShowGameResultActivity</string>
     <string name="title_activity_choose_controlled_categories">ChooseControlledCategoriesActivity</string>
     <string name="title_activity_manage_invitation">ManageInvitationActivity</string>
-    <string name="app_id">773202776073711</string>
+    <string name="app_id">773183809408941</string>
 </resources>

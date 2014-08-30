@@ -36,7 +36,7 @@ playerSchema.methods.getName = function () {
   return this.name;
 }
 playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
-  if (this.registrationId == from.registrationId){
+  if (this.fbId == from.fbId){
     console.log("wont send the invitation to the creator");
     return; //wont send the invitation to the creator
   }
@@ -62,11 +62,11 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
 }
 
 playerSchema.methods.setNotificationSentForGame = function(gameId){
-  var registrationId=this.registrationId;
+  var fbId=this.fbId;
   this.invitations.push(gameId);
   this.save(function(err) {
           if(!err) {
-            console.log('Saved player with new invitation '+registrationId);
+            console.log('Saved player with new invitation '+fbId);
           } else {
             console.log('ERROR: ' + err);
           }

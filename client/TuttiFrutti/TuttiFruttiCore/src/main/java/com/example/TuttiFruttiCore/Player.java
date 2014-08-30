@@ -24,7 +24,7 @@ public class Player implements Serializable{
 
     public String getName() {
        if(name == null)
-        return registrationId.substring(0,3);
+        return "NO TIENE NOMBRE, FIJATE";
 
         return name;
     }

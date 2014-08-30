@@ -100,23 +100,23 @@ gameSchema.methods.addPlayer = function addPlayer(player){
   });  
 }
 
-gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationIdStopPlayer, callback){
+gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPlayer, callback){
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
-    if (player.registrationId == registrationIdStopPlayer){
-      console.log("Wont send notification to stop player: "+player.registrationId);
+    if (player.fbId == fbIdStopPlayer){
+      console.log("Wont send notification to stop player: "+player.fbId);
       continue;
     }
     if (round.hasLineOfPlayer(player)) { // if it has a line of the player it means he has already sent me his line OR i have sent him notification
-      console.log("Wont send notification to a player that has already been notified or sent line "+player.registrationId);
+      console.log("Wont send notification to a player that has already been notified or sent line "+player.fbId);
       continue;
     }
-    console.log("Will send to notify this player: "+player.registrationId);
+    console.log("Will send to notify this player: "+player.fbId);
 
     var gameId =this.gameId;
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    Player.findOne({registrationId: registrationIdStopPlayer }, function (err, foundPlayer){
+    Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
       if (err) {
         console.log("ERROR: find player failed. "+err);
         return callback("ERROR: find player failed. "+err);
@@ -221,7 +221,7 @@ gameSchema.methods.removeAllInvitations = function(){
 }
 gameSchema.methods.acceptInvitation = function(request, callback){
   var game = this;
-  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+  Player.findOne({fbId: request.player.fbId }, function (err, player){
     if (err) {
       console.log("ERROR: find player failed. "+err);
       return callback("ERROR: find player failed. "+err);
@@ -254,7 +254,7 @@ gameSchema.methods.acceptInvitation = function(request, callback){
 }
 gameSchema.methods.rejectInvitation = function(request, callback){
   var game = this;
-  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+  Player.findOne({fbId: request.player.fbId }, function (err, player){
     if (err) {
       console.log("ERROR: find player failed. "+err);
       return callback("ERROR: find player failed. "+err);

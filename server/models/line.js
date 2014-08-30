@@ -6,7 +6,7 @@ var Player = require('./player.js');
 var Game = require('./game.js');
 
 var lineSchema = new Schema({
-  player:   {registrationId: {type: String}},
+  player:   {registrationId: {type: String}, fbId: {type: String}},
   plays:   [ Play.schema ],
   score: { type: Number },
   startTimestamp: { type: Date }

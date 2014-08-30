@@ -57,7 +57,7 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
 
         Game gs = new Game();
-        gs.setSettings(mode, oponents, categories);
+        gs.setSettings(mode, categories, oponents);
 
         if (oponents) {
             Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);

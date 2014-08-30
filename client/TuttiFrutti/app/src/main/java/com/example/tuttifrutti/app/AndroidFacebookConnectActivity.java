@@ -57,6 +57,9 @@ public class AndroidFacebookConnectActivity extends Activity {
 
                                     TuttiFruttiAPI api=new TuttiFruttiAPI(getString(R.string.server_url));
                                     api.AddPlayer(newPlayer);
+
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
                                 }
                             }
                         }
@@ -70,6 +73,7 @@ public class AndroidFacebookConnectActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_connect);
+        getHash();
 
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);

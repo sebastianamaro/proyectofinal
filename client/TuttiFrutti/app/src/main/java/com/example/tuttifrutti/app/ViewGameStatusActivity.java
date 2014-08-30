@@ -20,6 +20,7 @@ import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -29,14 +30,15 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     ListView listViewGames ;
     ListView listViewInvitations ;
     PlayServicesHelper helper;
-    String registrationId;
+    String fbId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_game_status);
 
-        helper= new PlayServicesHelper(MainActivity.class.getSimpleName());
-        registrationId=helper.getRegistrationId(getApplicationContext());
+        //helper= new PlayServicesHelper(MainActivity.class.getSimpleName());
+        //registrationId=helper.getRegistrationId(getApplicationContext());
+
         // Get ListView object from xml
         listViewGames = (ListView) findViewById(R.id.listGames);
         listViewInvitations = (ListView) findViewById(R.id.listInvitations);
@@ -77,7 +79,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList<UserGame> doInBackground(Void... filePlays) {
-            return api.getGames(registrationId);
+            fbId = FacebookHelper.getUserId();
+            return api.getGames(fbId);
         }
 
         protected void onPreExecute(){
@@ -125,8 +128,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList<FullGame> doInBackground(Void... filePlays) {
-
-            return api.getPendingInvitations(registrationId);
+            fbId = FacebookHelper.getUserId();
+            return api.getPendingInvitations(fbId);
         }
 
         protected void onPreExecute(){
