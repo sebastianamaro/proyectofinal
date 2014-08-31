@@ -36,11 +36,11 @@ public class TuttiFruttiAPI {
 
     }
 
-    public ArrayList<UserGame> getGames(String registrationId)
+    public ArrayList<UserGame> getGames(String fbId)
     {
         ArrayList<UserGame> games;
 
-        String url= serverURL+"player/"+registrationId+"/game";
+        String url= serverURL+"player/"+fbId+"/game";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
@@ -94,7 +94,6 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-
         ResponseEntity<String> resp=null;
         try {
            resp=restTemplate.postForEntity(url, game, null);
@@ -124,7 +123,7 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,GameScoreSummary.class);
     }
 
-    public void finishRound(int gameId, int roundId, String playerId, Date startTimeStamp, ArrayList<Play> plays)
+    public void finishRound(int gameId, int roundId, String playerFbId, String regId ,Date startTimeStamp, ArrayList<Play> plays)
     {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
@@ -135,7 +134,8 @@ public class TuttiFruttiAPI {
         pr.setRoundId(roundId);
 
         Player p=new Player();
-        p.setRegistrationId(playerId);
+        p.setFbId(playerFbId);
+        p.setRegistrationId(regId);
 
         Line rl= new Line();
         rl.setPlayer(p);
@@ -165,6 +165,16 @@ public class TuttiFruttiAPI {
 
         RoundScoreSummary[] lineArray= restTemplate.getForObject(url,RoundScoreSummary[].class);
         return new ArrayList<RoundScoreSummary>(Arrays.asList(lineArray));
+    }
+
+    public void AddPlayer(Player newPlayer)
+    {
+        String url= serverURL+"player"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        restTemplate.postForEntity(url, newPlayer, null);
     }
 
 }

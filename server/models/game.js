@@ -58,53 +58,65 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
-  this.addPlayer(game.owner.registrationId);
 }
 
-gameSchema.methods.addPlayer = function addPlayer(registrationId){
-  var gameId = this.gameId;
-  Player.findOne({ 'registrationId': registrationId}, function (err, foundPlayer){
+gameSchema.methods.addPlayer = function addPlayer(player){
+  var thisGame = this;
+
+  Player.findOne({ 'fbId': player.fbId}, function (err, foundPlayer){
     if (err){
       console.log('ERROR: ' + err);
       return err;
     } 
     if (!foundPlayer){
-      foundPlayer = new Player();
+      console.log('ERROR: user does not exists');
+      return "404";
     }
-    foundPlayer.setValues(registrationId);
-    foundPlayer.addGame(gameId);
+
+    thisGame.players.push(foundPlayer);
+    thisGame.creator.push(foundPlayer);
+
+    thisGame.save(function(err) {
+      if(!err) {
+        thisGame.sendInvitations(function(errInvitation){
+          if (errInvitation){
+            console.log('ERROR en sendInvitations: ' + errInvitation);
+          }    
+        });
+        console.log('Added players to game');
+      } else {
+        console.log('ERROR: ' + err);
+      }
+    });
+    
+    foundPlayer.addGame(thisGame.gameId);
     foundPlayer.save(function(err) {
           if(!err) {
-            console.log('Inserted new player with registrationId '+foundPlayer.registrationId);
+            console.log('Inserted new game to player with name '+foundPlayer.getName());
           } else {
             console.log('ERROR: ' + err);
           }
         });
-
-  });
-  foundPlayer = new Player();
-  foundPlayer.setValues(registrationId);
-  this.players.push(foundPlayer);
-  this.creator.push(foundPlayer);
+  });  
 }
 
-gameSchema.methods.sendNotificationsRoundFinished = function (round, registrationIdStopPlayer, callback){
+gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPlayer, callback){
   for (var i = this.players.length - 1; i >= 0; i--) {
     var player = this.players[i];
-    if (player.registrationId == registrationIdStopPlayer){
-      console.log("Wont send notification to stop player: "+player.registrationId);
+    if (player.fbId == fbIdStopPlayer){
+      console.log("Wont send notification to stop player: "+player.fbId);
       continue;
     }
     if (round.hasLineOfPlayer(player)) { // if it has a line of the player it means he has already sent me his line OR i have sent him notification
-      console.log("Wont send notification to a player that has already been notified or sent line "+player.registrationId);
+      console.log("Wont send notification to a player that has already been notified or sent line "+player.fbId);
       continue;
     }
-    console.log("Will send to notify this player: "+player.registrationId);
+    console.log("Will send to notify this player: "+player.fbId);
 
     var gameId =this.gameId;
     var notification = new Notification();
     notification.setRegistrationId(player.registrationId);
-    Player.findOne({registrationId: registrationIdStopPlayer }, function (err, foundPlayer){
+    Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
       if (err) {
         console.log("ERROR: find player failed. "+err);
         return callback("ERROR: find player failed. "+err);
@@ -180,6 +192,9 @@ gameSchema.methods.sendInvitations = function(callback){
   } else {
     var gameId = this.gameId;
     var creator = this.creator[0];
+    console.log("this GAME " + this);
+    console.log("this.creator " + this.creator);
+    console.log("recien imprimi el creator");
     Player.find({}, function (err, players){
       console.log(players);
       for(var iPlayer in players ){
@@ -206,7 +221,7 @@ gameSchema.methods.removeAllInvitations = function(){
 }
 gameSchema.methods.acceptInvitation = function(request, callback){
   var game = this;
-  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+  Player.findOne({fbId: request.player.fbId }, function (err, player){
     if (err) {
       console.log("ERROR: find player failed. "+err);
       return callback("ERROR: find player failed. "+err);
@@ -239,7 +254,7 @@ gameSchema.methods.acceptInvitation = function(request, callback){
 }
 gameSchema.methods.rejectInvitation = function(request, callback){
   var game = this;
-  Player.findOne({registrationId: request.player.registrationId }, function (err, player){
+  Player.findOne({fbId: request.player.fbId }, function (err, player){
     if (err) {
       console.log("ERROR: find player failed. "+err);
       return callback("ERROR: find player failed. "+err);

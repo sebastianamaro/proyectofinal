@@ -1,9 +1,6 @@
 package com.example.tuttifrutti.app;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,9 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
 
 public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 

@@ -6,11 +6,18 @@ var Game = require('./game.js');
 var playerSchema = new Schema({
     registrationId: { type: String },
     games: [{ type: Number }],
-    invitations: [{ type: Number }]
+    invitations: [{ type: Number }],
+    name: { type: String },
+    email: { type: String },
+    fbId: { type: String }
+
 });
 
 playerSchema.methods.setValues = function (player) {
-  this.registrationId = player;
+  this.registrationId = player.registrationId;
+  this.name = player.name;
+  this.email = player.email;
+  this.fbId = player.fbId;
   return this;
 }
 
@@ -26,11 +33,10 @@ playerSchema.methods.getGames = function () {
   return games;
 }
 playerSchema.methods.getName = function () {
-  if (this.registrationId.length <=3 ) return this.registrationId;
-  return this.registrationId.substr(0,4);
+  return this.name;
 }
 playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
-  if (this.registrationId == from.registrationId){
+  if (this.fbId == from.fbId){
     console.log("wont send the invitation to the creator");
     return; //wont send the invitation to the creator
   }
@@ -56,11 +62,11 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
 }
 
 playerSchema.methods.setNotificationSentForGame = function(gameId){
-  var registrationId=this.registrationId;
+  var fbId=this.fbId;
   this.invitations.push(gameId);
   this.save(function(err) {
           if(!err) {
-            console.log('Saved player with new invitation '+registrationId);
+            console.log('Saved player with new invitation '+fbId);
           } else {
             console.log('ERROR: ' + err);
           }

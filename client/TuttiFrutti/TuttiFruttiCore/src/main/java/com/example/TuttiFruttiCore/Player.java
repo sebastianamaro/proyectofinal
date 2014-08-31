@@ -6,10 +6,12 @@ import java.io.Serializable;
 public class Player implements Serializable{
     private String registrationId;
     private String name;
+    private String fbId;
+    private String email;
 
     public Player(){}
-    public Player(String registrationId) {
-        this.registrationId=registrationId;
+    public Player(String userId) {
+        this.setFbId(userId);
     }
 
     public String getRegistrationId() {
@@ -22,12 +24,28 @@ public class Player implements Serializable{
 
     public String getName() {
        if(name == null)
-        return registrationId.substring(0,3);
+        return "NO TIENE NOMBRE, FIJATE";
 
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFbId() {
+        return fbId;
+    }
+
+    public void setFbId(String fbId) {
+        this.fbId = fbId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

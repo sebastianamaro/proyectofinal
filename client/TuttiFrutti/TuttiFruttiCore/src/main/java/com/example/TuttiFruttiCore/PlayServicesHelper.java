@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.TuttiFruttiCore;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,9 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
-
-import com.example.tuttifrutti.app.MainActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -40,8 +37,13 @@ public class PlayServicesHelper {
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
 
-
     String regid;
+    String activityName;
+
+    public PlayServicesHelper(String actName)
+    {
+        this.activityName = actName;
+    }
 
     /**
      * Gets the current registration ID for application on GCM service.
@@ -108,7 +110,7 @@ public class PlayServicesHelper {
     private SharedPreferences getGCMPreferences(Context context) {
         // This sample app persists the registration ID in shared preferences, but
         // how you store the regID in your app is up to you.
-        return context.getSharedPreferences(MainActivity.class.getSimpleName(),
+        return context.getSharedPreferences(activityName,
                 Context.MODE_PRIVATE);
     }
 

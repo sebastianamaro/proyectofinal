@@ -13,6 +13,9 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.InvitationResponse;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.TuttiFruttiCore.Player;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -36,28 +39,34 @@ public class ManageInvitationActivity extends ActionBarActivity {
         txtGameMode.setText(gameSettings.getMode());
         txtOpponentsMode.setText(gameSettings.getOpponentsType());
         txtCategoriesMode.setText(gameSettings.getCategoriesType());
-
-
-
     }
 
     public void acceptInvitation(View view) {
-
-        InvitationResponse ir= new InvitationResponse("ACCEPTED",gameSettings.getOwner());
-        new RespondInvitationAsyncTask().execute(ir);
+        SendInvitationResponse("ACCEPTED");
     }
 
     public void rejectInvitation(View view) {
-        InvitationResponse ir= new InvitationResponse("REJECTED",gameSettings.getOwner());
-        new RespondInvitationAsyncTask().execute(ir);
+        SendInvitationResponse("REJECTED");
     }
 
-    public class RespondInvitationAsyncTask extends AsyncTask<InvitationResponse, Void, Void>
+    public void SendInvitationResponse(String response) {
+
+        new RespondInvitationAsyncTask().execute(response);
+    }
+
+    public class RespondInvitationAsyncTask extends AsyncTask<String, Void, Void>
     {
         TuttiFruttiAPI api;
         @Override
-        protected Void doInBackground(InvitationResponse... response) {
-            api.respondInvitation(gameSettings.getGameId(), response[0]);
+        protected Void doInBackground(String... response) {
+            String fbId= FacebookHelper.getUserId();
+
+            Player me = new Player();
+            me.setFbId(fbId);
+
+            InvitationResponse ir= new InvitationResponse(response[0],me);
+
+            api.respondInvitation(gameSettings.getGameId(), ir);
             return null;
         }
 

@@ -6,16 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,11 +19,10 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
-import com.example.tuttifrutti.app.R;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChooseControlledCategoriesActivity extends Activity {
     MyCustomAdapter dataAdapter = null;
@@ -188,16 +182,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
             Game gs=settings[0];
             TuttiFruttiAPI api= new TuttiFruttiAPI(getString(R.string.server_url));
 
-            PlayServicesHelper helper = new PlayServicesHelper();
-            String regid = "";
-            if (helper.checkPlayServices(ChooseControlledCategoriesActivity.this))
-            {
-                regid = helper.getRegistrationId(getApplicationContext());
-                if (regid == "")
-                    helper.registerGCMInBackground(getApplicationContext());
-            }
-
-            gs.setOwner(new Player(regid));
+            gs.setOwner(new Player(FacebookHelper.getUserId()));
             api.createGame(gs);
             return null;
         }

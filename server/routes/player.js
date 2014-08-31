@@ -6,7 +6,7 @@ module.exports = function(app) {
   var Player = require('../models/player.js');
 
   getGamesForPlayer = function(req, res) {
-    Player.findOne({ registrationId: req.params.id }, function (err, player){
+    Player.findOne({ fbId: req.params.id }, function (err, player){
     	console.log(player);
       	if (err) return res.send(err, 500);
       	if (!player) return res.send('Player not found', 404);   
@@ -25,10 +25,11 @@ module.exports = function(app) {
   }
 
   getInvitationsForPlayer = function(req, res) {
-      Player.findOne({ registrationId: req.params.id }, function (err, player){
+      Player.findOne({ fbId: req.params.id }, function (err, player){
           if (err) return res.send(err, 500);
           if (!player) return res.send('Player not found', 404);   
-
+          
+          console.log("encontre al player");  
           Game.find({ gameId: { $in : player.invitations } }, function(err, games) {
           var gamesToReturn = [];
           if (games){
@@ -38,10 +39,34 @@ module.exports = function(app) {
               gamesToReturn.push(game.asSummarized());
             };
           }
-
+          console.log("encontre invitaciones: "+gamesToReturn.length);  
           res.send(gamesToReturn, 200); //add error manipulation
           });
 
+      });
+    }
+
+    createPlayer = function(req, res)
+    {
+
+      Player.findOne({fbId: req.body.fbId }, function (err, player){
+        
+        if (player)
+          player.registrationId = req.body.registrationId;
+        else{
+          var player = new Player();
+          player.setValues(req.body);
+        }
+        
+          player.save(function(err) {
+            if(!err) {
+              console.log('Player '+player.getName()+' inserted');
+            } else {
+              console.log('ERROR en createPlayer: ' + err);
+            }
+          });
+
+          return res.send('Player '+player.getName()+' inserted', 200);
       });
     }
 }

@@ -71,8 +71,8 @@ module.exports = function(app) {
           if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
             return res.send('Added line to round', 200);
           }; 
-          console.log("The player who stopped is "+reqRound.line.player.registrationId);
-          game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.registrationId, function(err){
+          console.log("The player who stopped is "+reqRound.line.player.fbId);
+          game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
             currentRound.addLine(reqRound.line);
             
             if (currentRound.checkAllPlayersFinished(game)){
@@ -106,11 +106,10 @@ module.exports = function(app) {
       game.save(function(err) {
         if(!err) {
           console.log('Created game with gameId '+largerId);
-          game.sendInvitations( function(err){
-            if (err){
-              console.log('ERROR en sendInvitations: ' + err);
-            }    
-          });
+
+          game.addPlayer(req.body.owner);
+          
+          
         } else {
           console.log('ERROR en createGame: ' + err);
         }
@@ -160,7 +159,7 @@ module.exports = function(app) {
   getGamesForPlayer = function(req, res) {
     var numId =  parseInt(req.params.id);
     console.log(numId);
-    Player.findOne({}, function (err, player){
+    Player.findOne({ 'fbId': req.params.id }, function (err, player){
       if (err) return res.send(err, 500);
       if (!player) return res.send('Player not found', 404);     
       res.send(player.getGames(), 200); //add error manipulation

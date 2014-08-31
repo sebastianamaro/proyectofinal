@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TwoLineListItem;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.PlayServicesHelper;
+import com.example.TuttiFruttiCore.PlayServicesHelper;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -31,14 +30,15 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     ListView listViewGames ;
     ListView listViewInvitations ;
     PlayServicesHelper helper;
-    String registrationId;
+    String fbId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_game_status);
 
-        helper= new PlayServicesHelper();
-        registrationId=helper.getRegistrationId(getApplicationContext());
+        //helper= new PlayServicesHelper(MainActivity.class.getSimpleName());
+        //registrationId=helper.getRegistrationId(getApplicationContext());
+
         // Get ListView object from xml
         listViewGames = (ListView) findViewById(R.id.listGames);
         listViewInvitations = (ListView) findViewById(R.id.listInvitations);
@@ -79,7 +79,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList<UserGame> doInBackground(Void... filePlays) {
-            return api.getGames(registrationId);
+            fbId = FacebookHelper.getUserId();
+            return api.getGames(fbId);
         }
 
         protected void onPreExecute(){
@@ -127,8 +128,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList<FullGame> doInBackground(Void... filePlays) {
-
-            return api.getPendingInvitations(registrationId);
+            fbId = FacebookHelper.getUserId();
+            return api.getPendingInvitations(fbId);
         }
 
         protected void onPreExecute(){
