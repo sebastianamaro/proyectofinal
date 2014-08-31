@@ -3,9 +3,15 @@ package com.example.tuttifrutti.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +23,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,9 +37,7 @@ import java.util.List;
 
 public class ViewCategoriesActivity extends ActionBarActivity {
 
-    ListView staredCategoriesList;
-    ListView fixedCategoriesList;
-    ListView allCategoriesList;
+    ListView categoriesList;
     ArrayList<Category> selectedCategories= new ArrayList<Category>();
 
     @Override
@@ -40,9 +45,7 @@ public class ViewCategoriesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_categories);
 
-        staredCategoriesList = (ListView) findViewById(R.id.listStarCategory);
-        fixedCategoriesList = (ListView) findViewById(R.id.listFixedCategory);
-        allCategoriesList = (ListView) findViewById(R.id.listAllCategory);
+        categoriesList = (ListView) findViewById(R.id.categoriesList);
 
         new GetCategoriesAsyncTask().execute();
     }
@@ -67,6 +70,9 @@ public class ViewCategoriesActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void finish(View view) {
+    }
+
 
     public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
 
@@ -84,10 +90,9 @@ public class ViewCategoriesActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(ArrayList<Category> result) {
 
-            ArrayList<Category> staredCategories= new ArrayList<Category>();
-            ArrayList<Category> fixedCategories= new ArrayList<Category>();
             ArrayList<String> categoriesNames= new ArrayList<String>();
-
+            ArrayList<Category> staredCategories=new ArrayList<Category>();
+            ArrayList<Category> fixedCategories=new ArrayList<Category>();
             for(Category category : result){
                 if(category.isStared())
                     staredCategories.add(category);
@@ -99,61 +104,137 @@ public class ViewCategoriesActivity extends ActionBarActivity {
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(ViewCategoriesActivity.this, android.R.layout.simple_dropdown_item_1line, categoriesNames);
-            AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.categoryText);
+            MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
             textView.setAdapter(adapter);
 
 
-            //popular stared categories
-            PopulateCategoriesList(staredCategories, staredCategoriesList );
-            //popular fixed categories
-            PopulateCategoriesList(fixedCategories, fixedCategoriesList );
-            //popular todas
-            PopulateCategoriesList(result, allCategoriesList );
+            final CategoryAdapter categoryAdapter = new CategoryAdapter(getApplicationContext(), result, staredCategories, fixedCategories);
 
+
+            // Assign adapter to ListView
+            categoriesList.setAdapter(categoryAdapter);
+
+            // ListView Item Click Listener
+            categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                //SELECT Category
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+
+                    // ListView Clicked item value
+                    Category itemValue = (Category) categoriesList.getItemAtPosition(position);
+
+                    if (selectedCategories.contains(itemValue)) {
+                        Toast.makeText(getApplicationContext(),
+                                "La categoria " + itemValue.getName() + " ya esta seleccionada.", Toast.LENGTH_LONG)
+                                .show();          // Show Alert
+                    } else {
+                        selectedCategories.add(itemValue);
+
+                        final SpannableStringBuilder sb = new SpannableStringBuilder();
+                        TextView tv = createContactTextView(itemValue.getName());
+                        BitmapDrawable bd = (BitmapDrawable) convertViewToDrawable(tv);
+                        bd.setBounds(0, 0, bd.getIntrinsicWidth(), bd.getIntrinsicHeight());
+
+                        sb.append(itemValue.getName()+ ",");
+                        sb.setSpan(new ImageSpan(bd), sb.length()-(itemValue.getName().length()+1), sb.length()-1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
+                        textView.setTokenizer(new CustomCommaTokenizer());
+                        textView.setThreshold(0);
+                        textView.setText(sb);
+
+
+
+                    }
+                }
+
+            });
+
+        }
+
+        public class CustomCommaTokenizer extends MultiAutoCompleteTextView.CommaTokenizer {
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                CharSequence charSequence = super.terminateToken(text);
+                return charSequence.subSequence(0, charSequence.length()-1);
+            }
         }
 
     }
 
-    private void PopulateCategoriesList(ArrayList<Category> categories, final ListView list) {
-        CategoryAdapter adapter = new CategoryAdapter(getApplicationContext(),categories);
 
+    public static Object convertViewToDrawable(View view) {
+        int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        view.measure(spec, spec);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        Bitmap b = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        c.translate(-view.getScrollX(), -view.getScrollY());
+        view.draw(c);
+        view.setDrawingCacheEnabled(true);
+        Bitmap cacheBmp = view.getDrawingCache();
+        Bitmap viewBmp = cacheBmp.copy(Bitmap.Config.ARGB_8888, true);
+        view.destroyDrawingCache();
+        return new BitmapDrawable(viewBmp);
 
-        // Assign adapter to ListView
-        list.setAdapter(adapter);
-
-        // ListView Item Click Listener
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//SELECT Category
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-
-                // ListView Clicked item value
-                Category  itemValue    = (Category) list.getItemAtPosition(position);
-
-                if(selectedCategories.contains(itemValue))
-                {
-                    Toast.makeText(getApplicationContext(),
-                            "La categoria "+ itemValue.getName() + " ya esta seleccionada.", Toast.LENGTH_LONG)
-                            .show();          // Show Alert
-                }
-                else
-                    selectedCategories.add(itemValue);
-            }
-
-        });
     }
+
+    public TextView createContactTextView(String text){
+        //creating textview dynamically
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setTextSize(12);
+        tv.setBackgroundResource(R.drawable.oval);
+        tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.cross_bar, 0);
+        return tv;
+    }
+
+
 
     public class CategoryAdapter extends BaseAdapter{
 
         Context context;
-        private ArrayList<Category> categories;
-        public CategoryAdapter(Context context,ArrayList<Category> categories)
+        private ArrayList<Object> categories;
+        private int staredCategoriesSeparatorIndex=0;
+        private int fixedCategoriesSeparatorIndex;
+        private int allCategoriesSeparatorIndex;
+        private static final int ITEM_VIEW_TYPE_CATEGORY = 0;
+        private static final int ITEM_VIEW_TYPE_SEPARATOR = 1;
+        private static final int ITEM_VIEW_TYPE_COUNT = 2;
+        private static final String staredCategoriesText="Favoritas";
+        private static final String fixedCategoriesText="Controladas";
+        private static final String allCategoriesText="Todas";
+
+        public CategoryAdapter(Context context,ArrayList<Category> allCategories, ArrayList<Category> staredCategories, ArrayList<Category> fixedCategories)
         {
-            this.categories=categories;
             this.context=context;
+            this.categories= new ArrayList<Object>();
+            this.categories.addAll(staredCategories);
+            this.categories.addAll(fixedCategories);
+            this.categories.addAll(allCategories);
+
+            this.fixedCategoriesSeparatorIndex=staredCategories.size() + 1;
+            this.allCategoriesSeparatorIndex=staredCategories.size() +fixedCategories.size()  + 2;
+
+            this.categories.add(staredCategoriesSeparatorIndex,staredCategoriesText);
+            this.categories.add(fixedCategoriesSeparatorIndex,fixedCategoriesText);
+            this.categories.add(allCategoriesSeparatorIndex,allCategoriesText);
+
+
         }
+
+
+        @Override
+        public int getItemViewType(int position) {
+            return (categories.get(position) instanceof String) ? ITEM_VIEW_TYPE_SEPARATOR:ITEM_VIEW_TYPE_CATEGORY;
+        }
+
+        @Override
+        public int getViewTypeCount() { return ITEM_VIEW_TYPE_COUNT; } //Tenemos dos tipos de views, las categories y los separators
+
         @Override
         public int getCount() {
             return categories.size();
@@ -169,22 +250,33 @@ public class ViewCategoriesActivity extends ActionBarActivity {
             return i;
         }
 
-        private class ViewHolder {
+        @Override
+        public boolean isEnabled(int position) {
+            // A separator cannot be clicked !
+            return getItemViewType(position) != ITEM_VIEW_TYPE_SEPARATOR;
+        }
+
+        private class CategoryViewHolder {
             ImageView starImageView;
             ImageView reportImageView;
             TextView txtDesc;
         }
 
+        private class SeparatorViewHolder {
+            TextView txtSeparator;
+        }
+
 
         @Override
-        public View getView(int i, View convertView, ViewGroup viewGroup) {
+        public View getView(final int i, View convertView, ViewGroup viewGroup) {
 
 
             View.OnClickListener starCategoryListener = new View.OnClickListener() {
-
+                Object s = categories.get(i);
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "STAR Image of listItem ", Toast.LENGTH_SHORT).show();
+                    if(s instanceof Category)
+                        Toast.makeText(getApplicationContext(), "STAR Image of listItem : "+ ((Category)s).getName(), Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -193,31 +285,48 @@ public class ViewCategoriesActivity extends ActionBarActivity {
 
             View.OnClickListener reportCategoryListener = new View.OnClickListener() {
 
+                Object s = categories.get(i);
+
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "REPORT Image of listItem ", Toast.LENGTH_SHORT).show();
+                    if(s instanceof Category)
+                        Toast.makeText(getApplicationContext(), "REPORT Image of listItem : "+((Category)s).getName(), Toast.LENGTH_SHORT).show();
 
                 }
             };
 
+            final int type = getItemViewType(i);
 
-            ViewHolder holder = null;
+            if(type == ITEM_VIEW_TYPE_CATEGORY)
+                convertView = SetRowCategoryViewHolder(i, convertView, starCategoryListener, reportCategoryListener);
+            else
+                convertView = SetRowSeparatorViewHolder(i, convertView);
 
-            LayoutInflater mInflater = (LayoutInflater)
-                    context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+
+            return convertView;
+
+
+        }
+
+        private View SetRowCategoryViewHolder(int position, View convertView, View.OnClickListener starCategoryListener, View.OnClickListener reportCategoryListener) {
+            CategoryViewHolder holder = null;
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.category_row, null);
-                holder = new ViewHolder();
+
+                holder = new CategoryViewHolder();
                 holder.txtDesc = (TextView) convertView.findViewById(R.id.categoryListText);
                 holder.starImageView = (ImageView) convertView.findViewById(R.id.ImageStar);
                 holder.reportImageView = (ImageView) convertView.findViewById(R.id.ImageReport);
                 convertView.setTag(holder);
             }
             else {
-                holder = (ViewHolder) convertView.getTag();
+                holder = (CategoryViewHolder) convertView.getTag();
             }
 
-            Category rowItem = (Category) getItem(i);
+            Category rowItem = (Category) getItem(position);
 
             holder.txtDesc.setText(rowItem.getName());
             if(rowItem.isStared())
@@ -232,12 +341,28 @@ public class ViewCategoriesActivity extends ActionBarActivity {
 
             holder.starImageView.setOnClickListener(starCategoryListener);
             holder.reportImageView.setOnClickListener(reportCategoryListener);
-
-
-
             return convertView;
+        }
 
+        private View SetRowSeparatorViewHolder(int position, View convertView) {
+            SeparatorViewHolder holder = null;
 
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.category_row_separator, null);
+
+                holder = new SeparatorViewHolder();
+                holder.txtSeparator = (TextView) convertView.findViewById(R.id.separatorText);
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (SeparatorViewHolder) convertView.getTag();
+            }
+
+            String rowItem = (String) getItem(position);
+
+            holder.txtSeparator.setText(rowItem);
+            return convertView;
         }
     }
 }

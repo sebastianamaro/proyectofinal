@@ -181,13 +181,43 @@ public class TuttiFruttiAPI {
 
     public ArrayList<Category> getCategories()
     {
-        String url= serverURL+"category";
+       /* String url= serverURL+"category";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         Category[] lineArray= restTemplate.getForObject(url,Category[].class);
-        return new ArrayList<Category>(Arrays.asList(lineArray));
+        return new ArrayList<Category>(Arrays.asList(lineArray));*/
+
+        //stared
+        Category cat1= new Category("NOMBRES DE TELO",true, false, false);
+        Category cat2= new Category("LAGOS DE PATAGONIA",true, false, false);
+        Category cat3= new Category("BOLICHES",true, false, false);
+        //fixed
+        Category cat4= new Category("ANIMALES",false, false, true);
+        Category cat5= new Category("COLORES",false, false, true);
+        Category cat6= new Category("MARCAS DE AUTO",false, false, true);
+        Category cat7 = new Category("FRUTAS",false,false, true);
+
+
+        Category cat8= new Category("CALLES",false,false, false);
+        Category cat9= new Category("TRAGOS",false,false, false);
+        Category cat10= new Category("PAISES",false,true, false);
+        Category cat11= new Category("UTENSILLOS",false,true, false);
+
+        ArrayList<Category> categories= new ArrayList<Category>();
+        categories.add(cat1);
+        categories.add(cat2);
+        categories.add(cat3);
+        categories.add(cat4);
+        categories.add(cat5);
+        categories.add(cat6);
+        categories.add(cat7);
+        categories.add(cat8);
+        categories.add(cat9);
+        categories.add(cat10);
+        categories.add(cat11);
+        return categories;
     }
 }
 

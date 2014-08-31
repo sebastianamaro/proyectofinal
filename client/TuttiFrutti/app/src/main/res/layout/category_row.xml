@@ -12,14 +12,14 @@
             android:id="@+id/categoryListText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FF7F3300"
-            android:textSize="20sp"
+            android:textColor="#6699aa"
+            android:textSize="12sp"
             android:textStyle="italic"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/ImageReport"
-        android:layout_toStartOf="@+id/ImageStar"
+        android:layout_toLeftOf="@+id/ImageStar"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:padding="5dp"

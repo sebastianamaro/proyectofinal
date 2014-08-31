@@ -8,67 +8,36 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.tuttifrutti.app.ViewCategoriesActivity">
 
-    <AutoCompleteTextView
+    <LinearLayout android:id="@+id/topText"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+    <MultiAutoCompleteTextView
+
         android:id="@+id/categoryText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="25dp"
-        android:inputType="text"
-        android:completionThreshold="3"/>
+        android:layout_weight="5"
+        android:inputType="text"/>
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Terminar"
+            android:id="@+id/finish"
+            android:layout_toRightOf="@id/categoryText"
+            android:layout_weight="17"
+            android:onClick="finish" />
 
-
-    <TextView
-        android:text="Favoritas"
-        android:textSize="35dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:id="@+id/titleCategory"
-        android:layout_below="@+id/categoryText"
-        android:gravity="left"/>
-
+    </LinearLayout>
 
     <ListView
-        android:id="@+id/listStarCategory"
+        android:id="@+id/categoriesList"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_below="@+id/titleCategory">
-    </ListView>
-
-    <TextView
-        android:text="Controladas"
-        android:textSize="35dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:id="@+id/titleFixedCategory"
-        android:layout_below="@+id/listStarCategory"
-        android:gravity="left"/>
-
-
-    <ListView
-        android:id="@+id/listFixedCategory"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/titleFixedCategory">
-    </ListView>
-
-    <TextView
-        android:text="Todas"
-        android:textSize="35dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:id="@+id/titleAllCategories"
-        android:layout_below="@+id/listFixedCategory"
-        android:gravity="left"/>
-
-
-    <ListView
-        android:id="@+id/listAllCategory"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/titleAllCategories">
+        android:layout_below="@+id/topText">
     </ListView>
 
 </RelativeLayout>

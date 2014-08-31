@@ -51,6 +51,15 @@
         android:layout_below="@+id/viewGames"
         android:onClick="showGameResult" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver categorias"
+        android:id="@+id/viewCategories"
+        android:layout_below="@+id/showGameResult"
+        android:onClick="viewCategories" />
+
+
 
 
 </RelativeLayout>

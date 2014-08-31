@@ -11,6 +11,15 @@ public class Category implements Serializable{
     boolean isReported;
     boolean isFixed;
 
+    public Category(){}
+    public Category(String name, boolean isStared, boolean isReported, boolean isFixed ){
+        this.name=name;
+        this.isStared=isStared;
+        this.isReported=isReported;
+        this.isFixed=isFixed;
+    }
+
+
     public void setFixed(boolean isFixed) {
         this.isFixed = isFixed;
     }
