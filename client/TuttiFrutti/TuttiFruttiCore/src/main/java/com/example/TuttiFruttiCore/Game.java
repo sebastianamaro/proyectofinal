@@ -13,6 +13,7 @@ public class Game implements Serializable {
     private Player owner;
     private int randomPlayersCount;
     private ArrayList<String> selectedCategories;
+    private ArrayList<String> selectedFriends;
 
     public Game(){}
     public Game(String mode, String categoriesType, String opponentsType, int randomPlayersCount){
@@ -69,5 +70,21 @@ public class Game implements Serializable {
 
     public void setSelectedCategories(ArrayList<String> selectedCategories) {
         this.selectedCategories = selectedCategories;
+    }
+
+    public ArrayList<String> getSelectedFriends() {
+        return selectedFriends;
+    }
+
+    public void setSelectedFriends(ArrayList<String> selectedFriends) {
+        this.selectedFriends = selectedFriends;
+    }
+
+    public void addSelectedFriend(String friendFbId)
+    {
+        if (this.selectedFriends == null)
+            setSelectedFriends(new ArrayList<String>());
+
+        this.selectedFriends.add(friendFbId);
     }
 }

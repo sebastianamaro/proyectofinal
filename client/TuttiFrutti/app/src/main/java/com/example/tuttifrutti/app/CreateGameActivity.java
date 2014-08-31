@@ -3,6 +3,7 @@ package com.example.tuttifrutti.app;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -63,19 +64,14 @@ public class CreateGameActivity extends ActionBarActivity {
             Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
             intent.putExtra("gameSettings", gs);
             startActivity(intent);
-        } else if (categories){
-            //todo: esto no deberia estar aca, se debe llamar desde la actividad de elegir amigos
-            Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+        }
+        else{
+            Intent intent = new Intent(getApplicationContext(), ChooseFriendsActivity.class);
             intent.putExtra("gameSettings", gs);
             startActivity(intent);
         }
-        else{
-            //todo: llamar a la actividad de elegir amigos
-
-            CreateGameTask task = new CreateGameTask();
-            task.execute(gs);
-        }
     }
+
 
     //todo: meter esto en una clase
     private class CreateGameTask extends AsyncTask<Game,Void, Void> {
