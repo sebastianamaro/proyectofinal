@@ -236,7 +236,9 @@ gameSchema.methods.acceptInvitation = function(request, callback){
         game.status = "PLAYING";  
         game.removeAllInvitations();        
       }
+
       player.removeInvitation(game.gameId);
+      player.addGame(game.gameId);
       game.save(function(err) {
         if(err) {
           return callback("ERROR: save game failed. "+err);
