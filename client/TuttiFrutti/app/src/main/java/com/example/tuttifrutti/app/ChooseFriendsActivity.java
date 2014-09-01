@@ -70,7 +70,20 @@ public class ChooseFriendsActivity extends FragmentActivity {
                     new PickerFragment.OnDoneButtonClickedListener() {
                         @Override
                         public void onDoneButtonClicked(PickerFragment<?> fragment) {
-                            finishActivity();
+                            if (friendPickerFragment != null) {
+                                List<GraphUser> selectedFriends =  friendPickerFragment.getSelection();
+
+                                for(GraphUser g : selectedFriends)
+                                {
+                                    gameSettings.addSelectedFriend(g.getId());
+                                }
+                            }
+
+                            if (gameSettings.getCategoriesType().equals("FIXED")) {
+                                Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+                                intent.putExtra("gameSettings", gameSettings);
+                                startActivity(intent);
+                            }//else: llamar a choose free categories
                         }
                     });
     }
@@ -87,28 +100,12 @@ public class ChooseFriendsActivity extends FragmentActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                if (finishActivity) {
-                                    finishActivity();
-                                }
+
                             }
                         });
         builder.show();
     }
 
-    private void finishActivity() {
-
-        if (friendPickerFragment != null) {
-            List<GraphUser> selectedFriends =  friendPickerFragment.getSelection();
-
-            for(GraphUser g : selectedFriends)
-            {
-                gameSettings.addSelectedFriend(g.getId());
-            }
-        }
-
-        setResult(RESULT_OK, null);
-        finish();
-    }
 
     @Override
     protected void onStart() {
