@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="server_url">http://54.94.138.160:8080/</string>
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>

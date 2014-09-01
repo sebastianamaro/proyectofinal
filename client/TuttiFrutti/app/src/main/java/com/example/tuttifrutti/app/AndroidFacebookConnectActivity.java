@@ -41,13 +41,9 @@ public class AndroidFacebookConnectActivity extends Activity {
                             @Override
                             public void onCompleted(GraphUser user, Response response) {
                                 if (user != null) {
-                                    PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
-                                    if (helper.checkPlayServices(AndroidFacebookConnectActivity.this))
-                                    {
-                                        regid = helper.getRegistrationId(getApplicationContext());
-                                        if (regid == "")
-                                            helper.registerGCMInBackground(getApplicationContext());
-                                    }
+
+                                    PlayServicesHelper helper = new PlayServicesHelper(AndroidFacebookConnectActivity.class.getSimpleName());
+                                    regid = helper.getRegistrationId(getApplicationContext());
 
                                     Player newPlayer = new Player();
                                     newPlayer.setEmail(user.asMap().get("email").toString());
@@ -73,7 +69,14 @@ public class AndroidFacebookConnectActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_connect);
-        getHash();
+
+        PlayServicesHelper helper = new PlayServicesHelper(AndroidFacebookConnectActivity.class.getSimpleName());
+        if (helper.checkPlayServices(AndroidFacebookConnectActivity.this))
+        {
+            regid = helper.getRegistrationId(getApplicationContext());
+            if (regid == "")
+                helper.registerGCMInBackground(getApplicationContext());
+        }
 
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
