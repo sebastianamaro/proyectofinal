@@ -1,0 +1,30 @@
+{% extends '::base.html.twig' %}
+{% block body -%}
+<h1>Categor&iacute;a: <small>{{ category.name }}</small></h1> 
+    <ol class="breadcrumb">
+      <li><a href="{{ path('category') }}"><i class="fa fa-desktop"></i> Volver al listado Categor&iacute;as</a></li>
+    </ol>
+<h3>Detalle de la categor&iacute;a</h3>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="bs-example">
+            <div class="list-group">
+                <span class="list-group-item"><b>Nombre:</b> {{ category.name }}</span>
+                <span class="list-group-item"><b>Es controlada:</b> {% if category.isFixed %} Si {% else %} No{% endif %}</span>
+                <span class="list-group-item"><b>Fue denunciada:</b> {% if category.isReported %} Si {% else %} No{% endif %}</span>
+                <span class="list-group-item"><b>Cantidad de usos:</b> {{ category.hits}}</span>
+                <span class="list-group-item"><b>Cantidad de palabras reportadas:</b> {{ category.reportedWordsAmount}}</span>
+                
+            </div>
+        </div>
+        {{ include('CategoryBundle:Category:words.html.twig',{ 'category': category,'path':'category_show'}) }}
+        
+        <a href="{{ path('category_edit', { 'id': category.id }) }}"  class="btn btn-primary">Editar</a>
+        
+        &nbsp;&nbsp;&nbsp;
+        <a href="{{ path('category_delete', { 'id': category.id }) }}" class="btn btn-danger">Eliminar</a>
+    
+        <br>    
+    </div>
+</div>
+{% endblock %}

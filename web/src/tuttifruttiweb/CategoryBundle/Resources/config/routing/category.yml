@@ -1,0 +1,37 @@
+category:
+    path:     /
+    defaults: { _controller: "CategoryBundle:Category:index" }
+
+category_show:
+    path:     /{id}/show
+    defaults: { _controller: "CategoryBundle:Category:show" }
+
+category_create:
+    path:     /create
+    defaults: { _controller: "CategoryBundle:Category:create" }
+
+category_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CategoryBundle:Category:edit" }
+
+category_update:
+    path:     /{id}/update
+    defaults: { _controller: "CategoryBundle:Category:update" }
+    requirements: { _method: post|put }
+
+category_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CategoryBundle:Category:delete" }
+    requirements: { _method: post|delete }
+
+reportedword_accept:
+    path:     /{id}/acceptReportedWord/{word}
+    defaults: { _controller: "CategoryBundle:Category:addWord" }
+
+reportedword_reject:
+    path:     /{id}/rejectReportedWord/{word}
+    defaults: { _controller: "CategoryBundle:Category:removeReportedWord" }
+
+acceptedword_delete:
+    path:     /{id}/deleteWord/{word}
+    defaults: { _controller: "CategoryBundle:Category:removeWord" }

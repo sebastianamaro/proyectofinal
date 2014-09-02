@@ -2,10 +2,11 @@ var express = require("express"),
     app     = express(),
     http    = require("http"),
     server  = http.createServer(app),
-    mongoose = require('mongoose'); 
+    mongoose = require('mongoose');
 
 routes = require('./routes/game.js')(app);
 routes = require('./routes/player.js')(app);
+routes = require('./routes/category.js')(app);
 
 app.configure(function () {
   app.use(express.bodyParser());
@@ -23,6 +24,9 @@ app.get('/game/:id/round/:roundId/scores', getRoundScores);
 app.get('/player/:id/game', getGamesForPlayer);
 app.get('/player/:id/invitations', getInvitationsForPlayer);
 app.post('/player', createPlayer);
+app.get('/category?:criteria', getCategories); 
+app.get('/category/:id', getCategory); 
+app.post('/category', createCategory); 
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {

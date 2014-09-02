@@ -1,0 +1,89 @@
+{% extends '::base.html.twig' %}
+
+{% block javascriptsHead %}
+  <script src="{{ asset('bundles/utils/js/agregarLinkPaginadores.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<h1>Categor&iacute;as </h1>  
+<ol class="breadcrumb">
+    <li><a href="{{ path('category_create') }}">Crear nueva categoría</a></li>
+</ol> 
+<form method="get" action=".">
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><b>{{ form_label(form.name) }}</b></th>
+                <th><b>{{ form_label(form.isFixed) }}</b></th>
+                <th><b>{{ form_label(form.isReported) }}</b></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ form_widget(form.name) }}</td> 
+                <td>{{ form_widget(form.isFixed) }}</td> 
+                <td>{{ form_widget(form.isReported) }}</td> 
+            </tr>
+        </tbody>                        
+            <tr>
+                <td></td>
+                <td align='center'><input type="submit" class="btn btn-primary" name="submit-filter" value="Buscar" /></td>
+                <td align='center'> <input type="submit" class="btn btn-primary" name="clear-filter" value="Blanquear" /></td>
+                <td></td>                        
+            </tr>       
+    </table>
+</div>
+{{ form_end(form) }}
+
+<div class="count">
+    {{categories | length }} de {{ totalCategories }} categor&iacute;as
+</div>
+<br>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-striped tablesorter">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Es Controlada</th>
+        <th>Fue Denunciada</th>
+        <th>Cantidad de Palabras Aceptadas</th>
+        <th>Cantidad de Palabras Reportadas</th>
+        <th>Cantidad de usos</th>
+        <th>Acciones</th>
+
+      </tr>
+    </thead>
+    <tbody> 
+    {% for category in categories %}
+            <tr>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{{ category.name }}</td>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{% if category.isFixed %} Si {% else %} No{% endif %}</td>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{% if category.isReported %} Si {% else %} No{% endif %}</td>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{{ category.acceptedWords | length }}</td>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{{ category.reportedWords | length }}</td>
+                <td style="cursor:pointer;"  onclick="location.href='{{ path('category_show', { 'id': category.id }) }}'">{{ category.hits }}</td>
+                <td>
+                    <a href="{{ path('category_edit', { 'id': category.id }) }}" class="btn btn-primary btn-xs">editar</a>
+                    <a href="#" class="btn btn-danger btn-xs">eliminar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="pagination">
+    {{ simple_paginator_render('category', null, {
+                'container_class': 'pagination',
+                'previousPageText': 'Anterior',
+                'nextPageText':'Siguiente',
+                'currentClass':'active',
+                'firstPageText':'Primera',
+                'lastPageText':'Última',
+                'firstDisabledClass':'disabled',
+                'lastDisabledClass':'disabled',
+                'nextDisabledClass':'disabled',
+                'previousDisabledClass':'disabled',
+                }) }}
+</div>
+{% endblock %}
