@@ -6,17 +6,16 @@ import java.util.ArrayList;
  * Created by Nituguivi on 03/08/2014.
  */
 public class GameScoreSummary {
-    private ArrayList<Player> players;
+    private ArrayList<String> playersName;
     private ArrayList<GameRoundScoreSummary> roundsResult;
-    private ArrayList<PlayerResult> playerResult;
+    private ArrayList<ScoreInfo> playerResult;
 
-
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public ArrayList<String> getPlayers() {
+        return playersName;
     }
 
-    public void setPlayersName(ArrayList<Player> players) {
-        this.players = players;
+    public void setPlayersName(ArrayList<String> players) {
+        this.playersName = players;
     }
 
     public ArrayList<GameRoundScoreSummary> getRoundsResult() {
@@ -26,11 +25,11 @@ public class GameScoreSummary {
     public void setRoundsResult(ArrayList<GameRoundScoreSummary> roundsResult) {
         this.roundsResult = roundsResult;
     }
-    public ArrayList<PlayerResult> getPlayerResult() {
+    public ArrayList<ScoreInfo> getPlayerResult() {
         return playerResult;
     }
 
-    public void setPlayerResult(ArrayList<PlayerResult> playerResult) {
+    public void setPlayerResult(ArrayList<ScoreInfo> playerResult) {
         this.playerResult = playerResult;
     }
 }
