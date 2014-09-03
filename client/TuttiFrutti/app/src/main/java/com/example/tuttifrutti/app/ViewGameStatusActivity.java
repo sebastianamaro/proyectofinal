@@ -199,7 +199,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             Game game = gameList.get(position);
             ((TextView)convertView.findViewById(android.R.id.text1)).setText(game.getOwner().getName());
             ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getMode());
-
+            ((TextView)convertView.findViewById(android.R.id.text1)).setTextColor(getResources().getColor(R.color.black));
+            ((TextView)convertView.findViewById(android.R.id.text2)).setTextColor(getResources().getColor(R.color.black));
             return convertView;
 
         }
@@ -231,6 +232,8 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             ((TextView)convertView.findViewById(android.R.id.text1)).setText(String.valueOf(game.getGameId()));
             ((TextView)convertView.findViewById(android.R.id.text2)).setText(game.getStatus());
 
+            ((TextView)convertView.findViewById(android.R.id.text1)).setTextColor(getResources().getColor(R.color.black));
+            ((TextView)convertView.findViewById(android.R.id.text2)).setTextColor(getResources().getColor(R.color.black));
             return convertView;
 
         }
