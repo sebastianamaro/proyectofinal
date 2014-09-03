@@ -81,9 +81,8 @@ class CategoryController extends Controller
 
             $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category');            
             $reqJson  = new HttpPostJson($url,$objectCategory);
-            $categoriesData = $this->get('api_caller')->call($reqJson);
-
-            return $this->redirect($this->generateUrl('category_show', array('id' => $category->getId())));
+            $categoryData = $this->get('api_caller')->call($reqJson);
+            return $this->redirect($this->generateUrl('category_show', array('id' => $categoryData->id)));
         }
 
         return $this->render('CategoryBundle:Category:new.html.twig', array(
@@ -164,13 +163,6 @@ class CategoryController extends Controller
         ));
     }
 
-    /**
-    * Creates a form to edit a Category entity.
-    *
-    * @param Category $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
     private function createEditForm(Category $entity)
     {
         $form = $this->createForm(new CategoryType(), $entity, array(
@@ -182,10 +174,6 @@ class CategoryController extends Controller
 
         return $form;
     }
-    /**
-     * Edits an existing Category entity.
-     *
-     */
     public function updateAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();

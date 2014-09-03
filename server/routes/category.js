@@ -36,7 +36,6 @@ module.exports = function(app) {
       });
   }
   createCategory = function(req,res){
-    console.log(JSON.stringify(req.body));
     Category.findOne({}).sort('-id').exec(function(err, doc) { 
       var largerId;
       if (doc){
@@ -52,7 +51,6 @@ module.exports = function(app) {
       for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
         var wordReq = req.body.acceptedWords.values[i];
         var valueWord = wordReq.value;
-        console.log(wordReq+" is the word object, "+valueWord+" is the word value");
         category.acceptedWords.push(valueWord);
       };
       category.hits = 0;
@@ -65,7 +63,7 @@ module.exports = function(app) {
           console.log('ERROR: ' + err);
         }
       });
-      return res.send('Created category with id '+largerId, 200);
+      return res.send({'id':largerId}, 200);
      });
   }
 }
