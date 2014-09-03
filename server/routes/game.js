@@ -72,22 +72,29 @@ module.exports = function(app) {
             return res.send('Added line to round', 200);
           }; 
           console.log("The player who stopped is "+reqRound.line.player.fbId);
-          game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
-            currentRound.addLine(reqRound.line);
-            
-            if (currentRound.checkAllPlayersFinished(game)){
-              currentRound.finish(game);
-            }
+          
+          Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
+                if (err) return res.send(err, 500);
+                if (!foundPlayer) return res.send('Player not found', 404);
+              console.log('foundPlayer ' + foundPlayer);
+              game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
+                currentRound.addLine(reqRound.line, foundPlayer);
+                console.log("ultima line antes de guardar " + currentRound.lines[currentRound.lines.length-1]);
+                
+                if (currentRound.checkAllPlayersFinished(game)){
+                  currentRound.finish(game);
+                }
 
-            game.save(function(err) {
-              if(!err) {
-                console.log('Finished round');
-              } else {
-                console.log('ERROR: ' + err);
-              }
-            });
+                game.save(function(err) {
+                  if(!err) {
+                    console.log('Finished round');
+                  } else {
+                    console.log('ERROR: ' + err);
+                  }
+                });
+              });
+              res.send('Round finished', 200);
           });
-          res.send('Round finished', 200);
             
         });
   }
@@ -173,7 +180,6 @@ module.exports = function(app) {
       var gameScoresMap = { 'playersName': game.getPlayerNames(),
                             'roundsResult': roundResults,
                             'playerResult': game.getPlayerResults(roundResults) };
-
       res.send(gameScoresMap, 200);            
      });
   }

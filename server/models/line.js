@@ -6,16 +6,22 @@ var Player = require('./player.js');
 var Game = require('./game.js');
 
 var lineSchema = new Schema({
-  player:   {registrationId: {type: String}, fbId: {type: String}},
+  player:   [ Player.schema ],
   plays:   [ Play.schema ],
   score: { type: Number },
   startTimestamp: { type: Date }
 }, { _id : false });
 
-lineSchema.methods.setValues = function setValues(line) {
-  this.player = line.player;
-  this.startTimestamp = line.startTimeStamp;
-  this.addPlays(line.plays);
+lineSchema.methods.setValues = function setValues(line, foundPlayer) {
+  var thisLine = this;
+  console.log('line.player.fbId '+line.player.fbId);
+  
+
+      thisLine.player.push(foundPlayer);
+      thisLine.startTimestamp = line.startTimeStamp;
+      thisLine.addPlays(line.plays);
+    
+  
  }
 
 lineSchema.methods.addPlays = function addPlays(playsArray) {

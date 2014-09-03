@@ -140,9 +140,14 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
 }
 gameSchema.methods.getPlayerNames = function(){
   var playerNames = [];
+  
   for (var i = this.players.length - 1; i >= 0; i--) {
-    playerNames.push( this.players[i].getName() );
+    console.log("this.players[i].getName() " + this.players[i].getName());
+    playerNames.push(this.players[i].getName());
   };
+
+  console.log("playerNames " + playerNames);
+
   return playerNames;
 }
 gameSchema.methods.getRoundResults = function(){

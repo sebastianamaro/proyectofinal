@@ -17,11 +17,14 @@ roundSchema.methods.start = function start(letter) {
   this.status = 'PLAYING';
 }
 
-roundSchema.methods.addLine = function addLine(newLine) {
-  var existingLine = this.lines.filter(function (line) {return line.player.fbId == newLine.player.fbId; }).pop();
-  if (!existingLine){
+roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
+  console.log('newLine.player.fbId ' + newLine.player.fbId);
+  var existingLine = this.lines.filter(function (line) {return line.player[0].fbId == newLine.player.fbId; }).pop();
+  
+  if (existingLine===undefined){
     var myLine = new Line();
-    myLine.setValues(newLine);
+    myLine.setValues(newLine, foundPlayer);
+    console.log('myline ' + myLine);
     this.lines.push(myLine);
   }
 }
@@ -38,13 +41,13 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
 
 roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
   var existingLine = this.lines.filter(function (line) {
-    return line.player.fbId == player.fbId; 
+    return line.player[0].fbId == player.fbId; 
   }).pop();  
   return existingLine !== undefined;
 }
 roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player){
   var existingLine = this.lines.filter(function (line) {
-    return line.player.fbId == player.fbId && line.plays.length>0; 
+    return line.player[0].fbId == player.fbId && line.plays.length>0; 
   }).pop();  
   return existingLine !== undefined;
 }
@@ -130,7 +133,7 @@ roundSchema.methods.addToScoresMap = function addToScoresMap(scoresMap, play, iL
 
 roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
   var line = new Line();
-  line.player = player;
+  line.player.push(player);
   this.addLine(line);
 }
 
@@ -141,7 +144,8 @@ roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScores
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var lineForPlayer = this.lines.filter(function (line) 
-      {return line.player.fbId == aPlayer.fbId; }).pop();
+      {return line.player[0].fbId == aPlayer.fbId; }).pop();
+    
     var unScore = { 'score': lineForPlayer.score, 'best' : false };
     scores.push(unScore);
 
@@ -162,7 +166,7 @@ roundSchema.methods.getScores = function getScores(players){
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var lineForPlayer = this.lines.filter(function (line) 
-      {return line.player.fbId == aPlayer.fbId; }).pop();
+      {return line.player[0].fbId == aPlayer.fbId; }).pop();
     if (lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 

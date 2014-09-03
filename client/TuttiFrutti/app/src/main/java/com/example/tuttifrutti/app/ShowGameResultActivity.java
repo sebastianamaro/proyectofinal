@@ -17,8 +17,11 @@ import com.example.TuttiFruttiCore.GameScoreSummary;
 
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.GameRoundScoreSummary;
+import com.example.TuttiFruttiCore.PlayerResult;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiAPI;
+
+import java.util.ArrayList;
 
 public class ShowGameResultActivity extends ActionBarActivity {
 
@@ -72,9 +75,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
             AddHeaderTextView(playersRow, "Rondas");
 
-            for (Player p : result.getPlayers())
+            for (String p : result.getPlayers())
             {
-                AddHeaderTextView(playersRow, p.getName());
+                AddHeaderTextView(playersRow, p);
             }
 
             table.addView(playersRow);
@@ -94,9 +97,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
             }
 
             AddTotalTextView(totalScoreRow, null); //la primera es la columna de las rondas
-            roundRes = result.getRoundsResult().get(result.getRoundsResult().size()-1);
-            for (int k=0;k<roundRes.getScores().size();k++) {
-                AddTotalTextView(totalScoreRow, roundRes.getScores().get(k));
+            ArrayList<ScoreInfo> playersRes = result.getPlayerResult();
+            for (int k=0;k<playersRes.size();k++) {
+                AddTotalTextView(totalScoreRow, playersRes.get(k));
             }
 
             // la ultima fila que agrego es la de los puntajes
