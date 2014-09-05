@@ -4,6 +4,8 @@ namespace tuttifruttiweb\CategoryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use tuttifruttiweb\CategoryBundle\Entity\AcceptedWord;
+use tuttifruttiweb\CategoryBundle\Entity\ReportedWord;
 /**
  * Category
  *
@@ -18,13 +20,13 @@ class Category
             switch ($key) {
                 case 'acceptedWords':
                     foreach ($value as $keyWord => $valueWord) {
-                        $word = new Word($valueWord); 
+                        $word = new AcceptedWord($valueWord); 
                         $this->addAcceptedWord($word);
                     }
                     break;
                 case 'reportedWords':
                     foreach ($value as $keyWord => $valueWord) {
-                        $word = new Word($valueWord); 
+                        $word = new ReportedWord($valueWord); 
                         $this->addReportedWord($word);
                     }
                     break;
@@ -48,7 +50,7 @@ class Category
      *
      * @ORM\Column(name="name", type="string", length=255)
      */
-    public $name;
+    private $name;
 
     /**
      * @var boolean
@@ -72,11 +74,11 @@ class Category
     private $hits = 0;
 
     /**
-    * @ORM\OneToMany(targetEntity="\tuttifruttiweb\CategoryBundle\Entity\Word", mappedBy="category", cascade={"all"}, orphanRemoval=true)
+    * @ORM\OneToMany(targetEntity="\tuttifruttiweb\CategoryBundle\Entity\ReportedWord", mappedBy="category", cascade={"all"}, orphanRemoval=true)
      */
     private $reportedWords;
     /**
-    * @ORM\OneToMany(targetEntity="\tuttifruttiweb\CategoryBundle\Entity\Word", mappedBy="category", cascade={"all"}, orphanRemoval=true)
+    * @ORM\OneToMany(targetEntity="\tuttifruttiweb\CategoryBundle\Entity\AcceptedWord", mappedBy="category", cascade={"all"}, orphanRemoval=true)
      */
     private $acceptedWords;
 
@@ -208,7 +210,7 @@ class Category
      * @param \tuttifruttiweb\CategoryBundle\Entity\Word $reportedWords
      * @return Category
      */
-    public function addReportedWord(\tuttifruttiweb\CategoryBundle\Entity\Word $reportedWords)
+    public function addReportedWord(\tuttifruttiweb\CategoryBundle\Entity\ReportedWord $reportedWords)
     {
         $this->reportedWords[] = $reportedWords;
 
@@ -220,7 +222,7 @@ class Category
      *
      * @param \tuttifruttiweb\CategoryBundle\Entity\Word $reportedWords
      */
-    public function removeReportedWord(\tuttifruttiweb\CategoryBundle\Entity\Word $reportedWords)
+    public function removeReportedWord(\tuttifruttiweb\CategoryBundle\Entity\ReportedWord $reportedWords)
     {
         $this->reportedWords->removeElement($reportedWords);
     }
@@ -241,7 +243,7 @@ class Category
      * @param \tuttifruttiweb\CategoryBundle\Entity\Word $acceptedWords
      * @return Category
      */
-    public function addAcceptedWord(\tuttifruttiweb\CategoryBundle\Entity\Word $acceptedWords)
+    public function addAcceptedWord(\tuttifruttiweb\CategoryBundle\Entity\AcceptedWord $acceptedWords)
     {
         $this->acceptedWords[] = $acceptedWords;
 
@@ -253,7 +255,7 @@ class Category
      *
      * @param \tuttifruttiweb\CategoryBundle\Entity\Word $acceptedWords
      */
-    public function removeAcceptedWord(\tuttifruttiweb\CategoryBundle\Entity\Word $acceptedWords)
+    public function removeAcceptedWord(\tuttifruttiweb\CategoryBundle\Entity\AcceptedWord $acceptedWords)
     {
         $this->acceptedWords->removeElement($acceptedWords);
     }

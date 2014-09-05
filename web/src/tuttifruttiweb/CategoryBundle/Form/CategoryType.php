@@ -28,7 +28,7 @@ class CategoryType extends AbstractType
             ))
             ->add('acceptedWords','collection',
                 array(
-                'type'=>new WordType(),
+                'type'=>new AcceptedWordType(),
                 'label'=>false,
                 'allow_add'=>true,
                 'allow_delete'=>true))

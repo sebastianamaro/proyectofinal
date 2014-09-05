@@ -8,13 +8,14 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Lsw\ApiCallerBundle\Call\HttpGetJson;
 use Lsw\ApiCallerBundle\Call\HttpPostJson;
+use Lsw\ApiCallerBundle\Call\HttpPutJson;
 use Lsw\ApiCallerBundle\Caller\LoggingApiCaller;
 use Symfony\Component\HttpFoundation\Response;
 
 use tuttifruttiweb\UtilsBundle\Utils\ArraySorter as ArraySorter;
 use tuttifruttiweb\UtilsBundle\Utils\Encoder as Encoder;
 use tuttifruttiweb\CategoryBundle\Entity\Category;
-use tuttifruttiweb\CategoryBundle\Entity\Word;
+use tuttifruttiweb\CategoryBundle\Entity\AcceptedWord;
 use tuttifruttiweb\CategoryBundle\Form\CategoryType;
 use tuttifruttiweb\CategoryBundle\Form\CategoryFilterType;
 
@@ -69,7 +70,7 @@ class CategoryController extends Controller
     public function createAction(Request $request)
     {
         $category = new Category();
-        $acceptedWord = new Word();
+        $acceptedWord = new AcceptedWord();
 
         $category->addAcceptedWord($acceptedWord);
         $form = $this->createCreateForm($category);
@@ -91,13 +92,6 @@ class CategoryController extends Controller
         ));
     }
 
-    /**
-     * Creates a form to create a Category entity.
-     *
-     * @param Category $entity The entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
     private function createCreateForm(Category $entity)
     {
         $form = $this->createForm(new CategoryType(), $entity, array(
@@ -138,26 +132,28 @@ class CategoryController extends Controller
             'acceptedWordsPage' =>$acceptedWordsPage,
         ));
     }
-
-    /**
-     * Displays a form to edit an existing Category entity.
-     *
-     */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+        $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+        $category = new Category();
+        $category->set($categoryData);
 
-        $entity = $em->getRepository('CategoryBundle:Category')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Category entity.');
-        }
-
-        $editForm = $this->createEditForm($entity);
+        $editForm = $this->createEditForm($category);
         $deleteForm = $this->createDeleteForm($id);
 
+        $editForm->handleRequest($request);
+        if ($editForm->isValid()) {
+          $encoder = new Encoder();
+          $objectCategory = $encoder->getSerializedObject($category);
+
+          $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;            
+          $reqJson  = new HttpPutJson($url,$objectCategory);
+          $categoryData = $this->get('api_caller')->call($reqJson);
+          return $this->redirect($this->generateUrl('category_show', array('id' => $category->getId())));
+        }
         return $this->render('CategoryBundle:Category:edit.html.twig', array(
-            'entity'      => $entity,
+            'category'      => $category,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
@@ -166,44 +162,18 @@ class CategoryController extends Controller
     private function createEditForm(Category $entity)
     {
         $form = $this->createForm(new CategoryType(), $entity, array(
-            'action' => $this->generateUrl('category_update', array('id' => $entity->getId())),
+            'action' => $this->generateUrl('category_edit', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
-
-        $form->add('submit', 'submit', array('label' => 'Update'));
-
+        $form->add('isReported', 'choice', array(
+                'label'  => 'Está reportada',
+                'choices'   => array(true => 'Si', false => 'No'),
+                'required'  => true,
+                'expanded' =>true,
+                'multiple' => false
+            ));
         return $form;
     }
-    public function updateAction(Request $request, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('CategoryBundle:Category')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Category entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createEditForm($entity);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isValid()) {
-            $em->flush();
-
-            return $this->redirect($this->generateUrl('category_edit', array('id' => $id)));
-        }
-
-        return $this->render('CategoryBundle:Category:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-    /**
-     * Deletes a Category entity.
-     *
-     */
     public function deleteAction(Request $request, $id)
     {
         $form = $this->createDeleteForm($id);
@@ -224,13 +194,6 @@ class CategoryController extends Controller
         return $this->redirect($this->generateUrl('category'));
     }
 
-    /**
-     * Creates a form to delete a Category entity by id.
-     *
-     * @param mixed $id The entity id
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()

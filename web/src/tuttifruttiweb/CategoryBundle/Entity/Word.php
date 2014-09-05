@@ -22,39 +22,23 @@ class Word
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="value", type="string", length=255)
      */
-    private $value;
+    protected $value;
 
-    
-    /**
-    * @ORM\ManyToOne(targetEntity="\tuttifruttiweb\CategoryBundle\Entity\Category")
-    * @ORM\JoinColumn(name="idCategory", referencedColumnName="id")
-    */
-    private $category;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
     public function getId()
     {
         return $this->id;
     }
-
-    /**
-     * Set value
-     *
-     * @param string $value
-     * @return Word
-     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
     public function setValue($value)
     {
         $this->value = $value;
@@ -62,36 +46,10 @@ class Word
         return $this;
     }
 
-    /**
-     * Get value
-     *
-     * @return string 
-     */
     public function getValue()
     {
         return $this->value;
     }
 
-    /**
-     * Set category
-     *
-     * @param \tuttifruttiweb\CategoryBundle\Entity\Category $category
-     * @return Word
-     */
-    public function setCategory(\tuttifruttiweb\CategoryBundle\Entity\Category $category = null)
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return \tuttifruttiweb\CategoryBundle\Entity\Category 
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
+    
 }

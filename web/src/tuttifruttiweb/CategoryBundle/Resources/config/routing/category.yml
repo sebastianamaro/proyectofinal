@@ -14,11 +14,6 @@ category_edit:
     path:     /{id}/edit
     defaults: { _controller: "CategoryBundle:Category:edit" }
 
-category_update:
-    path:     /{id}/update
-    defaults: { _controller: "CategoryBundle:Category:update" }
-    requirements: { _method: post|put }
-
 category_delete:
     path:     /{id}/delete
     defaults: { _controller: "CategoryBundle:Category:delete" }

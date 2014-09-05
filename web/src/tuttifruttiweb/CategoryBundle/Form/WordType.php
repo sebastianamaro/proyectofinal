@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class WordType extends AbstractType
+abstract class WordType extends AbstractType
 {
     /**
     * @param FormBuilderInterface $builder
@@ -25,21 +25,4 @@ class WordType extends AbstractType
                     ));
     }
     
-    /**
-     * @param OptionsResolverInterface $resolver
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => 'tuttifruttiweb\CategoryBundle\Entity\Word'
-        ));
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'tuttifruttiweb_categorybundle_word';
-    }
 }
