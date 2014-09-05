@@ -26,6 +26,7 @@ app.get('/player/:id/invitations', getInvitationsForPlayer);
 app.post('/player', createPlayer);
 app.get('/category?:criteria', getCategories); 
 app.get('/category/:id', getCategory); 
+app.put('/category/:id', editCategory); 
 app.post('/category', createCategory); 
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {

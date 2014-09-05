@@ -13,20 +13,17 @@
     {{ form_row(edit_form.isFixed) }}
     {{ form_row(edit_form.isReported) }}
 
-    {% macro prototype(acceptedWord) %}
+    {% macro prototype(word) %}
          <tr>
-             <td>{{form_widget(acceptedWord.value)}}</td>
+             <td>{{form_widget(word.value)}}</td>
              <td> &nbsp;&nbsp;<a href="#">Eliminar Palabra</a></td>
          </tr>
      {% endmacro %}
-     {% macro prototype(reportedWord) %}
-         <tr>
-             <td>{{form_widget(reportedWord.value)}}</td>
-             <td> &nbsp;&nbsp;<a href="#">Eliminar Palabra</a></td>
-         </tr>
-     {% endmacro %}
-
-    <h3>Palabras:</h3>
+     
+    <h3>Palabras aceptadas:</h3>
+    
+    {{ form_label(edit_form.acceptedWordsBatch) }}<br>
+    {{ form_widget(edit_form.acceptedWordsBatch) }}<br><br>
     <a href="#" class="add_word_link" id="add_word_link">Agregar Palabra</a>
     <table>
         <caption></caption>
@@ -37,12 +34,11 @@
         </thead>
 
         <tbody>
-            {% for acceptedWord in edit_form.acceptedWords %}
-                {{_self.prototype(acceptedWord)}}
+            {% for word in edit_form.acceptedWords %}
+                {{_self.prototype(word)}}
             {% endfor %}
         </tbody>
     </table>
-
  <div class="col-lg-12">
   <div class="form-group">
     <br>{{ form_row(edit_form.submit) }}

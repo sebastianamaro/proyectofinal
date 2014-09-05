@@ -35,6 +35,9 @@ module.exports = function(app) {
         res.send(category, 200); //add error manipulation
       });
   }
+  arrayContains = function(array, search){
+    return array.indexOf(search) >= 0;
+  }
   editCategory = function(req, res) {
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);
@@ -49,19 +52,12 @@ module.exports = function(app) {
       if (req.body.acceptedWords.values !== undefined){
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
-          var valueWord = wordReq.value;
-          category.acceptedWords.push(valueWord);
+          var valueWord = wordReq.value.toUpperCase().trim();
+          if (!arrayContains(category.acceptedWords,valueWord)){
+            category.acceptedWords.push(valueWord);
+          }
         };
       }
-      category.reportedWords = [];
-      if (req.body.reportedWords.values !== undefined){
-        for (var i = req.body.reportedWords.values.length - 1; i >= 0; i--) {
-          var wordReq = req.body.reportedWords.values[i];
-          var valueWord = wordReq.value;
-          category.reportedWords.push(valueWord);
-        };
-      }
-      
       category.save(function(err) {
         if(!err) {
           console.log('Saved category with id '+category.id);
@@ -93,11 +89,12 @@ module.exports = function(app) {
       if (req.body.acceptedWords.values !== undefined){
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
-          var valueWord = wordReq.value;
-          category.acceptedWords.push(valueWord);
+          var valueWord = wordReq.value.toUpperCase().trim(); 
+          if (!arrayContains(category.acceptedWords,valueWord )) {
+            category.acceptedWords.push(valueWord);
+          }
         };
-      }
-      
+      }      
       category.save(function(err) {
         if(!err) {
           console.log('Created category with id '+largerId);

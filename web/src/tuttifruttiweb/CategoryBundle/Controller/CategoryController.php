@@ -17,6 +17,8 @@ use tuttifruttiweb\UtilsBundle\Utils\Encoder as Encoder;
 use tuttifruttiweb\CategoryBundle\Entity\Category;
 use tuttifruttiweb\CategoryBundle\Entity\AcceptedWord;
 use tuttifruttiweb\CategoryBundle\Form\CategoryType;
+use tuttifruttiweb\CategoryBundle\Form\AcceptedWordType;
+use tuttifruttiweb\CategoryBundle\Form\ReportedWordType;
 use tuttifruttiweb\CategoryBundle\Form\CategoryFilterType;
 
 class CategoryController extends Controller
@@ -77,9 +79,10 @@ class CategoryController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $acceptedWordsBatch = $form["acceptedWordsBatch"]->getData();
+            $category->addAcceptedWordsBatch($acceptedWordsBatch);
             $encoder = new Encoder();
             $objectCategory = $encoder->getSerializedObject($category);
-
             $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category');            
             $reqJson  = new HttpPostJson($url,$objectCategory);
             $categoryData = $this->get('api_caller')->call($reqJson);
@@ -144,6 +147,8 @@ class CategoryController extends Controller
 
         $editForm->handleRequest($request);
         if ($editForm->isValid()) {
+          $acceptedWordsBatch = $editForm["acceptedWordsBatch"]->getData();
+          $category->addAcceptedWordsBatch($acceptedWordsBatch);
           $encoder = new Encoder();
           $objectCategory = $encoder->getSerializedObject($category);
 

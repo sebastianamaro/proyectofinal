@@ -36,6 +36,14 @@ class Category
             }
         }
     }
+    public function addAcceptedWordsBatch($acceptedWordsBatch){
+        if ($acceptedWordsBatch !== ''){
+            $arrayWords = explode(',', $acceptedWordsBatch);
+            foreach ($arrayWords as $key => $acceptedWordValue) {
+                $this->addAcceptedWord(new AcceptedWord($acceptedWordValue));
+            }
+        }
+    }
     /**
      * @var integer
      *

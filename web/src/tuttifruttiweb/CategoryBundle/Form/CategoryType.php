@@ -32,6 +32,13 @@ class CategoryType extends AbstractType
                 'label'=>false,
                 'allow_add'=>true,
                 'allow_delete'=>true))
+            ->add('acceptedWordsBatch','textarea',
+                array(
+                'required'=>false,
+                'mapped'=>false,
+                'label'=>'Lote de palabras (separadas por coma, se ignoran repetidas)',
+                'attr'=> array('rows'=>'3',
+                            'cols'=>'100')))
             ->add('submit','submit',array('label' => 'Guardar',
                 'attr'=> array('class'=>'btn btn-primary btn-lg')))
             ;
