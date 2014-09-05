@@ -15,6 +15,7 @@ var gameSchema = new Schema({
     opponentsType: { type: String },
     players: [ Player.schema ],
     creator: [ Player.schema ],
+    selectedFriends: [ { type: String } ],
     randomPlayersCount: { type: Number }
 });
 
@@ -58,6 +59,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
+  this.selectedFriends = game.selectedFriends;
 }
 
 gameSchema.methods.addPlayer = function addPlayer(player){
@@ -192,11 +194,18 @@ gameSchema.methods.getPlayerResults = function(partialScores){
   return playerResults;
 }
 gameSchema.methods.sendInvitations = function(callback){
+  var creator = this.creator[0];
+  var gameId = this.gameId;
+  
   if (this.opponentsType !== 'RANDOM'){
+    Player.find({ fbId: { $in: this.selectedFriends } }, function (err, players){
+      for(var iPlayer in players ){
+        var player = players[iPlayer];
+        player.sendInvitationToGameIfPossible(gameId, creator);
+      }
+    });
     return callback();
-  } else {
-    var gameId = this.gameId;
-    var creator = this.creator[0];
+  } else {    
     console.log("this GAME " + this);
     console.log("this.creator " + this.creator);
     console.log("recien imprimi el creator");
@@ -235,13 +244,28 @@ gameSchema.methods.acceptInvitation = function(request, callback){
       console.log("ERROR: player not found");
       return callback("ERROR: player not found"); 
     }
+
+    var invitedPlayersCount;
     if (game.opponentsType == 'RANDOM'){
+        invitedPlayersCount = game.randomPlayersCount + 1;
+    }
+    else{
+        invitedPlayersCount = game.selectedFriends.length + 1;
+    }
+    
       game.players.push(player);
-      if (game.randomPlayersCount + 1 == game.players.length){
-        game.status = "PLAYING";  
+      if (invitedPlayersCount == game.players.length){
+        if (invitedPlayersCount != 1)
+        {
+          game.status = "PLAYING";  
+        }
+        else
+        {
+          game.status = "ALLREJECTED";  
+
+        }
         game.removeAllInvitations();        
       }
-
       player.removeInvitation(game.gameId);
       player.addGame(game.gameId);
       game.save(function(err) {
@@ -256,7 +280,8 @@ gameSchema.methods.acceptInvitation = function(request, callback){
       });
       console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
       return callback();
-    }
+    
+    
   });
 }
 gameSchema.methods.rejectInvitation = function(request, callback){
@@ -270,16 +295,29 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       console.log("ERROR: player not found");
       return callback("ERROR: player not found"); 
     }
-    if (game.opponentsType == 'RANDOM'){
-      player.removeInvitation(game.gameId);
-      player.save(function(err) {
-        if(err) {
-          return callback("ERROR: save player failed. "+err);
-        } 
-        console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
-      });
-      return callback();
+
+    player.removeInvitation(game.gameId);
+    player.save(function(err) {
+      if(err) {
+        return callback("ERROR: save player failed. "+err);
+      } 
+      console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
+    });
+
+    if (game.opponentsType !== 'RANDOM'){
+        //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
+        var index = this.selectedFriends.indexOf(player.fbId);
+        if (index > -1) {
+          this.selectedFriends.splice(index, 1);
+        }
     }
+
+    game.save(function(err) {
+        if(err) {
+          return callback("ERROR: save game failed. "+err);
+        } 
+      });
+    return callback();
   });  
 }
 gameSchema.methods.asSummarized = function(){
