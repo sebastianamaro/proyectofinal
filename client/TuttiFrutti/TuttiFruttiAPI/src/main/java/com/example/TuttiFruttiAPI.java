@@ -171,12 +171,30 @@ public class TuttiFruttiAPI {
 
     public void AddPlayer(Player newPlayer)
     {
-        String url= serverURL+"player"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
+        String url= serverURL+"player";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
         restTemplate.postForEntity(url, newPlayer, null);
+    }
+
+    public void reportCategory(int categoryId){
+
+        String url= serverURL+"category/"+ categoryId+"?report";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.put(url, null);
+    }
+
+    public void starCategory(String playerId, int categoryId){
+
+        String url= serverURL+"player/"+ playerId+"/category/"+categoryId;
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.put(url, null);
     }
 
     public ArrayList<Category> getCategories()
@@ -190,20 +208,20 @@ public class TuttiFruttiAPI {
         return new ArrayList<Category>(Arrays.asList(lineArray));*/
 
         //stared
-        Category cat1= new Category("NOMBRES DE TELO",true, false, false);
-        Category cat2= new Category("LAGOS DE PATAGONIA",true, false, false);
-        Category cat3= new Category("BOLICHES",true, false, false);
+        Category cat1= new Category(1,"NOMBRES DE TELO",true, false, false);
+        Category cat2= new Category(2,"LAGOS DE PATAGONIA",true, false, false);
+        Category cat3= new Category(3,"BOLICHES",true, false, false);
         //fixed
-        Category cat4= new Category("ANIMALES",false, false, true);
-        Category cat5= new Category("COLORES",false, false, true);
-        Category cat6= new Category("MARCAS DE AUTO",false, false, true);
-        Category cat7 = new Category("FRUTAS",false,false, true);
+        Category cat4= new Category(4,"ANIMALES",false, false, true);
+        Category cat5= new Category(5,"COLORES",false, false, true);
+        Category cat6= new Category(6,"MARCAS DE AUTO",false, false, true);
+        Category cat7 = new Category(7,"FRUTAS",false,false, true);
 
 
-        Category cat8= new Category("CALLES",false,false, false);
-        Category cat9= new Category("TRAGOS",false,false, false);
-        Category cat10= new Category("PAISES",false,true, false);
-        Category cat11= new Category("UTENSILLOS",false,true, false);
+        Category cat8= new Category(8,"CALLES",false,false, false);
+        Category cat9= new Category(9,"TRAGOS",false,false, false);
+        Category cat10= new Category(10,"PAISES",false,true, false);
+        Category cat11= new Category(11,"UTENSILLOS",false,true, false);
 
         ArrayList<Category> categories= new ArrayList<Category>();
         categories.add(cat1);

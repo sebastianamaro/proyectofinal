@@ -6,19 +6,25 @@ import java.io.Serializable;
  * Created by Sebastian on 24/08/2014.
  */
 public class Category implements Serializable{
+    int id;
     String name;
     boolean isStared;
     boolean isReported;
     boolean isFixed;
 
     public Category(){}
-    public Category(String name, boolean isStared, boolean isReported, boolean isFixed ){
+    public Category(int id, String name, boolean isStared, boolean isReported, boolean isFixed ){
         this.name=name;
         this.isStared=isStared;
         this.isReported=isReported;
         this.isFixed=isFixed;
+        this.id=id;
     }
 
+
+    public void setId(int id) { this.id=id; }
+
+    public int getId() { return this.id; }
 
     public void setFixed(boolean isFixed) {
         this.isFixed = isFixed;

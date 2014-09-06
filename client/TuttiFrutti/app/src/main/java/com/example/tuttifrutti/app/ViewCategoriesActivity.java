@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.UserGame;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,96 +74,6 @@ public class ViewCategoriesActivity extends ActionBarActivity {
     public void finish(View view) {
     }
 
-
-    public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
-
-        @Override
-        protected ArrayList<Category> doInBackground(Void... voids) {
-            return api.getCategories();
-        }
-
-        TuttiFruttiAPI api;
-
-        protected void onPreExecute(){
-            api=new TuttiFruttiAPI(getString(R.string.server_url));
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Category> result) {
-
-            ArrayList<String> categoriesNames= new ArrayList<String>();
-            ArrayList<Category> staredCategories=new ArrayList<Category>();
-            ArrayList<Category> fixedCategories=new ArrayList<Category>();
-            for(Category category : result){
-                if(category.isStared())
-                    staredCategories.add(category);
-                else if(category.isFixed())
-                    fixedCategories.add(category);
-
-                categoriesNames.add(category.getName());
-
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ViewCategoriesActivity.this, android.R.layout.simple_dropdown_item_1line, categoriesNames);
-            MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
-            textView.setAdapter(adapter);
-
-
-            final CategoryAdapter categoryAdapter = new CategoryAdapter(getApplicationContext(), result, staredCategories, fixedCategories);
-
-
-            // Assign adapter to ListView
-            categoriesList.setAdapter(categoryAdapter);
-
-            // ListView Item Click Listener
-            categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                //SELECT Category
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-
-
-                    // ListView Clicked item value
-                    Category itemValue = (Category) categoriesList.getItemAtPosition(position);
-
-                    if (selectedCategories.contains(itemValue)) {
-                        Toast.makeText(getApplicationContext(),
-                                "La categoria " + itemValue.getName() + " ya esta seleccionada.", Toast.LENGTH_LONG)
-                                .show();          // Show Alert
-                    } else {
-                        selectedCategories.add(itemValue);
-
-                        final SpannableStringBuilder sb = new SpannableStringBuilder();
-                        TextView tv = createContactTextView(itemValue.getName());
-                        BitmapDrawable bd = (BitmapDrawable) convertViewToDrawable(tv);
-                        bd.setBounds(0, 0, bd.getIntrinsicWidth(), bd.getIntrinsicHeight());
-
-                        sb.append(itemValue.getName()+ ",");
-                        sb.setSpan(new ImageSpan(bd), sb.length()-(itemValue.getName().length()+1), sb.length()-1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
-                        textView.setTokenizer(new CustomCommaTokenizer());
-                        textView.setThreshold(0);
-                        textView.setText(sb);
-
-
-
-                    }
-                }
-
-            });
-
-        }
-
-        public class CustomCommaTokenizer extends MultiAutoCompleteTextView.CommaTokenizer {
-            @Override
-            public CharSequence terminateToken(CharSequence text) {
-                CharSequence charSequence = super.terminateToken(text);
-                return charSequence.subSequence(0, charSequence.length()-1);
-            }
-        }
-
-    }
 
 
     public static Object convertViewToDrawable(View view) {
@@ -276,10 +187,10 @@ public class ViewCategoriesActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     if(s instanceof Category)
-                        Toast.makeText(getApplicationContext(), "STAR Image of listItem : "+ ((Category)s).getName(), Toast.LENGTH_SHORT).show();
-
+                    {
+                        Toast.makeText(getApplicationContext(), "STAR Image of listItem : " + ((Category) s).getName(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-
             };
 
 
@@ -290,7 +201,9 @@ public class ViewCategoriesActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     if(s instanceof Category)
-                        Toast.makeText(getApplicationContext(), "REPORT Image of listItem : "+((Category)s).getName(), Toast.LENGTH_SHORT).show();
+                    {
+                        new ReportCategoryAsyncTask().execute(((Category) s).getId());
+                    }
 
                 }
             };
@@ -363,6 +276,137 @@ public class ViewCategoriesActivity extends ActionBarActivity {
 
             holder.txtSeparator.setText(rowItem);
             return convertView;
+        }
+    }
+
+
+    public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
+
+        @Override
+        protected ArrayList<Category> doInBackground(Void... voids) {
+            return api.getCategories();
+        }
+
+        TuttiFruttiAPI api;
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Category> result) {
+
+            ArrayList<String> categoriesNames= new ArrayList<String>();
+            ArrayList<Category> staredCategories=new ArrayList<Category>();
+            ArrayList<Category> fixedCategories=new ArrayList<Category>();
+            for(Category category : result){
+                if(category.isStared())
+                    staredCategories.add(category);
+                else if(category.isFixed())
+                    fixedCategories.add(category);
+
+                categoriesNames.add(category.getName());
+
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ViewCategoriesActivity.this, android.R.layout.simple_dropdown_item_1line, categoriesNames);
+            MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
+            textView.setAdapter(adapter);
+
+
+            final CategoryAdapter categoryAdapter = new CategoryAdapter(getApplicationContext(), result, staredCategories, fixedCategories);
+
+
+            // Assign adapter to ListView
+            categoriesList.setAdapter(categoryAdapter);
+
+            // ListView Item Click Listener
+            categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                //SELECT Category
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    // ListView Clicked item value
+                    Category itemValue = (Category) categoriesList.getItemAtPosition(position);
+
+                    if (selectedCategories.contains(itemValue)) {
+                        Toast.makeText(getApplicationContext(),
+                                "La categoria " + itemValue.getName() + " ya esta seleccionada.", Toast.LENGTH_LONG)
+                                .show();          // Show Alert
+                    } else {
+                        selectedCategories.add(itemValue);
+
+                        final SpannableStringBuilder sb = new SpannableStringBuilder();
+                        TextView tv = createContactTextView(itemValue.getName());
+                        BitmapDrawable bd = (BitmapDrawable) convertViewToDrawable(tv);
+                        bd.setBounds(0, 0, bd.getIntrinsicWidth(), bd.getIntrinsicHeight());
+
+                        sb.append(itemValue.getName()+ ",");
+                        sb.setSpan(new ImageSpan(bd), sb.length()-(itemValue.getName().length()+1), sb.length()-1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.categoryText);
+                        textView.setTokenizer(new CustomCommaTokenizer());
+                        textView.setThreshold(0);
+                        textView.setText(sb);
+                    }
+                }
+
+            });
+        }
+
+        public class CustomCommaTokenizer extends MultiAutoCompleteTextView.CommaTokenizer {
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                CharSequence charSequence = super.terminateToken(text);
+                return charSequence.subSequence(0, charSequence.length()-1);
+            }
+        }
+
+    }
+
+
+    public class ReportCategoryAsyncTask extends AsyncTask<Integer, Void, Void>
+    {
+        TuttiFruttiAPI api;
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected Void doInBackground(Integer... categoryId) {
+            api.reportCategory(categoryId[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            new GetCategoriesAsyncTask().execute();
+        }
+    }
+
+
+
+    public class StarCategoryAsyncTask extends AsyncTask<Integer, Void, Void>
+    {
+        TuttiFruttiAPI api;
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected Void doInBackground(Integer... categoryId) {
+            api.starCategory(FacebookHelper.getUserId(),categoryId[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            new GetCategoriesAsyncTask().execute();
         }
     }
 }
