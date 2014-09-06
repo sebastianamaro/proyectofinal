@@ -39,7 +39,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
         displayListView();
     }
 
-    private void displayListView() {
+    private void displayListView() { // TODO get del server
 
         //Array list of countries
         ArrayList<Category> categoryList = new ArrayList<Category>();

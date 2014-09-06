@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
+import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
@@ -40,13 +41,16 @@ public class ViewCategoriesActivity extends ActionBarActivity {
 
     ListView categoriesList;
     ArrayList<Category> selectedCategories= new ArrayList<Category>();
-
+    Game gameSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_categories);
 
         categoriesList = (ListView) findViewById(R.id.categoriesList);
+
+        Intent intent = getIntent();
+        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
 
         new GetCategoriesAsyncTask().execute();
     }
@@ -72,6 +76,7 @@ public class ViewCategoriesActivity extends ActionBarActivity {
     }
 
     public void finish(View view) {
+
     }
 
 
