@@ -127,7 +127,8 @@ module.exports = function(app) {
   respondInvitation = function(req, res){
     Game.findOne({ 'gameId': req.params.id , status: 'WAITINGFORPLAYERS'}, function (err, game){
       if (err) return res.send(err, 500);
-      if (!game) return res.send('Game not found', 404);                
+      if (!game) return res.send('Game not found', 404);
+            
       var response = req.body.response;
       if (response == 'ACCEPTED'){
         game.acceptInvitation(req.body, function(err){

@@ -219,12 +219,16 @@ gameSchema.methods.sendInvitations = function(callback){
     return callback();
   }
 }
-gameSchema.methods.removeAllInvitations = function(){
+gameSchema.methods.removeAllInvitations = function(playerWhoResponded){
   var gameId = this.gameId;
-  Player.find({ invitations: gameId }, function (err, players){
+  Player.find({ invitations: gameId,  fbId: { $ne: playerWhoResponded } }, function (err, players){
+    console.log('removeAllInvitations players: ' + players)
     for(var iPlayer in players ){
+      console.log('removeAllInvitations iPlayer: ' + iPlayer);
       var player = players[iPlayer];
+      console.log('removeAllInvitations player: ' + player);
       player.removeInvitation(gameId);
+      console.log('removeAllInvitations player sin invitations: ' + player);
       player.save(function(err) {
         if(err) {
           console.log("ERROR: save player failed when removeAllInvitations. "+err);
@@ -246,40 +250,38 @@ gameSchema.methods.acceptInvitation = function(request, callback){
     }
 
     var invitedPlayersCount;
-    if (game.opponentsType == 'RANDOM'){
-        invitedPlayersCount = game.randomPlayersCount + 1;
+    if (game.opponentsType == 'RANDOM')
+        invitedPlayersCount = game.randomPlayersCount + 1; //mas el creador
+    else
+        invitedPlayersCount = game.selectedFriends.length + 1; //mas el creador
+      
+    //+1 porque todavia no lo guarde (porque necesito guardarlo sin las invitaciones y con el game)
+    if (invitedPlayersCount == game.players.length + 1){
+      game.status = "PLAYING";  
+      if (game.opponentsType == 'RANDOM')
+        game.removeAllInvitations(player.fbId);        
     }
-    else{
-        invitedPlayersCount = game.selectedFriends.length + 1;
-    }
-    
-      game.players.push(player);
-      if (invitedPlayersCount == game.players.length){
-        if (invitedPlayersCount != 1)
-        {
-          game.status = "PLAYING";  
-        }
-        else
-        {
-          game.status = "ALLREJECTED";  
 
-        }
-        game.removeAllInvitations();        
-      }
-      player.removeInvitation(game.gameId);
-      player.addGame(game.gameId);
-      game.save(function(err) {
-        if(err) {
-          return callback("ERROR: save game failed. "+err);
-        } 
-      });
-      player.save(function(err) {
+    player.removeInvitation(game.gameId);
+    player.addGame(game.gameId);
+
+    game.players.push(player);
+
+    game.save(function(err) {
+      if(err) {
+        return callback("ERROR: save game failed. "+err);
+      } 
+    });
+    console.log('guardo el player');
+    player.save(function(err) {
+
         if(err) {
           return callback("ERROR: save player failed after removeInvitation. "+err);
         } 
       });
-      console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
-      return callback();
+    
+    console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
+    return callback();
     
     
   });
@@ -306,10 +308,18 @@ gameSchema.methods.rejectInvitation = function(request, callback){
 
     if (game.opponentsType !== 'RANDOM'){
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-        var index = this.selectedFriends.indexOf(player.fbId);
-        if (index > -1) {
-          this.selectedFriends.splice(index, 1);
+        var index = game.selectedFriends.indexOf(player.fbId);
+        if (index > -1) 
+          game.selectedFriends.splice(index, 1);
+        
+        if (game.selectedFriends.length + 1 == game.players.length)
+        {
+          if (game.players.length == 1)
+            game.status = "ALLPLAYERSREJECTED";
+          else
+            game.status = "PLAYING";  
         }
+
     }
 
     game.save(function(err) {
