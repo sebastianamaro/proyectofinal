@@ -7,10 +7,9 @@ module.exports = function(app) {
 
   getGamesForPlayer = function(req, res) {
     Player.findOne({ fbId: req.params.id }, function (err, player){
-    	console.log(player);
       	if (err) return res.send(err, 500);
       	if (!player) return res.send('Player not found', 404);   
-      	console.log(player);
+      	
       	Game.find({ gameId: { $in : player.games } }, function(err, games) {
 	        var gamesToReturn = [];
 	        if (games){
@@ -29,7 +28,6 @@ module.exports = function(app) {
           if (err) return res.send(err, 500);
           if (!player) return res.send('Player not found', 404);   
           
-          console.log("encontre al player");  
           Game.find({ gameId: { $in : player.invitations } }, function(err, games) {
           var gamesToReturn = [];
           if (games){

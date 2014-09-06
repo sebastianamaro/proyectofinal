@@ -15,6 +15,7 @@ var gameSchema = new Schema({
     opponentsType: { type: String },
     players: [ Player.schema ],
     creator: [ Player.schema ],
+    selectedFriends: [ { type: String } ],
     randomPlayersCount: { type: Number }
 });
 
@@ -58,6 +59,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = game.selectedCategories;
+  this.selectedFriends = game.selectedFriends;
 }
 
 gameSchema.methods.addPlayer = function addPlayer(player){
@@ -192,11 +194,18 @@ gameSchema.methods.getPlayerResults = function(partialScores){
   return playerResults;
 }
 gameSchema.methods.sendInvitations = function(callback){
+  var creator = this.creator[0];
+  var gameId = this.gameId;
+  
   if (this.opponentsType !== 'RANDOM'){
+    Player.find({ fbId: { $in: this.selectedFriends } }, function (err, players){
+      for(var iPlayer in players ){
+        var player = players[iPlayer];
+        player.sendInvitationToGameIfPossible(gameId, creator);
+      }
+    });
     return callback();
-  } else {
-    var gameId = this.gameId;
-    var creator = this.creator[0];
+  } else {    
     console.log("this GAME " + this);
     console.log("this.creator " + this.creator);
     console.log("recien imprimi el creator");
@@ -210,12 +219,16 @@ gameSchema.methods.sendInvitations = function(callback){
     return callback();
   }
 }
-gameSchema.methods.removeAllInvitations = function(){
+gameSchema.methods.removeAllInvitations = function(playerWhoResponded){
   var gameId = this.gameId;
-  Player.find({ invitations: gameId }, function (err, players){
+  Player.find({ invitations: gameId,  fbId: { $ne: playerWhoResponded } }, function (err, players){
+    console.log('removeAllInvitations players: ' + players)
     for(var iPlayer in players ){
+      console.log('removeAllInvitations iPlayer: ' + iPlayer);
       var player = players[iPlayer];
+      console.log('removeAllInvitations player: ' + player);
       player.removeInvitation(gameId);
+      console.log('removeAllInvitations player sin invitations: ' + player);
       player.save(function(err) {
         if(err) {
           console.log("ERROR: save player failed when removeAllInvitations. "+err);
@@ -235,28 +248,42 @@ gameSchema.methods.acceptInvitation = function(request, callback){
       console.log("ERROR: player not found");
       return callback("ERROR: player not found"); 
     }
-    if (game.opponentsType == 'RANDOM'){
-      game.players.push(player);
-      if (game.randomPlayersCount + 1 == game.players.length){
-        game.status = "PLAYING";  
-        game.removeAllInvitations();        
-      }
 
-      player.removeInvitation(game.gameId);
-      player.addGame(game.gameId);
-      game.save(function(err) {
-        if(err) {
-          return callback("ERROR: save game failed. "+err);
-        } 
-      });
-      player.save(function(err) {
+    var invitedPlayersCount;
+    if (game.opponentsType == 'RANDOM')
+        invitedPlayersCount = game.randomPlayersCount + 1; //mas el creador
+    else
+        invitedPlayersCount = game.selectedFriends.length + 1; //mas el creador
+      
+    //+1 porque todavia no lo guarde (porque necesito guardarlo sin las invitaciones y con el game)
+    if (invitedPlayersCount == game.players.length + 1){
+      game.status = "PLAYING";  
+      if (game.opponentsType == 'RANDOM')
+        game.removeAllInvitations(player.fbId);        
+    }
+
+    player.removeInvitation(game.gameId);
+    player.addGame(game.gameId);
+
+    game.players.push(player);
+
+    game.save(function(err) {
+      if(err) {
+        return callback("ERROR: save game failed. "+err);
+      } 
+    });
+    console.log('guardo el player');
+    player.save(function(err) {
+
         if(err) {
           return callback("ERROR: save player failed after removeInvitation. "+err);
         } 
       });
-      console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
-      return callback();
-    }
+    
+    console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
+    return callback();
+    
+    
   });
 }
 gameSchema.methods.rejectInvitation = function(request, callback){
@@ -270,16 +297,37 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       console.log("ERROR: player not found");
       return callback("ERROR: player not found"); 
     }
-    if (game.opponentsType == 'RANDOM'){
-      player.removeInvitation(game.gameId);
-      player.save(function(err) {
-        if(err) {
-          return callback("ERROR: save player failed. "+err);
-        } 
-        console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
-      });
-      return callback();
+
+    player.removeInvitation(game.gameId);
+    player.save(function(err) {
+      if(err) {
+        return callback("ERROR: save player failed. "+err);
+      } 
+      console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
+    });
+
+    if (game.opponentsType !== 'RANDOM'){
+        //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
+        var index = game.selectedFriends.indexOf(player.fbId);
+        if (index > -1) 
+          game.selectedFriends.splice(index, 1);
+        
+        if (game.selectedFriends.length + 1 == game.players.length)
+        {
+          if (game.players.length == 1)
+            game.status = "ALLPLAYERSREJECTED";
+          else
+            game.status = "PLAYING";  
+        }
+
     }
+
+    game.save(function(err) {
+        if(err) {
+          return callback("ERROR: save game failed. "+err);
+        } 
+      });
+    return callback();
   });  
 }
 gameSchema.methods.asSummarized = function(){

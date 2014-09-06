@@ -89,7 +89,7 @@ public class AndroidFacebookConnectActivity extends Activity {
         else {
             LoginButton authButton = (LoginButton) findViewById(R.id.authButton);
             // set permission list, Don't foeget to add email
-            authButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+            authButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
             authButton.setSessionStatusCallback(callback);
             //Session.openActiveSession(this, true, callback);
         }
