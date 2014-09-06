@@ -20,7 +20,7 @@ category_delete:
 
 reportedword_accept:
     path:     /{id}/acceptReportedWord/{word}
-    defaults: { _controller: "CategoryBundle:Category:addWord" }
+    defaults: { _controller: "CategoryBundle:Category:addReportedWord" }
 
 reportedword_reject:
     path:     /{id}/rejectReportedWord/{word}

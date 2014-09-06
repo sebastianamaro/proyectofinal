@@ -76,7 +76,6 @@ class CategoryController extends Controller
     {
         $category = new Category();
         $acceptedWord = new AcceptedWord();
-
         $category->addAcceptedWord($acceptedWord);
         $form = $this->createCreateForm($category);
         $form->handleRequest($request);
@@ -110,31 +109,63 @@ class CategoryController extends Controller
 
         return $form;
     }
-
+    public function addReportedWordAction($id,$word){
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+      $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+      $category = new Category();
+      $category->set($categoryData);
+      if (!$category->getId()){
+        throw $this->createNotFoundException('No se encuentra la categoría.');
+      }
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word;            
+      $reqJson  = new HttpPutJson($url,array());
+      $categoryData = $this->get('api_caller')->call($reqJson);
+      return $this->redirect($this->generateUrl('category_show', array('id' => $id)));
+    }
+    public function removeReportedWordAction($id,$word){
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+      $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+      $category = new Category();
+      $category->set($categoryData);
+      if (!$category->getId()){
+        throw $this->createNotFoundException('No se encuentra la categoría.');
+      }
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word;            
+      $reqJson  = new HttpDeleteJson($url,array());
+      $categoryData = $this->get('api_caller')->call($reqJson);
+      return $this->redirect($this->generateUrl('category_show', array('id' => $id)));
+    }
     public function showAction($id)
     {
-        $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
-        $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
-        $category = new Category();
-        $category->set($categoryData);
-        if (!$category->getId()){
-          throw $this->createNotFoundException('No se encuentra la categoría.');
-        }
-        $paginator = $this->get('ideup.simple_paginator');
-        $reportedWordsPage = $paginator
-              ->setItemsPerPage(3,'reportedWords')
-              ->paginate($category->getReportedWords(), 'reportedWords')
-              ->getResult();
-        $acceptedWordsPage = $paginator
-              ->setItemsPerPage(3,'acceptedWords')
-              ->paginate($category->getAcceptedWords(), 'acceptedWords')
-              ->getResult();
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+      $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+      $category = new Category();
+      $category->set($categoryData);
+      if (!$category->getId()){
+        throw $this->createNotFoundException('No se encuentra la categoría.');
+      }
+      
+      $paginator = $this->get('ideup.simple_paginator');
 
-        return $this->render('CategoryBundle:Category:show.html.twig', array(
-            'category'      => $category,
-            'reportedWordsPage' =>$reportedWordsPage,
-            'acceptedWordsPage' =>$acceptedWordsPage,
-        ));
+      $reportedWords = $category->getReportedWords()->toArray();
+      $reportedWords =  ArraySorter::sort($reportedWords,'value','ASC');
+      $reportedWordsPage = $paginator
+            ->setItemsPerPage(5,'reportedWords')
+            ->paginate($reportedWords, 'reportedWords')
+            ->getResult();
+  
+      $acceptedWords = $category->getAcceptedWords()->toArray();
+      $acceptedWords =  ArraySorter::sort($acceptedWords,'value','ASC');
+      $acceptedWordsPage = $paginator
+            ->setItemsPerPage(5,'acceptedWords')
+            ->paginate($acceptedWords, 'acceptedWords')
+            ->getResult();
+
+      return $this->render('CategoryBundle:Category:show.html.twig', array(
+          'category'      => $category,
+          'reportedWordsPage' =>$reportedWordsPage,
+          'acceptedWordsPage' =>$acceptedWordsPage,
+      ));
     }
     public function editAction(Request $request, $id)
     {
@@ -144,6 +175,10 @@ class CategoryController extends Controller
         $category->set($categoryData);
         if (!$category->getId()){
           throw $this->createNotFoundException('No se encuentra la categoría.');
+        }
+        if (count($category->getAcceptedWords()) == 0){
+          $acceptedWord = new AcceptedWord();
+          $category->addAcceptedWord($acceptedWord);
         }
         $editForm = $this->createEditForm($category);
         $editForm->handleRequest($request);

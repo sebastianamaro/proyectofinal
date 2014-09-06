@@ -7,7 +7,7 @@ class ArraySorter
     private $sort;
     private $direction;
 
-    function __construct( $sort, $direction = 'asc' ) {
+    function __construct( $sort, $direction = 'ASC' ) {
         $this->sort = $sort;
         $this->direction = $direction;
     }
@@ -16,7 +16,7 @@ class ArraySorter
         $sort = 'get'.ucfirst($this->sort);
         $reflectionMethod = new \ReflectionMethod($a, $sort);
 
-        if ($this->direction == 'asc' )
+        if ($this->direction == 'ASC' )
             return strcmp($reflectionMethod->invoke($a), $reflectionMethod->invoke($b));
         else
             return strcmp($reflectionMethod->invoke($b), $reflectionMethod->invoke($a));

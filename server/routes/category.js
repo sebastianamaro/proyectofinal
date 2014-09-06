@@ -5,6 +5,59 @@ module.exports = function(app) {
   hasValue = function(parameter){
     return parameter !== '' && parameter !== undefined && parameter !== '?';
   }
+  removeReportedWordFromCategory = function(req, res) {
+    Category.findOne({id:req.params.id}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      if (arrayContains(category.reportedWords,valueWord)){
+        var index = category.reportedWords.indexOf(valueWord);
+        category.reportedWords.splice(index, 1);
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Removed reported word to category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+  }
+  addWordToCategory = function(req, res) {
+    Category.findOne({id:req.params.id}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      if (!arrayContains(category.acceptedWords,valueWord)){
+        category.acceptedWords.push(valueWord);
+      }
+      if (arrayContains(category.reportedWords,valueWord)){
+        var index = category.reportedWords.indexOf(valueWord);
+        category.reportedWords.splice(index, 1);
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Added word to category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+  }
   getCategories = function(req, res) {
     var criteria = url.parse(req.url,true).query;
     var name = criteria.name;
@@ -67,7 +120,7 @@ module.exports = function(app) {
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
           var valueWord = wordReq.value.toUpperCase().trim();
-          if (!arrayContains(category.acceptedWords,valueWord)){
+          if (!arrayContains(category.acceptedWords,valueWord) && hasValue(valueWord)){
             category.acceptedWords.push(valueWord);
           }
         };
@@ -104,7 +157,7 @@ module.exports = function(app) {
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
           var valueWord = wordReq.value.toUpperCase().trim(); 
-          if (!arrayContains(category.acceptedWords,valueWord )) {
+          if (!arrayContains(category.acceptedWords,valueWord) && hasValue(valueWord)) {
             category.acceptedWords.push(valueWord);
           }
         };

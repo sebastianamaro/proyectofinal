@@ -27,6 +27,8 @@ app.post('/player', createPlayer);
 app.get('/category?:criteria', getCategories); 
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
+app.put('/category/:id/:word', addWordToCategory); 
+app.delete('/category/:id/:word', removeReportedWordFromCategory); 
 app.delete('/category/:id', removeCategory); 
 app.post('/category', createCategory); 
 
