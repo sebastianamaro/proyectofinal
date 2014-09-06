@@ -16,6 +16,7 @@ class Category
 {
     public function set($data) {
         if (is_null($data)) return;
+        if (is_null($data->id)) return;
         foreach ($data AS $key => $value) {
             switch ($key) {
                 case 'acceptedWords':

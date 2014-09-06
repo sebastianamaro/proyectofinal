@@ -35,6 +35,20 @@ module.exports = function(app) {
         res.send(category, 200); //add error manipulation
       });
   }
+  removeCategory = function(req,res) {
+      Category.findOne({id:req.params.id}, function (err, category){
+        if (err) return res.send(err, 500);
+        if (!category) return res.send('Category not found', 404);   
+        Category.remove({id:req.params.id}, function (err){
+          if (err){
+            console.log('ERROR: Remove category failed');
+            return res.send('Remove category failed',500);  
+          }
+          console.log('Removed category.');
+          res.send(category, 200); //add error manipulation
+        });
+      });
+  }
   arrayContains = function(array, search){
     return array.indexOf(search) >= 0;
   }

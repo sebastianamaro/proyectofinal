@@ -17,7 +17,6 @@ category_edit:
 category_delete:
     path:     /{id}/delete
     defaults: { _controller: "CategoryBundle:Category:delete" }
-    requirements: { _method: post|delete }
 
 reportedword_accept:
     path:     /{id}/acceptReportedWord/{word}

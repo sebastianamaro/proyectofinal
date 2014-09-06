@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Lsw\ApiCallerBundle\Call\HttpGetJson;
 use Lsw\ApiCallerBundle\Call\HttpPostJson;
 use Lsw\ApiCallerBundle\Call\HttpPutJson;
+use Lsw\ApiCallerBundle\Call\HttpDeleteJson;
 use Lsw\ApiCallerBundle\Caller\LoggingApiCaller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -48,7 +49,9 @@ class CategoryController extends Controller
       foreach ($categoriesData as $key => $categoryData) {
           $category = new Category();
           $category->set($categoryData);
-          $categories[] = $category;
+          if ($category->getId()){
+            $categories[] = $category;
+          }
       }
       
       $sort = $this->get('request')->query->get('sort','name');
@@ -86,6 +89,9 @@ class CategoryController extends Controller
             $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category');            
             $reqJson  = new HttpPostJson($url,$objectCategory);
             $categoryData = $this->get('api_caller')->call($reqJson);
+            if (!$categoryData->id){
+              throw new \Exception("Error al guardar la categoría", 1);
+            }
             return $this->redirect($this->generateUrl('category_show', array('id' => $categoryData->id)));
         }
 
@@ -111,7 +117,9 @@ class CategoryController extends Controller
         $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
         $category = new Category();
         $category->set($categoryData);
-        
+        if (!$category->getId()){
+          throw $this->createNotFoundException('No se encuentra la categoría.');
+        }
         $paginator = $this->get('ideup.simple_paginator');
         $reportedWordsPage = $paginator
               ->setItemsPerPage(3,'reportedWords')
@@ -122,15 +130,8 @@ class CategoryController extends Controller
               ->paginate($category->getAcceptedWords(), 'acceptedWords')
               ->getResult();
 
-        if (!$category) {
-            throw $this->createNotFoundException('Unable to find Category entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
         return $this->render('CategoryBundle:Category:show.html.twig', array(
             'category'      => $category,
-            'delete_form' => $deleteForm->createView(),
             'reportedWordsPage' =>$reportedWordsPage,
             'acceptedWordsPage' =>$acceptedWordsPage,
         ));
@@ -141,10 +142,10 @@ class CategoryController extends Controller
         $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
         $category = new Category();
         $category->set($categoryData);
-
+        if (!$category->getId()){
+          throw $this->createNotFoundException('No se encuentra la categoría.');
+        }
         $editForm = $this->createEditForm($category);
-        $deleteForm = $this->createDeleteForm($id);
-
         $editForm->handleRequest($request);
         if ($editForm->isValid()) {
           $acceptedWordsBatch = $editForm["acceptedWordsBatch"]->getData();
@@ -159,8 +160,7 @@ class CategoryController extends Controller
         }
         return $this->render('CategoryBundle:Category:edit.html.twig', array(
             'category'      => $category,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'edit_form'   => $editForm->createView()
         ));
     }
 
@@ -181,31 +181,15 @@ class CategoryController extends Controller
     }
     public function deleteAction(Request $request, $id)
     {
-        $form = $this->createDeleteForm($id);
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('CategoryBundle:Category')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Category entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
+        $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+        $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+        $category = new Category();
+        $category->set($categoryData);
+        if (!$category->getId()){
+          throw $this->createNotFoundException('No se encuentra la categoría.');
         }
-
+        $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+        $this->get('api_caller')->call(new HttpDeleteJson($url,array()));
         return $this->redirect($this->generateUrl('category'));
-    }
-
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('category_delete', array('id' => $id)))
-            ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
-        ;
     }
 }
