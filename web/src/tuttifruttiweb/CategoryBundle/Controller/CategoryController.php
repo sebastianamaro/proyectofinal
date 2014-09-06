@@ -130,6 +130,19 @@ class CategoryController extends Controller
       if (!$category->getId()){
         throw $this->createNotFoundException('No se encuentra la categoría.');
       }
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word.'?reported';            
+      $reqJson  = new HttpDeleteJson($url,array());
+      $categoryData = $this->get('api_caller')->call($reqJson);
+      return $this->redirect($this->generateUrl('category_show', array('id' => $id)));
+    }
+    public function removeAcceptedWordAction($id,$word){
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
+      $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
+      $category = new Category();
+      $category->set($categoryData);
+      if (!$category->getId()){
+        throw $this->createNotFoundException('No se encuentra la categoría.');
+      }
       $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word;            
       $reqJson  = new HttpDeleteJson($url,array());
       $categoryData = $this->get('api_caller')->call($reqJson);

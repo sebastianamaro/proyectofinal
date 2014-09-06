@@ -28,4 +28,4 @@ reportedword_reject:
 
 acceptedword_delete:
     path:     /{id}/deleteWord/{word}
-    defaults: { _controller: "CategoryBundle:Category:removeWord" }
+    defaults: { _controller: "CategoryBundle:Category:removeAcceptedWord" }

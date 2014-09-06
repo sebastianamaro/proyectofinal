@@ -28,7 +28,10 @@ app.get('/category?:criteria', getCategories);
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
 app.put('/category/:id/:word', addWordToCategory); 
-app.delete('/category/:id/:word', removeReportedWordFromCategory); 
+app.put('/category/:id/:word?report', addReportedWordToCategory); 
+app.put('/category/:id?report', reportCategory); 
+app.delete('/category/:id/:word?reject', removeReportedWordFromCategory); 
+app.delete('/category/:id/:word', removeAcceptedWordFromCategory); 
 app.delete('/category/:id', removeCategory); 
 app.post('/category', createCategory); 
 

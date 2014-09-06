@@ -5,6 +5,31 @@ module.exports = function(app) {
   hasValue = function(parameter){
     return parameter !== '' && parameter !== undefined && parameter !== '?';
   }
+  removeAcceptedWordFromCategory = function(req, res) {
+    Category.findOne({id:req.params.id}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      if (arrayContains(category.acceptedWords,valueWord)){
+        var index = category.acceptedWords.indexOf(valueWord);
+        category.acceptedWords.splice(index, 1);
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Removed accepted word to category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+  }
   removeReportedWordFromCategory = function(req, res) {
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);
@@ -22,6 +47,30 @@ module.exports = function(app) {
       category.save(function(err) {
         if(!err) {
           console.log('Removed reported word to category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+  }
+  addReportedWordToCategory = function(req, res){
+    Category.findOne({id:req.params.id}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      if (arrayContains(category.reportedWords,valueWord)){
+        category.acceptedWords.push(valueWord);
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Added word to category with id '+category.id);
           return res.status(204).send();  
         } else {
           console.log('ERROR: Save category failed. ' + err);
@@ -104,6 +153,23 @@ module.exports = function(app) {
   }
   arrayContains = function(array, search){
     return array.indexOf(search) >= 0;
+  }
+  reportCategory = function(req, res) {
+    Category.findOne({id:req.params.id}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+      
+      category.isReported = true;
+      category.save(function(err) {
+        if(!err) {
+          console.log('Saved category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+      });
   }
   editCategory = function(req, res) {
     Category.findOne({id:req.params.id}, function (err, category){
