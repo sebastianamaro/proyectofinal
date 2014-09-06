@@ -1,0 +1,88 @@
+{% block javascriptsHead %}
+  <script src="{{ asset('bundles/utils/js/agregarLinkPaginadores.js') }}"></script>
+{% endblock %}
+<b>Palabras reportadas</b>
+<div class="count">
+    {{reportedWordsPage | length }} de {{ category.reportedWords | length }} palabras reportadas
+</div>
+<br>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-striped tablesorter">
+    <thead>
+      <tr>
+        <th>Palabra</th>
+        <th>Acciones</th>
+
+      </tr>
+    </thead>
+    <tbody> 
+    {% for word in reportedWordsPage %}
+            <tr>
+                <td>{{ word.value }}</td>
+                <td>
+                    <a href="{{ path('reportedword_accept', { 'id': category.id, 'word':word.value }) }}" class="btn btn-primary btn-xs">aceptar</a>
+                    <a href="{{ path('reportedword_reject', { 'id': category.id, 'word':word.value }) }}" class="btn btn-danger btn-xs">rechazar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="pagination">
+    {{ simple_paginator_render(path, 'reportedWords', {
+                'routeParams' : {'id' : category.id},
+                'container_class': 'pagination',
+                'previousPageText': 'Anterior',
+                'nextPageText':'Siguiente',
+                'currentClass':'active',
+                'firstPageText':'Primera',
+                'lastPageText':'Última',
+                'firstDisabledClass':'disabled',
+                'lastDisabledClass':'disabled',
+                'nextDisabledClass':'disabled',
+                'previousDisabledClass':'disabled',
+                }) }}
+</div>
+<br>
+<b>Palabras aceptadas</b>
+<div class="count">
+    {{acceptedWordsPage | length }} de {{ category.acceptedWords | length }} palabras aceptadas
+</div>
+<br>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-striped tablesorter">
+    <thead>
+      <tr>
+        <th>Palabra</th>
+        <th>Acciones</th>
+
+      </tr>
+    </thead>
+    <tbody> 
+    {% for word in acceptedWordsPage %}
+            <tr>
+                <td>{{ word.value }}</td>
+                <td>
+                    <a href="{{ path('acceptedword_delete', { 'id': category.id, 'word':word.value }) }}" class="btn btn-danger btn-xs">eliminar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="pagination">
+    {{ simple_paginator_render(path, 'acceptedWords', {
+                'routeParams' : {'id' : category.id},
+                'container_class': 'pagination',
+                'previousPageText': 'Anterior',
+                'nextPageText':'Siguiente',
+                'currentClass':'active',
+                'firstPageText':'Primera',
+                'lastPageText':'Última',
+                'firstDisabledClass':'disabled',
+                'lastDisabledClass':'disabled',
+                'nextDisabledClass':'disabled',
+                'previousDisabledClass':'disabled',
+                }) }}
+</div>
+<br>
