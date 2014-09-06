@@ -7,6 +7,7 @@ var playerSchema = new Schema({
     registrationId: { type: String },
     games: [{ type: Number }],
     invitations: [{ type: Number }],
+    staredCategories: [{ type: Number }]
     name: { type: String },
     email: { type: String },
     fbId: { type: String }
@@ -19,6 +20,18 @@ playerSchema.methods.setValues = function (player) {
   this.email = player.email;
   this.fbId = player.fbId;
   return this;
+}
+
+playerSchema.methods.starCategory= function (category)
+{
+    this.staredCategories.push(category.id);
+    this.save(function(err) {
+          if(!err) {
+            console.log('Saved staredCategory'+category.id+' player with new invitation '+fbId);
+          } else {
+            console.log('ERROR: ' + err);
+          }
+        });
 }
 
 playerSchema.methods.getGames = function () {

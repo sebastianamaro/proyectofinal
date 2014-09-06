@@ -25,6 +25,7 @@ categorySchema.methods.setValues = function setValues(category) {
 
 categorySchema.methods.asSummarized = function asSummarized() {
 	return {
+    'id': this.id;
 		'name': this.name,
 		'isReported': this.isReported,
 		'isFixed': this.isFixed
