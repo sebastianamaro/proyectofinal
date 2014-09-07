@@ -29,7 +29,7 @@ lineSchema.methods.addPlays = function addPlays(playsArray) {
     var newPlay= new Play();
 
     newPlay.setValues(playsArray[i]);
-    newPlay.setUniqueScore();
+    newPlay.setUniqueResult();
     this.plays.push(newPlay);
   };
 }

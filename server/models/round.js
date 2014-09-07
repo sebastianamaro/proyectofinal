@@ -93,7 +93,7 @@ roundSchema.methods.calculateAndSetPartialScores = function calculateAndSetParti
       
       if (dataForPlays.length == 1){ //only one player chose this word, it's only
         var playToScore = this.getPlay(dataForPlays, 0);
-        playToScore.setOnlyScore();
+        playToScore.setOnlyResult();
       } else { //more than a player chose this word, they are all repeated
         this.setAllRepeated(dataForPlays);
       }
@@ -102,7 +102,7 @@ roundSchema.methods.calculateAndSetPartialScores = function calculateAndSetParti
         var dataForPlays = words[word];
         if (dataForPlays.length == 1){ //only one player chose this word, it's only
           var playToScore = this.getPlay(dataForPlays, 0);
-          playToScore.setUniqueScore();
+          playToScore.setUniqueResult();
         } else { //more than a player chose this word, they are all repeated
           this.setAllRepeated(dataForPlays);
         }
@@ -113,7 +113,7 @@ roundSchema.methods.calculateAndSetPartialScores = function calculateAndSetParti
 roundSchema.methods.setAllRepeated = function setAllRepeated(dataForPlays){
   for (var i = dataForPlays.length - 1; i >= 0; i--) {
     var playToScore = this.getPlay(dataForPlays, i);
-    playToScore.setRepeatedScore();
+    playToScore.setRepeatedResult();
   }
 }
 roundSchema.methods.getPlay = function getPlay(dataForPlays, iData){
@@ -170,7 +170,7 @@ roundSchema.methods.getScores = function getScores(players){
     if (lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 
-    scores.push({ 'player' : lineForPlayer.player,
+    scores.push({ 'player' : lineForPlayer.player[0],
                   'scoreInfo' : { 'score' : lineForPlayer.score,
                               'best'  : false},
                   'plays' : lineForPlayer.getSummarizedPlays() });

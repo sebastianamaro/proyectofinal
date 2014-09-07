@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -21,15 +22,24 @@ import com.example.TuttiFruttiCore.PlayScoreSummary;
 import java.util.ArrayList;
 
 public class ShowRoundResultActivity extends ActionBarActivity {
-
-    int gameId=1;
-    int roundId=1;
+    int gameId;
+    int roundId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_round_result);
 
+        Intent intent = getIntent();
+        gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
+        roundId = intent.getIntExtra(MainActivity.ROUND_ID_EXTRA_MESSAGE, 1);
+
        new GetScoresAsyncTask().execute();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
     }
 
     @Override

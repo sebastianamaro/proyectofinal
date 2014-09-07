@@ -1,25 +1,10 @@
 package com.example.TuttiFruttiCore;
 
-/**
- *
- * var fullRoundSchema = new Schema({
- letter:   { type: String },
- status:   { type: String },
- roundId:   { type: Number },
- gameId:   { type: Number },
- categories: [ {type: String} ],
- gameStatus:   { type: String }
- });
-
- */
-
-
 public class FullRound extends Round {
-
-
     private String letter;
     private String[] categories;
     private String gameStatus;
+    private String gameMode;
 
     public void setLetter(String letter)
     {
@@ -51,4 +36,7 @@ public class FullRound extends Round {
         return this.gameStatus;
     }
 
+    public String getGameMode() { return gameMode; }
+
+    public void setGameMode(String gameMode) { this.gameMode = gameMode; }
 }

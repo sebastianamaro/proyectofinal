@@ -18,6 +18,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     public final static String GAME_ID_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMEID";
+    public final static String ROUND_ID_EXTRA_MESSAGE = "com.example.tuttifrutti.ROUNDID";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     /**
@@ -85,6 +86,8 @@ public class MainActivity extends ActionBarActivity {
     public void showRoundResult(View view) {
 
         Intent intent = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
+        intent.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
+        intent.getIntExtra(MainActivity.ROUND_ID_EXTRA_MESSAGE, 1);
 
         startActivity(intent);
     }
