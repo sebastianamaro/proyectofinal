@@ -316,7 +316,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             String fbId=FacebookHelper.getUserId();
             api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(), finishedRounds[0].getPlays());
             return null;
-        }
+            }
 
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));
@@ -427,7 +427,15 @@ public class PlayRoundActivity extends FragmentActivity implements
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
                        timer.cancel();
-                       Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                       Intent intent;
+                       if (currentRound.getGameMode() == "ONLINE") {
+                           intent = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
+                           intent.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, currentRound.getGameId());
+                           intent.getIntExtra(MainActivity.ROUND_ID_EXTRA_MESSAGE, currentRound.getRoundId());
+                       }
+                       else
+                           intent = new Intent(getApplicationContext(), MainActivity.class);
+
                        startActivity(intent);
                    }
                });

@@ -7,7 +7,8 @@ var fullRoundSchema = new Schema({
   roundId:   { type: Number },
   gameId:   { type: Number },
   categories: [ {type: String} ],
-  gameStatus:   { type: String }
+  gameStatus:   { type: String },
+  gameMode: {type: String}
 });
 
 fullRoundSchema.methods.fillData = function fillData(game, round) {
@@ -18,6 +19,7 @@ fullRoundSchema.methods.fillData = function fillData(game, round) {
   this.gameId = game.gameId;
   this.categories = game.categories;
   this.gameStatus = game.status;
+  this.gameMode = game.mode;
   console.log('categories: ' + this.categories);
 }
 
