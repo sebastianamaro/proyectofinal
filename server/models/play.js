@@ -26,12 +26,12 @@ playSchema.methods.setValues = function setValues(newPlay) {
   return this;
 }
 
-playSchema.methods.setOnlyScore = function setOnlyScore() {
+playSchema.methods.setOnlyResult = function setOnlyResult() {
   this.score = 20;
   this.result = 'ONLY';
 }
 
-playSchema.methods.setUniqueScore = function setUniqueScore() {
+playSchema.methods.setUniqueResult = function setUniqueResult() {
   this.score = 10;
   this.result = 'UNIQUE';
 }

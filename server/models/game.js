@@ -178,7 +178,7 @@ gameSchema.methods.getPlayerResults = function(partialScores){
   }
   var playerResults = [];
   var bestScore = 0 ;
-  for (var i = playerPartialResults.length - 1; i >= 0; i--) {
+  for (var i = 0; i < playerPartialResults.length; i++) {
     var playerPartialResult = playerPartialResults[i];
     if (playerPartialResult > bestScore){
       bestScore = playerPartialResult;
@@ -206,9 +206,6 @@ gameSchema.methods.sendInvitations = function(callback){
     });
     return callback();
   } else {    
-    console.log("this GAME " + this);
-    console.log("this.creator " + this.creator);
-    console.log("recien imprimi el creator");
     Player.find({}, function (err, players){
       console.log(players);
       for(var iPlayer in players ){
@@ -224,11 +221,8 @@ gameSchema.methods.removeAllInvitations = function(playerWhoResponded){
   Player.find({ invitations: gameId,  fbId: { $ne: playerWhoResponded } }, function (err, players){
     console.log('removeAllInvitations players: ' + players)
     for(var iPlayer in players ){
-      console.log('removeAllInvitations iPlayer: ' + iPlayer);
       var player = players[iPlayer];
-      console.log('removeAllInvitations player: ' + player);
       player.removeInvitation(gameId);
-      console.log('removeAllInvitations player sin invitations: ' + player);
       player.save(function(err) {
         if(err) {
           console.log("ERROR: save player failed when removeAllInvitations. "+err);
