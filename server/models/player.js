@@ -7,7 +7,7 @@ var playerSchema = new Schema({
     registrationId: { type: String },
     games: [{ type: Number }],
     invitations: [{ type: Number }],
-    staredCategories: [{ type: Number }]
+    staredCategories: [{ type: Number }],
     name: { type: String },
     email: { type: String },
     fbId: { type: String }

@@ -78,13 +78,12 @@ public class ChooseFriendsActivity extends FragmentActivity {
                                     gameSettings.addSelectedFriend(g.getId());
                                 }
                             }
-                            //TODO redirect a free categories
                             if (gameSettings.getCategoriesType().equals("FIXED")) {
                                 Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
                                 intent.putExtra("gameSettings", gameSettings);
                                 startActivity(intent);
                             }
-                            {
+                            else {
                                 Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
                                 intent.putExtra("gameSettings", gameSettings);
                                 startActivity(intent);   

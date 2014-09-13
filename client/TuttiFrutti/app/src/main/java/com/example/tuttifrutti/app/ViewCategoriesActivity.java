@@ -2,6 +2,7 @@ package com.example.tuttifrutti.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -31,6 +32,7 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
+import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class ViewCategoriesActivity extends ActionBarActivity {
     ListView categoriesList;
     ArrayList<Category> selectedCategories= new ArrayList<Category>();
     Game gameSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +79,34 @@ public class ViewCategoriesActivity extends ActionBarActivity {
     }
 
     public void finish(View view) {
+        gameSettings.setSelectedCategories(selectedCategories);
+        new CreateGameFreeCategoriesAsyncTask(getString(R.string.server_url), this).execute(gameSettings);
+    }
 
+
+    public class CreateGameFreeCategoriesAsyncTask extends CreateGameAsyncTask {
+
+        public CreateGameFreeCategoriesAsyncTask(String serverUrl, Activity redirectionActivity)
+        {
+            super(serverUrl,redirectionActivity);
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            ad.setCancelable(false); // This blocks the 'BACK' button
+            ad.setMessage("Se ha creado la partida!");
+            ad.setButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+            ad.show();
+
+        }
     }
 
 
@@ -138,8 +168,6 @@ public class ViewCategoriesActivity extends ActionBarActivity {
             this.categories.add(staredCategoriesSeparatorIndex,staredCategoriesText);
             this.categories.add(fixedCategoriesSeparatorIndex,fixedCategoriesText);
             this.categories.add(allCategoriesSeparatorIndex,allCategoriesText);
-
-
         }
 
 
@@ -193,7 +221,7 @@ public class ViewCategoriesActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     if(s instanceof Category)
                     {
-                        Toast.makeText(getApplicationContext(), "STAR Image of listItem : " + ((Category) s).getName(), Toast.LENGTH_SHORT).show();
+                        new StarCategoryAsyncTask().execute(((Category) s).getId());
                     }
                 }
             };

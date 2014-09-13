@@ -73,53 +73,5 @@ public class CreateGameActivity extends ActionBarActivity {
     }
 
 
-    //todo: meter esto en una clase
-    private class CreateGameTask extends AsyncTask<Game,Void, Void> {
-
-        AlertDialog ad;
-        TuttiFruttiAPI api;
-
-        @Override
-        protected Void doInBackground(Game... settings) {
-
-            Game gs=settings[0];
-
-            PlayServicesHelper helper = new PlayServicesHelper(MainActivity.class.getSimpleName());
-            String regid = "";
-            if (helper.checkPlayServices(CreateGameActivity.this))
-            {
-                regid = helper.getRegistrationId(getApplicationContext());
-                if (regid == "")
-                    helper.registerGCMInBackground(getApplicationContext());
-            }
-
-            gs.setOwner(new Player(FacebookHelper.getUserId()));
-            api.createGame(gs);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-
-            ad.setCancelable(false); // This blocks the 'BACK' button
-            ad.setMessage("Se ha creado la partida!");
-            ad.setButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                }
-            });
-            ad.show();
-
-        }
-
-        @Override
-        protected void onPreExecute(){
-            ad=new AlertDialog.Builder(CreateGameActivity.this).create();
-
-            api=new TuttiFruttiAPI(getString(R.string.server_url));
-        }
-    }
 
 }

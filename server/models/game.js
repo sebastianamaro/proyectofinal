@@ -3,13 +3,14 @@ var mongoose = require('mongoose'),
 var Round = require('./round.js');
 var Player = require('./player.js');
 var NotificationFile = require('./notification.js');
+var Category = require('./category.js');
 
 var gameSchema = new Schema({
   	gameId:   { type: Number },
   	startTimestamp: { type: Date }, 
   	rounds: [Round.schema],
   	status: { type: String },
-  	categories: [ { type: String } ],
+  	categories: [ Category.schema ],
     mode : { type: String },
     categoriesType: { type: String },
     opponentsType: { type: String },

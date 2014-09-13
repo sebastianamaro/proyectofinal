@@ -199,43 +199,26 @@ public class TuttiFruttiAPI {
 
     public ArrayList<Category> getCategories()
     {
-       /* String url= serverURL+"category";
+        String url= serverURL+"category";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         Category[] lineArray= restTemplate.getForObject(url,Category[].class);
-        return new ArrayList<Category>(Arrays.asList(lineArray));*/
+        return new ArrayList<Category>(Arrays.asList(lineArray));
 
-        //stared
-        Category cat1= new Category(1,"NOMBRES DE TELO",true, false, false);
-        Category cat2= new Category(2,"LAGOS DE PATAGONIA",true, false, false);
-        Category cat3= new Category(3,"BOLICHES",true, false, false);
-        //fixed
-        Category cat4= new Category(4,"ANIMALES",false, false, true);
-        Category cat5= new Category(5,"COLORES",false, false, true);
-        Category cat6= new Category(6,"MARCAS DE AUTO",false, false, true);
-        Category cat7 = new Category(7,"FRUTAS",false,false, true);
+    }
 
+    public ArrayList<Category> getFixedCategories()
+    {
+        String url= serverURL+"category?isFixed=1";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        Category cat8= new Category(8,"CALLES",false,false, false);
-        Category cat9= new Category(9,"TRAGOS",false,false, false);
-        Category cat10= new Category(10,"PAISES",false,true, false);
-        Category cat11= new Category(11,"UTENSILLOS",false,true, false);
+        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
 
-        ArrayList<Category> categories= new ArrayList<Category>();
-        categories.add(cat1);
-        categories.add(cat2);
-        categories.add(cat3);
-        categories.add(cat4);
-        categories.add(cat5);
-        categories.add(cat6);
-        categories.add(cat7);
-        categories.add(cat8);
-        categories.add(cat9);
-        categories.add(cat10);
-        categories.add(cat11);
-        return categories;
     }
 }
 

@@ -53,7 +53,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
 
         gameSettings.setRandomPlayersCount(np.getValue());
-//TODO redirect a ViewCategories
+
         if (gameSettings.getCategoriesType().equals("FIXED")) {
             Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
             intent.putExtra("gameSettings", gameSettings);

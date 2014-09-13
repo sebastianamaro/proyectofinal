@@ -130,6 +130,8 @@ module.exports = function(app) {
         res.send(categories, 200); //add error manipulation
       });
   }
+
+  
   getCategory = function(req, res) {
     Category.findOne({id:req.params.id}, function (err, category){
         if (err) return res.send(err, 500);
@@ -151,9 +153,11 @@ module.exports = function(app) {
         });
       });
   }
+
   arrayContains = function(array, search){
     return array.indexOf(search) >= 0;
   }
+
   reportCategory = function(req, res) {
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);

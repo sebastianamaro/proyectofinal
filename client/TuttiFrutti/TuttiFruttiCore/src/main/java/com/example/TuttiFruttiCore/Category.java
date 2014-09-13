@@ -11,6 +11,7 @@ public class Category implements Serializable{
     boolean isStared;
     boolean isReported;
     boolean isFixed;
+    boolean isSelected;
 
     public Category(){}
     public Category(int id, String name, boolean isStared, boolean isReported, boolean isFixed ){
@@ -19,6 +20,16 @@ public class Category implements Serializable{
         this.isReported=isReported;
         this.isFixed=isFixed;
         this.id=id;
+        this.isSelected=false;
+    }
+
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
 
@@ -60,11 +71,11 @@ public class Category implements Serializable{
 
     @Override
     public boolean equals(Object o) {
-        return ((Category)o).getName().equals(getName());
+        return ((Category)o).getId() == (getId());
     }
 
     @Override
     public int hashCode() {
-        return 19 * name.hashCode();
+        return getId();
     }
 }
