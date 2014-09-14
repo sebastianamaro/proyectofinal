@@ -15,11 +15,19 @@ class ArraySorter
     {
         $sort = 'get'.ucfirst($this->sort);
         $reflectionMethod = new \ReflectionMethod($a, $sort);
-
+        
         if ($this->direction == 'ASC' )
-            return strcmp($reflectionMethod->invoke($a), $reflectionMethod->invoke($b));
+            if (is_numeric($reflectionMethod->invoke($a))){
+                return $reflectionMethod->invoke($a) >= $reflectionMethod->invoke($b);
+            }else{
+                return strcmp($reflectionMethod->invoke($a), $reflectionMethod->invoke($b));
+            }    
         else
-            return strcmp($reflectionMethod->invoke($b), $reflectionMethod->invoke($a));
+            if (is_numeric($reflectionMethod->invoke($a))){
+                return $reflectionMethod->invoke($b) >= $reflectionMethod->invoke($a);
+            }else{
+                return strcmp($reflectionMethod->invoke($b), $reflectionMethod->invoke($a));
+            }    
 
     }
     public static function sort($array, $sort, $direction = 'asc'){

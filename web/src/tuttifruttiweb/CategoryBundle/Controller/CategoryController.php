@@ -33,12 +33,14 @@ class CategoryController extends Controller
           null, array(
           'method' => 'get'
       ));
-      $form->handleRequest($request);
       $url = $initialUrl;
-      if ($this->get('request')->query->has($form->getName())) {
+      if ($this->get('request')->query->has('submit-filter')) {
+        $form->handleRequest($request);
         foreach ($request->query->get('item_filter') as $key=>$filter) {
-          if ($url !== $initialUrl) $url .=  '&';
-          $url .= $key.'='.$filter;
+          if ($filter !== ''){
+            if ($url !== $initialUrl) $url .=  '&';
+            $url .= $key.'='.$filter;
+          }
         };
       }
       $categoriesData = $this->get('api_caller')->call(new HttpGetJson($url,array()));

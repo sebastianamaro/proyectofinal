@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new Lexik\Bundle\FormFilterBundle\LexikFormFilterBundle(),
             new tuttifruttiweb\CategoryBundle\CategoryBundle(),
             new tuttifruttiweb\UtilsBundle\UtilsBundle(),
+            new tuttifruttiweb\StatisticsBundle\StatisticsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

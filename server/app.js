@@ -27,6 +27,7 @@ app.post('/player', createPlayer);
 app.put('/player/:id/category/:categoryId', alterStaredCategories);
 app.get('/player/:id/category', getCategoriesForPlayer);
 app.get('/category?:criteria', getCategories); 
+app.get('/category/hitsPerType', getCategoryHitsPerType); 
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
 app.put('/category/:id/:word', addWordToCategory); 
