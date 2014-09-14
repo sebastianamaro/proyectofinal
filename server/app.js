@@ -25,6 +25,7 @@ app.get('/player/:id/game', getGamesForPlayer);
 app.get('/player/:id/invitations', getInvitationsForPlayer);
 app.post('/player', createPlayer);
 app.get('/category?:criteria', getCategories); 
+app.get('/category/hitsPerType', getCategoryHitsPerType); 
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
 app.put('/category/:id/:word', addWordToCategory); 

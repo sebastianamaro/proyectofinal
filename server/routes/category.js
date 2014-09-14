@@ -107,6 +107,15 @@ module.exports = function(app) {
       });
     });
   }
+  getCategoryHitsPerType = function(req,res){
+    Category.aggregate(  
+      { $group: { _id: '$isFixed', hits: { $sum: '$hits' }}}, 
+      { $project: { _id: 1, hits: 1 }}, 
+      function(err, categories) {
+        res.send(categories, 200); 
+      });
+
+  }
   getCategories = function(req, res) {
     var criteria = url.parse(req.url,true).query;
     var name = criteria.name;
@@ -115,7 +124,7 @@ module.exports = function(app) {
 
     var criteriaMongo = {};
     if (hasValue(name)){
-      var nameLike = new RegExp(name, 'i');
+      var nameLike = new RegExp(name.replace("?",""), 'i');
       criteriaMongo['name'] = nameLike;
     }
     if (hasValue(fixed)){
@@ -124,6 +133,7 @@ module.exports = function(app) {
     if (hasValue(reported)){
       criteriaMongo['isReported'] = reported == '1' ? true : false;
     }
+    
     Category.find(criteriaMongo, function (err, categories){
         if (err) return res.send(err, 500);
         if (!categories) return res.send('Categories not found', 404);   

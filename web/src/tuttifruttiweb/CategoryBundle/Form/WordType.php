@@ -17,7 +17,7 @@ abstract class WordType extends AbstractType
         $builder
             ->add('value',null,array(
                 'label'  => false,
-                'required' => true,
+                'required' => false,
                 'attr'=>array('class'=>'form-control',
                         'oninvalid' => "setCustomValidity('Ingrese una palabra')",
                         'onchange' => "try{setCustomValidity('')}catch(e){}"
