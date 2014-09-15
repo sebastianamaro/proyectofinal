@@ -20,7 +20,7 @@ fullRoundSchema.methods.fillData = function fillData(game, round) {
   
   this.categories=[];
 
-  for (var i = game.categories.le.namength - 1; i >= 0; i--) {
+  for (var i = game.categories.length - 1; i >= 0; i--) {
     this.categories.push(game.categories[i].name);
   };
 

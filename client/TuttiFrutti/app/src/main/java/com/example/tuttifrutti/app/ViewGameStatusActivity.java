@@ -118,10 +118,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     // ListView Clicked item value
                     UserGame  itemValue    = (UserGame) listViewGames.getItemAtPosition(position);
 
-                    // Show Alert
-                    Toast.makeText(getApplicationContext(),
-                            "Position :"+itemPosition+"  ListItem : " +itemValue.getStatus() , Toast.LENGTH_LONG)
-                            .show();
+
 
                 }
 
@@ -165,10 +162,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     // ListView Clicked item value
                     FullGame  itemValue    = (FullGame) listViewInvitations.getItemAtPosition(position);
 
-                    // Show Alert
-                    Toast.makeText(getApplicationContext(),
-                            "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                            .show();
+
 
 
                     Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
