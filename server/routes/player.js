@@ -31,25 +31,26 @@ module.exports = function(app) {
         if (!player) return res.send('Player not found', 404);   
       
         var summarizedCategories =[];
-        Category.find({}, function (err, categories){
-                if (err) return res.send(err, 500);
-                if (!categories) return res.send('Categories not found', 404);   
-                
-                for (var i = categories.length - 1; i >= 0; i--) {
-                   var summarizedCategory = categories[i].asSummarized();
+        Category.find({}).sort('-name').exec(function (err, categories){
+            if (err) return res.send(err, 500);
+            if (!categories) return res.send('Categories not found', 404);   
+            
+            for (var i = categories.length - 1; i >= 0; i--) {
+               
+                  var summarizedCategory = categories[i].asSummarized();
 
-                if (player.categories.indexOf(categories[i].id) > -1)
-                    summarizedCategory['isStared'] = true;     
-                else
-                    summarizedCategory['isStared'] = false;
+                  
+                  if (player.staredCategories.indexOf(categories[i].id) > -1)
+                      summarizedCategory['isStared'] = true;     
+                  else
+                      summarizedCategory['isStared'] = false;
 
-                   summarizedCategories.push(summarizedCategory);
-                };
-                
-              });
+                 summarizedCategories.push(summarizedCategory);
+             
+            }
 
-
-          res.send(summarizedCategories, 200); //add error manipulation
+             res.send(summarizedCategories, 200); //add error manipulation
+          });
      });
   }
 
@@ -62,11 +63,11 @@ module.exports = function(app) {
               if (err) return res.send(err, 500);
               if (!category) return res.send('category not found', 404);   
 
-              var categoryIndex=player.categories.indexOf(categories[i].id);
+              var categoryIndex=player.staredCategories.indexOf(category.id);
                 if ( categoryIndex> -1)
-                    player.categories.splice(categoryIndex, 1);
+                    player.unstarCategory(category);
                 else
-                    player.categories.push(category.id);
+                    player.starCategory(category);
 
               return res.send('alterStaredCategories done!', 200);
           });

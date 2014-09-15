@@ -23,6 +23,11 @@ public class Category implements Serializable{
         this.isSelected=false;
     }
 
+    public Category(String name)
+    {
+        this.name=name;
+    }
+
 
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
@@ -71,11 +76,18 @@ public class Category implements Serializable{
 
     @Override
     public boolean equals(Object o) {
-        return ((Category)o).getId() == (getId());
+        if(getId() != 0 && ((Category)o).getId() != 0)
+            return ((Category)o).getId() == (getId());
+        else
+            return ((Category)o).getName().equals(getName());
     }
 
     @Override
-    public int hashCode() {
-        return getId();
+    public int hashCode()
+    {
+        if(getId() != 0)
+            return getId();
+        else
+            return 19 * getName().hashCode();
     }
 }

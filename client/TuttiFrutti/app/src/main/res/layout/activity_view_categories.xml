@@ -13,21 +13,20 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
+        <com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView
+            android:id="@+id/searchView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:layout_weight="5"
+            android:inputType="text"/>
 
-    <MultiAutoCompleteTextView
-
-        android:id="@+id/categoryText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="25dp"
-        android:layout_weight="5"
-        android:inputType="text"/>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Terminar"
             android:id="@+id/finish"
-            android:layout_toRightOf="@id/categoryText"
+            android:layout_toRightOf="@id/searchView"
             android:layout_weight="17"
             android:onClick="finish" />
 

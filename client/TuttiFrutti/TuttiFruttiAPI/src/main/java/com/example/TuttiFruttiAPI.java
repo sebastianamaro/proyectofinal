@@ -209,6 +209,18 @@ public class TuttiFruttiAPI {
 
     }
 
+    public ArrayList<Category> getStaredCategories(String playerId)
+    {
+        String url= serverURL+"player/"+ playerId+"/category";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
+
+    }
+
     public ArrayList<Category> getFixedCategories()
     {
         String url= serverURL+"category?isFixed=1";

@@ -10,7 +10,7 @@ var gameSchema = new Schema({
   	startTimestamp: { type: Date }, 
   	rounds: [Round.schema],
   	status: { type: String },
-  	categories: [ Category.schema ],
+  	categories: [ { id : { type : Number } , name : { type : String } , isFixed : { type : Boolean }} ],
     mode : { type: String },
     categoriesType: { type: String },
     opponentsType: { type: String },
@@ -59,7 +59,15 @@ gameSchema.methods.setValues = function setValues(game){
   this.categoriesType = game.categoriesType;
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
-  this.categories = game.selectedCategories;
+  this.categories = [];
+
+  for (var i = game.selectedCategories.length - 1; i >= 0; i--) {
+    var category= {'id': game.selectedCategories[i].id , 'name': game.selectedCategories[i].name, 'isFixed': game.selectedCategories[i].isFixed};
+    this.categories.push(category);
+  };
+
+  console.log(this.categories);
+
   this.selectedFriends = game.selectedFriends;
 }
 

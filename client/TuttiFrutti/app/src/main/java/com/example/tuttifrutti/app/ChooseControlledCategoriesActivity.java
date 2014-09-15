@@ -51,7 +51,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
 
         @Override
         protected ArrayList<Category> doInBackground(Void... voids) {
-            return api.getCategories();
+            return api.getFixedCategories();
         }
 
         TuttiFruttiAPI api;
