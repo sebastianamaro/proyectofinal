@@ -1,0 +1,7 @@
+parameters:
+#    player.example.class: tuttifruttiweb\PlayerBundle\Example
+
+services:
+#    player.example:
+#        class: %player.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

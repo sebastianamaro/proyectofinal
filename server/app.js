@@ -21,6 +21,8 @@ app.get('/game/:id/scores', getGameScores);
 app.put('/game/:id/round', alterRound); 
 app.get('/game/:id/round', getRound);
 app.get('/game/:id/round/:roundId/scores', getRoundScores);
+app.get('/player?:criteria', getPlayers); 
+app.get('/player/createdPerDate', getPlayersPerDate); 
 app.get('/player/:id/game', getGamesForPlayer);
 app.get('/player/:id/invitations', getInvitationsForPlayer);
 app.post('/player', createPlayer);

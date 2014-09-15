@@ -1,0 +1,80 @@
+{% extends '::base.html.twig' %}
+
+{% block javascriptsHead %}
+  <script src="{{ asset('bundles/utils/js/agregarLinkPaginadores.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<h1>Jugadores</h1>  
+
+<form method="get" action=".">
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><b>{{ form_label(form.name) }}</b></th>
+                <th><b>{{ form_label(form.email) }}</b></th>
+                <th><b>{{ form_label(form.fbId) }}</b></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ form_widget(form.name) }}</td> 
+                <td>{{ form_widget(form.email) }}</td> 
+                <td>{{ form_widget(form.fbId) }}</td> 
+            </tr>
+        </tbody>                        
+            <tr>
+                <td></td>
+                <td align='center'><input type="submit" class="btn btn-primary" name="submit-filter" value="Buscar" /></td>
+                <td align='center'> <input type="submit" class="btn btn-primary" name="clear-filter" value="Blanquear" /></td>
+                <td></td>                        
+            </tr>       
+    </table>
+</div>
+{{ form_end(form) }}
+<center><ol class="breadcrumb">
+    <li>{{players | length }} de {{ totalPlayers }} jugadores</li>
+</ol> </center>
+
+<br>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-striped tablesorter">
+    <thead>
+      <tr>
+
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Id. Facebook</th>
+        <th>Fecha de alta</th>
+        
+      </tr>
+    </thead>
+    <tbody> 
+    {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.email }}</td>
+                <td>{{ player.fbId }}</td>
+                <td>{{ player.dateInserted |date("d/m/Y") }}</td>
+                
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="pagination">
+    {{ simple_paginator_render('player', null, {
+                'container_class': 'pagination',
+                'previousPageText': 'Anterior',
+                'nextPageText':'Siguiente',
+                'currentClass':'active',
+                'firstPageText':'Primera',
+                'lastPageText':'Última',
+                'firstDisabledClass':'disabled',
+                'lastDisabledClass':'disabled',
+                'nextDisabledClass':'disabled',
+                'previousDisabledClass':'disabled',
+                }) }}
+</div>
+{% endblock %}

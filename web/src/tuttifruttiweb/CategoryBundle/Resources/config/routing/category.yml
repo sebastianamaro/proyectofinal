@@ -1,6 +1,6 @@
 category:
     path:     /
-    defaults: { _controller: "CategoryBundle:Category:index" }
+    defaults: { _controller: "CategoryBundle:Category:index"}
 
 category_show:
     path:     /{id}/show

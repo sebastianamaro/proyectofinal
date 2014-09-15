@@ -4,7 +4,45 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
+  var url = require('url');
 
+  hasValue = function(parameter){
+    return parameter !== '' && parameter !== undefined && parameter !== '?';
+  }
+  getPlayersPerDate = function(req,res){
+    Player.aggregate(
+      { $group : {_id : { month: { $month: "$dateInserted" }, day: { $dayOfMonth: "$dateInserted" }, year: { $year: "$dateInserted" } },amount: { $sum: 1 }}},
+      { $project: { _id: 1, amount: 1 }}, 
+      function(err, players) {
+        res.send(players, 200); 
+      });
+  }
+
+  getPlayers = function(req, res) {
+    var criteria = url.parse(req.url,true).query;
+    
+    var name = criteria.name;
+    var email = criteria.email;
+    var fbId = criteria.fbId;
+
+    var criteriaMongo = {};
+    if (hasValue(name)){
+      var nameLike = new RegExp(name.replace("?",""), 'i');
+      criteriaMongo['name'] = nameLike;
+    }
+    if (hasValue(email)){
+      var emailLike = new RegExp(email.replace("?",""), 'i');
+      criteriaMongo['email'] = emailLike;
+    }
+    if (hasValue(fbId)){
+      criteriaMongo['fbId'] = fbId;
+    }
+    Player.find(criteriaMongo, function (err, players){
+        if (err) return res.send(err, 500);
+        if (!players) return res.send('Players not found', 404);   
+        res.send(players, 200); //add error manipulation
+      });
+  }
   getGamesForPlayer = function(req, res) {
     Player.findOne({ fbId: req.params.id }, function (err, player){
     	console.log(player);
@@ -56,6 +94,7 @@ module.exports = function(app) {
         else{
           var player = new Player();
           player.setValues(req.body);
+          player.dateInserted = new Date();
         }
         
           player.save(function(err) {

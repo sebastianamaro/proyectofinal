@@ -1,0 +1,3 @@
+player_routes:
+    resource: "@PlayerBundle/Resources/config/routing/player.yml"
+    prefix:   /player

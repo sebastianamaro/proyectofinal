@@ -27,6 +27,8 @@ class CategoryController extends Controller
 
     public function indexAction(Request $request)
     {
+      $sort='name';
+      $direction='ASC';
       $initialUrl = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'?';
         
       $form = $this->get('form.factory')->create(new CategoryFilterType(),
@@ -56,9 +58,6 @@ class CategoryController extends Controller
           }
       }
       
-      $sort = $this->get('request')->query->get('sort','name');
-      $direction = $this->get('request')->query->get('direction', 'ASC');
-      
       $categories =  ArraySorter::sort($categories,$sort,$direction);
       $totalCategories = count($categories);
 
@@ -71,7 +70,9 @@ class CategoryController extends Controller
       return $this->render('CategoryBundle:Category:index.html.twig', array(
           'categories' => $categoriesPage,
           'totalCategories'=>$totalCategories,
-          'form' => $form->createView()
+          'form' => $form->createView(),
+          'sort'=>$sort,
+          'direction'=>$direction
       ));
     }
     public function createAction(Request $request)
