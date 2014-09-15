@@ -24,7 +24,6 @@ fullRoundSchema.methods.fillData = function fillData(game, round) {
     this.categories.push(game.categories[i].name);
   };
 
-  this.categories = game.categories;
   this.gameStatus = game.status;
   this.gameMode = game.mode;
 }
