@@ -123,11 +123,16 @@ public class ChooseControlledCategoriesActivity extends Activity {
     public void addCategoriesToGame(View v)
     {
         ArrayList<Category> categoryList = dataAdapter.categoryList;
+        ArrayList<Category> selectedCategories  = new ArrayList<Category>();
+
+        for (Category c : categoryList)
+            if(c.isSelected())
+                selectedCategories.add(c);
 
 
-        if (categoryList.size() >= 4) {
+        if (selectedCategories.size() >= 4) {
 
-            gameSettings.setSelectedCategories(categoryList);
+            gameSettings.setSelectedCategories(selectedCategories);
 
             CreateGameControlledCategoriesAsyncTask task = new CreateGameControlledCategoriesAsyncTask(getString(R.string.server_url),this);
             task.execute(gameSettings);
