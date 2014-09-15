@@ -75,7 +75,7 @@ public class ChooseFriendsActivity extends FragmentActivity {
 
                                 for(GraphUser g : selectedFriends)
                                 {
-                                    gameSettings.addSelectedFriend(g.getId());
+                                    gameSettings.addSelectedFriend(g.getId(), g.getName());
                                 }
                             }
                             if (gameSettings.getCategoriesType().equals("FIXED")) {

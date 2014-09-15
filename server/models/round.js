@@ -14,7 +14,7 @@ var roundSchema = new Schema({
 
 roundSchema.methods.start = function start(letter) {
   this.letter = letter;
-  this.status = 'PLAYING';
+  this.status = 'OPENED';
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
@@ -30,7 +30,7 @@ roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
 }
 
 roundSchema.methods.isPlaying = function isPlaying() {
-  return this.status === 'PLAYING';
+  return this.status === 'OPENED';
 }
 
 roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(game) {
@@ -67,7 +67,7 @@ roundSchema.methods.createScoresMap = function createScoresMap(game){
   return scoresMap;
 }
 roundSchema.methods.finish = function finish(game) {
-  this.status = "FINISHED";
+  this.status = "CLOSED";
   var scoresMap = this.createScoresMap(game);
   this.calculateAndSetPartialScores(scoresMap);
   this.calculateAndSetTotalScores();

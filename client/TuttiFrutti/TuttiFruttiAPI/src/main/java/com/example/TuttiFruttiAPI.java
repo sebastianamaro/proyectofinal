@@ -121,7 +121,7 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         FullRound fr= new FullRound();
-        fr.setStatus("PLAYING");
+        fr.setStatus("OPENED");
         restTemplate.put(url, fr);
     }
 

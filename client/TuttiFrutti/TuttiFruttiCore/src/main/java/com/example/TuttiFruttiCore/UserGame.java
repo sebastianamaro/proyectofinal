@@ -1,16 +1,20 @@
 package com.example.TuttiFruttiCore;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  * Created by Sebastian on 23/07/2014.
  */
-public class UserGame {
+public class UserGame implements Serializable {
     private String status;
     private int gameId;
     private String mode;
     private String categoriesType;
     private ArrayList<String> playersName;
+    private boolean playerHasPlayedCurrentRound;
+    private int roundId;
+    private boolean isFirstRound;
 
     public void setGameId(int gameId) {
         this.gameId = gameId;
@@ -50,5 +54,29 @@ public class UserGame {
 
     public void setPlayersName(ArrayList<String> playersName) {
         this.playersName = playersName;
+    }
+
+    public boolean getPlayerHasPlayedCurrentRound() {
+        return playerHasPlayedCurrentRound;
+    }
+
+    public void setPlayerHasPlayedCurrentRound(boolean playerHasPlayedCurrentRound) {
+        this.playerHasPlayedCurrentRound = playerHasPlayedCurrentRound;
+    }
+
+    public int getRoundId() {
+        return roundId;
+    }
+
+    public void setRoundId(int currentRoundId) {
+        this.roundId = currentRoundId;
+    }
+
+    public boolean getIsFirstRound() {
+        return isFirstRound;
+    }
+
+    public void setIsFirstRound(boolean isFirstRound) {
+        this.isFirstRound = isFirstRound;
     }
 }
