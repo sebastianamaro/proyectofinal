@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="server_url">http://192.168.1.122:8080/</string>
+    <string name="server_url">http://192.168.1.114:8080/</string>
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -17,4 +17,5 @@
     <string name="title_activity_choose_friends">ChooseFriendsActivity</string>
     <string name="error_dialog_title">Error</string>
     <string name="error_dialog_button_text">OK</string>
+    <string name="title_activity_view_categories">ViewCategoriesActivity</string>
 </resources>

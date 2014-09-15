@@ -24,6 +24,8 @@ app.get('/game/:id/round/:roundId/scores', getRoundScores);
 app.get('/player/:id/game', getGamesForPlayer);
 app.get('/player/:id/invitations', getInvitationsForPlayer);
 app.post('/player', createPlayer);
+app.put('/player/:id/category/:categoryId', alterStaredCategories);
+app.get('/player/:id/category', getCategoriesForPlayer);
 app.get('/category?:criteria', getCategories); 
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 

@@ -58,6 +58,12 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
             Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
             intent.putExtra("gameSettings", gameSettings);
             startActivity(intent);
-        }//else: llamar a choose free categories
+        }
+        else
+        {
+            Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
+            intent.putExtra("gameSettings", gameSettings);
+            startActivity(intent);
+        }
     }
 }

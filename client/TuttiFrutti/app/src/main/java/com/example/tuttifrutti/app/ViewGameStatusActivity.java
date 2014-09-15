@@ -81,13 +81,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
     public class ViewGameStatusAsyncTaks extends AsyncTask<Void,Void, ArrayList<UserGame>>
     {
-        TuttiFruttiAPI api;
 
         @Override
         protected ArrayList<UserGame> doInBackground(Void... filePlays) {
             fbId = FacebookHelper.getUserId();
             return api.getGames(fbId);
         }
+
+        TuttiFruttiAPI api;
 
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));

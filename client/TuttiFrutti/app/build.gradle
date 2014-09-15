@@ -34,11 +34,11 @@ dependencies {
     compile project(':TuttiFruttiCore')
     compile project(':TuttiFruttiAPI')
     compile project(':facebook')
-
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:19.+'
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.android.gms:play-services:3.1.+'
+    compile files('libs/tokenautocomplete-1.2.1.jar')
 }

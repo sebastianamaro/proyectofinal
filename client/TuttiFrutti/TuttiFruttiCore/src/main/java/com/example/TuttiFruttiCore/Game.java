@@ -12,7 +12,7 @@ public class Game implements Serializable {
     private String opponentsType;
     private Player owner;
     private int randomPlayersCount;
-    private ArrayList<String> selectedCategories;
+    private ArrayList<Category> selectedCategories;
     private ArrayList<String> selectedFriends;
 
     public Game(){}
@@ -64,11 +64,11 @@ public class Game implements Serializable {
     }
 
     public int getRandomPlayersCount() { return randomPlayersCount;}
-    public ArrayList<String> getSelectedCategories() {
+    public ArrayList<Category> getSelectedCategories() {
         return selectedCategories;
     }
 
-    public void setSelectedCategories(ArrayList<String> selectedCategories) {
+    public void setSelectedCategories(ArrayList<Category> selectedCategories) {
         this.selectedCategories = selectedCategories;
     }
 

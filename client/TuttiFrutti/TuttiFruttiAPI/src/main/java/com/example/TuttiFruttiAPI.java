@@ -2,6 +2,7 @@ package com.example;
 
 import android.os.StrictMode;
 
+import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Game;
@@ -18,9 +19,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class TuttiFruttiAPI {
 
@@ -144,7 +147,6 @@ public class TuttiFruttiAPI {
 
         pr.setLine(rl);
         restTemplate.put(url,pr);
-
     }
 
     public FullRound getCurrentRoundInformation(int gameId)
@@ -169,7 +171,7 @@ public class TuttiFruttiAPI {
 
     public void AddPlayer(Player newPlayer)
     {
-        String url= serverURL+"player"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
+        String url= serverURL+"player";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -177,5 +179,58 @@ public class TuttiFruttiAPI {
         restTemplate.postForEntity(url, newPlayer, null);
     }
 
+    public void reportCategory(int categoryId){
+
+        String url= serverURL+"category/"+ categoryId+"?report";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.put(url, null);
+    }
+
+    public void starCategory(String playerId, int categoryId){
+
+        String url= serverURL+"player/"+ playerId+"/category/"+categoryId;
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.put(url, null);
+    }
+
+    public ArrayList<Category> getCategories()
+    {
+        String url= serverURL+"category";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
+
+    }
+
+    public ArrayList<Category> getStaredCategories(String playerId)
+    {
+        String url= serverURL+"player/"+ playerId+"/category";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
+
+    }
+
+    public ArrayList<Category> getFixedCategories()
+    {
+        String url= serverURL+"category?isFixed=1";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
+
+    }
 }
 
