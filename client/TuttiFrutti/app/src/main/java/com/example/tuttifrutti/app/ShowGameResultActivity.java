@@ -81,12 +81,12 @@ public class ShowGameResultActivity extends ActionBarActivity {
             }
 
             table.addView(playersRow);
-
-            for (int i=0;i<result.getRoundsResult().size();i++)
+            //las rondas vienen al reves, primero la ultima y ultima la primera
+            for (int i=result.getRoundsResult().size()-1;i>=0;i--)
             {
                 contentRow=new TableRow(getApplicationContext());
                 roundRes = result.getRoundsResult().get(i);
-                AddHeaderTextView(contentRow, "Ronda " + Integer.toString(i+1));
+                AddHeaderTextView(contentRow, "Ronda " + Integer.toString(result.getRoundsResult().size()-i));
 
                 for (int j=0;j<roundRes.getScores().size();j++) {
                     ScoreInfo score = roundRes.getScores().get(j);
