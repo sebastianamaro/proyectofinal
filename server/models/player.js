@@ -10,7 +10,8 @@ var playerSchema = new Schema({
     staredCategories: [{ type: Number }],
     name: { type: String },
     email: { type: String },
-    fbId: { type: String }
+    fbId: { type: String },
+    dateInserted: { type: Date}
 
 });
 

@@ -5,10 +5,10 @@
         <title>{% block title %}Tutti Frutti - Portable Fun{% endblock %}</title>
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
         <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon"> 
+        <link href="{{ asset('bundles/utils/font-awesome-4.2.0/css/font-awesome.css') }}" rel="stylesheet" type="text/css" 
+        />
         <!-- Bootstrap core CSS -->
         <link href="{{ asset('bundles/utils/css/bootstrap.css') }}" rel="stylesheet" type="text/css" /><link href="{{ asset('bundles/utils/css/sb-admin.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('bundles/utils/sb-admin/font-awesome-4.1.0/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" 
-        />
         <!-- Add custom CSS to GRUPO -->
         <link rel="stylesheet" href="{{ asset('bundles/utils/css/jquery-ui.css') }}" type="text/css"         />
 
@@ -41,9 +41,9 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav side-nav">
             <li>
-            <li><a href="{{path('category')}}"><i class="fa fa-users"></i> Categor&iacute;as</a></li>
-            <li><a href="#"><i class="fa fa-desktop"></i> Usuarios</a></li>
-            <li><a href="{{path('statistics')}}"><i class="fa fa-desktop"></i> Estad&iacute;sticas</a></li>
+            <li><a href="{{path('category')}}"><i class="fa fa-folder"></i> Categor&iacute;as</a></li>
+            <li><a href="{{path('player')}}"><i class="fa fa-users"></i> Jugadores</a></li>
+            <li><a href="{{path('statistics')}}"><i class="fa fa-bar-chart"></i> Estad&iacute;sticas</a></li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right navbar-user">
