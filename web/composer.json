@@ -18,11 +18,10 @@
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
-        "leaseweb/api-caller-bundle": "*",
+        "leaseweb/api-caller-bundle": "1.1.3",
         "beberlei/DoctrineExtensions": "dev-master",
         "ideup/simple-paginator-bundle": "dev-master",
-        "lexik/form-filter-bundle": "dev-master",
-        "symfony/serializer": "*"
+        "lexik/form-filter-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
