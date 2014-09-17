@@ -269,6 +269,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             Category rowItem = (Category) getItem(position);
 
             holder.txtDesc.setText(rowItem.getName());
+
             if(rowItem.isStared())
                 holder.starImageView.setImageResource(R.drawable.icon_star);
             else
@@ -289,9 +290,15 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             holder.reportImageView.setOnClickListener(reportCategoryListener);
 
            if(selectedCategories.contains(rowItem))
-                convertView.setBackgroundColor(getResources().getColor(R.color.blue));
+           {
+               convertView.setBackgroundColor(getResources().getColor(R.color.blue));
+               holder.txtDesc.setTextColor(getResources().getColor(R.color.white));
+           }
             else
+           {
                convertView.setBackgroundColor(getResources().getColor(R.color.white));
+               holder.txtDesc.setTextColor(getResources().getColor(R.color.skyblue));
+           }
 
             return convertView;
         }
