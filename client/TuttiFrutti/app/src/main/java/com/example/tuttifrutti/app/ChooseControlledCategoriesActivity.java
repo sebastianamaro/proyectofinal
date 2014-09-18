@@ -1,7 +1,6 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,10 +18,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Game;
-import com.example.TuttiFruttiCore.Player;
-import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -63,7 +59,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
         @Override
         protected void onPostExecute(ArrayList<Category> result) {
             //create an ArrayAdaptar from the String Array
-            dataAdapter = new MyCustomAdapter(getApplicationContext(), R.layout.listview_row_category, result);
+            dataAdapter = new MyCustomAdapter(getApplicationContext(), R.layout.controlled_category_row, result);
             ListView listView = (ListView) findViewById(R.id.categoryList);
             listView.setAdapter(dataAdapter);
         }
@@ -92,7 +88,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.listview_row_category, null);
+                convertView = vi.inflate(R.layout.controlled_category_row, null);
 
                 holder = new ViewHolder();
                 holder.code = (TextView) convertView.findViewById(R.id.textViewTitle);

@@ -36,9 +36,6 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_game_status);
 
-        //helper= new PlayServicesHelper(MainActivity.class.getSimpleName());
-        //registrationId=helper.getRegistrationId(getApplicationContext());
-
         // Get ListView object from xml
         listViewGames = (ListView) findViewById(R.id.listGames);
         listViewInvitations = (ListView) findViewById(R.id.listInvitations);
@@ -77,6 +74,9 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createGame(View view) {
     }
 
     public class ViewGameStatusAsyncTaks extends AsyncTask<Void,Void, ArrayList<UserGame>>
