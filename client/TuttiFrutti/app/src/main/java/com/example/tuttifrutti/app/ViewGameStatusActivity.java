@@ -28,8 +28,6 @@ import java.util.ArrayList;
 public class ViewGameStatusActivity extends ActionBarActivity {
 
     ListView listViewGames ;
-    ListView listViewInvitations ;
-    PlayServicesHelper helper;
     String fbId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +36,9 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         // Get ListView object from xml
         listViewGames = (ListView) findViewById(R.id.listGames);
-        listViewInvitations = (ListView) findViewById(R.id.listInvitations);
 
 
-        new ViewGameStatusAsyncTaks().execute();
-        new ViewPendingInvitationsAsyncTaks().execute();
+        new FillListViewAsyncTask().execute();
 
     }
 
@@ -50,11 +46,6 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
-    }
-
-    public void setActivityBackgroundColor(int color) {
-        View view = this.getWindow().getDecorView();
-        view.setBackgroundColor(color);
     }
 
     @Override
@@ -77,22 +68,36 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     }
 
     public void createGame(View view) {
+
     }
 
-    public class ViewGameStatusAsyncTaks extends AsyncTask<Void,Void, ArrayList<UserGame>>
+    public class FillListViewAsyncTask extends AsyncTask<Void, Void, Void>
     {
-
-        @Override
-        protected ArrayList<UserGame> doInBackground(Void... filePlays) {
-            fbId = FacebookHelper.getUserId();
-            return api.getGames(fbId);
-        }
-
         TuttiFruttiAPI api;
+        ArrayList<UserGame> games;
+        ArrayList<FullGame> invitations;
 
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
+
+        @Override
+        protected Void doInBackground(Void... filePlays) {
+            fbId = FacebookHelper.getUserId();
+            games=api.getGames(fbId);
+            invitations=api.getPendingInvitations(fbId);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //Todo hacer un adapter y combinar ambas listas en el list view con separadores.
+        }
+    }
+/*
+    public class ViewGameStatusAsyncTaks extends AsyncTask<Void,Void, ArrayList<UserGame>>
+    {
+
 
         @Override
         protected void onPostExecute(ArrayList<UserGame> result) {
@@ -128,17 +133,6 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
     public class ViewPendingInvitationsAsyncTaks extends AsyncTask<Void,Void, ArrayList<FullGame>>
     {
-        TuttiFruttiAPI api;
-
-        @Override
-        protected ArrayList<FullGame> doInBackground(Void... filePlays) {
-            fbId = FacebookHelper.getUserId();
-            return api.getPendingInvitations(fbId);
-        }
-
-        protected void onPreExecute(){
-            api=new TuttiFruttiAPI(getString(R.string.server_url));
-        }
 
         @Override
         protected void onPostExecute(ArrayList<FullGame> result) {
@@ -176,7 +170,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             });
         }
     }
-
+*/
     private class GameAdapter extends ArrayAdapter<FullGame> {
 
         private ArrayList<FullGame> gameList;

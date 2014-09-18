@@ -32,7 +32,7 @@
                 android:id="@+id/categoryValue"
                 android:layout_below="@+id/currentLetter"
                 android:layout_marginTop="70dp"
-                android:inputType="textNoSuggestions|textCapWords|text"
+                android:inputType="textNoSuggestions|textCapWords|text|textFilter"
                 android:enabled="true"
                 android:layout_alignLeft="@+id/currentLetter"
                 android:layout_alignStart="@+id/currentLetter"
