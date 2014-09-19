@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
 
@@ -32,7 +33,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
         setContentView(R.layout.activity_choose_controlled_categories);
 
         Intent intent = getIntent();
-        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
+        gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         //Generate list View from ArrayList
         displayListView();

@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FilePlay;
 import com.example.TuttiFruttiCore.FinishedRound;
 import com.example.TuttiFruttiCore.FullRound;
@@ -43,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 public class PlayRoundActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
-    public final static String STOP_NOTIFICATION_DATA = "com.example.tuttifrutti.STOP_NOTIFICATION_DATA";
     private String fileName;
     private FullRound currentRound;
     private CountDownTimer timer;
@@ -57,7 +57,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         registerReceiver(gcmLocalReceiver, new IntentFilter("gcmLocalReceiver"));
 
-        int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
+        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
         new APIStartRoundTask().execute(gameId);
 
     }
@@ -65,10 +65,10 @@ public class PlayRoundActivity extends FragmentActivity implements
     private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            StopNotificationData stopNotificationData = (StopNotificationData) intent.getSerializableExtra(PlayRoundActivity.STOP_NOTIFICATION_DATA);
+            StopNotificationData stopNotificationData = (StopNotificationData) intent.getSerializableExtra(Constants.STOP_NOTIFICATION_DATA);
             if (currentRound == null) {
                 TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
-                int gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, -1);
+                int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
             EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!");
@@ -254,9 +254,6 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         }
 
-        /* */
-
-
         @Override
         protected void onPostExecute(FullRound result) {
 
@@ -430,8 +427,8 @@ public class PlayRoundActivity extends FragmentActivity implements
                        Intent intent;
                        if (currentRound.getGameMode() == "ONLINE") {
                            intent = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
-                           intent.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, currentRound.getGameId());
-                           intent.getIntExtra(MainActivity.ROUND_ID_EXTRA_MESSAGE, currentRound.getRoundId());
+                           intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, currentRound.getGameId());
+                           intent.getIntExtra(Constants.ROUND_ID_EXTRA_MESSAGE, currentRound.getRoundId());
                        }
                        else
                            intent = new Intent(getApplicationContext(), MainActivity.class);

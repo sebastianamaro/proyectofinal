@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
@@ -31,7 +32,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
     ListView listViewGames ;
     String fbId;
-    public final static String GAME_INFO_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMEINFO";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,10 +125,11 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                                 (ug.getRoundId() == -1 && ug.getIsFirstRound()) ||
                                 (ug.getRoundId() != -1 && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
                             Intent i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
-                            i.putExtra(GAME_INFO_EXTRA_MESSAGE, ug);
+                            i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
 
                             startActivity(i);
                         }
+
                     }
                 }
 

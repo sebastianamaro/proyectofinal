@@ -16,6 +16,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.PlayScoreSummary;
 
@@ -30,8 +31,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_round_result);
 
         Intent intent = getIntent();
-        gameId = intent.getIntExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
-        roundId = intent.getIntExtra(MainActivity.ROUND_ID_EXTRA_MESSAGE, 1);
+        gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, 1);
+        roundId = intent.getIntExtra(Constants.ROUND_ID_EXTRA_MESSAGE, 1);
 
        new GetScoresAsyncTask().execute();
     }

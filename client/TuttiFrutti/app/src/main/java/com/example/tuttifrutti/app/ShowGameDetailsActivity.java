@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 
 public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
+    UserGame game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_game_details);
 
         Intent i = getIntent();
-        UserGame game = (UserGame)i.getSerializableExtra(ViewGameStatusActivity.GAME_INFO_EXTRA_MESSAGE);
+        game = (UserGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
         if (game.getRoundId() == -2) {
             Button b = (Button)findViewById(R.id.btnPlay);
@@ -76,8 +78,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Game result) {
             //todo: ver los aleatorios, los muestro? o solo que aceptaron X/Total
-            //todo: agregar si es online/offline, aleatorios/amigos, controladas/libres
-            //todo: mostrar las categorias seleccionadas
 
             TextView txtGameMode=(TextView) findViewById(R.id.gameModeTextView);
             TextView txtOpponentsMode=(TextView) findViewById(R.id.opponentsModeTextView);
@@ -86,6 +86,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
             txtOpponentsMode.setText(result.getSpanishOpponentsType());
             txtCategoriesMode.setText(result.getSpanishCategoriesType());
+
+            TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
+            TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);
+            lbl.setVisibility(View.GONE);
+            txt.setVisibility(View.GONE);
 
             ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
             String myId = FacebookHelper.getUserId();
@@ -99,11 +104,29 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                     if(!result.getPlayers().contains(p))
                         players.add(new SummarizedPlayer(p, false));
                 }
+            else
+            {
+                //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
+                int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size()-1);
 
-            PlayersAdapter playerAdapter = new PlayersAdapter(getApplicationContext(),
-                    R.layout.playerlistitem, players);
-            ListView list = (ListView) findViewById(R.id.playersList);
-            list.setAdapter(playerAdapter);
+                if (randomPlayersLeftToAccept > 0) {
+                    lbl.setVisibility(View.VISIBLE);
+                    txt.setVisibility(View.VISIBLE);
+                    txt.setText(Integer.toString(randomPlayersLeftToAccept));
+                }
+            }
+
+            if (players.size() > 0) {
+                PlayersAdapter playerAdapter = new PlayersAdapter(getApplicationContext(),
+                        R.layout.playerlistitem, players);
+                ListView list = (ListView) findViewById(R.id.playersList);
+                list.setAdapter(playerAdapter);
+            }else
+            {
+                TextView playersTitle = (TextView) findViewById(R.id.playersTitle);
+                playersTitle.setVisibility(View.GONE);
+            }
+
 
             ListView listView = (ListView) findViewById(R.id.categoriesList);
             listView.setTextFilterEnabled(true);
@@ -159,7 +182,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-
             ViewHolder holder = null;
 
             if (convertView == null) {
@@ -193,6 +215,16 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             return convertView;
         }
+
+    }
+
+    private void play(View view)
+    {
+        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
+        // aca en algun lado deberia saber el ID de la partida
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
+
+        startActivity(intent);
 
     }
 
