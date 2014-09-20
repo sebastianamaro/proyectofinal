@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.facebook.FacebookException;
 import com.facebook.HttpMethod;
@@ -38,7 +40,7 @@ public class ChooseFriendsActivity extends FragmentActivity {
         //getFriends();
 
         Intent intent = getIntent();
-        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
+        gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         Bundle args = getIntent().getExtras();
 
@@ -75,12 +77,12 @@ public class ChooseFriendsActivity extends FragmentActivity {
 
                                 for(GraphUser g : selectedFriends)
                                 {
-                                    gameSettings.addSelectedFriend(g.getId());
+                                    gameSettings.addSelectedFriend(g.getId(), g.getName());
                                 }
                             }
                             if (gameSettings.getCategoriesType().equals("FIXED")) {
                                 Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
-                                intent.putExtra("gameSettings", gameSettings);
+                                intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
                                 startActivity(intent);
                             }
                             else {

@@ -12,6 +12,7 @@ import com.example.TuttiFruttiCore.Line;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
 import com.example.TuttiFruttiCore.Player;
+import com.example.TuttiFruttiCore.PlayerRoundScoreSummary;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +122,7 @@ public class TuttiFruttiAPI {
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         FullRound fr= new FullRound();
-        fr.setStatus("PLAYING");
+        fr.setStatus("OPENED");
         restTemplate.put(url, fr);
     }
 
@@ -164,18 +165,18 @@ public class TuttiFruttiAPI {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
         return restTemplate.getForObject(url,FullRound.class);
     }
 
-    public ArrayList<RoundScoreSummary> getRoundScore(int gameId, int roundId)
+    public PlayerRoundScoreSummary getRoundScore(int gameId, String fbId)
     {
-        String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
+        String url= serverURL+"game/"+gameId+"/round/scores/for/"+fbId;
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        RoundScoreSummary[] lineArray= restTemplate.getForObject(url,RoundScoreSummary[].class);
-        return new ArrayList<RoundScoreSummary>(Arrays.asList(lineArray));
+        return restTemplate.getForObject(url,PlayerRoundScoreSummary.class);
     }
 
     public void AddPlayer(Player newPlayer)

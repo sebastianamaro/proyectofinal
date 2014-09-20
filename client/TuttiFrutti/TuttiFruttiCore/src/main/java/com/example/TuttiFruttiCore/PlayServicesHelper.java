@@ -18,22 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Nituguivi on 29/06/2014.
  */
 public class PlayServicesHelper {
-
-    public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    /**
-     * Substitute you own sender ID here. This is the project number you got
-     * from the API Console, as described in "Getting Started."
-     */
-    String SENDER_ID = "630267112121";
-
-    /**
-     * Tag used on log messages.
-     */
-    static final String TAG = "GCMDemo";
-
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
 
@@ -55,18 +39,18 @@ public class PlayServicesHelper {
      */
     public String getRegistrationId(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
-        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        String registrationId = prefs.getString(Constants.PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
-            Log.i(TAG, "Registration not found.");
+            Log.i(Constants.TAG, "Registration not found.");
             String msg = "";
         }
         // Check if app was updated; if so, it must clear the registration ID
         // since the existing regID is not guaranteed to work with the new
         // app version.
-        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int registeredVersion = prefs.getInt(Constants.PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
+            Log.i(Constants.TAG, "App version changed.");
             return "";
         }
         return registrationId;
@@ -84,7 +68,7 @@ public class PlayServicesHelper {
                         Log.d("GCM", gcm.toString());
                     }
 
-                    regid = gcm.register(SENDER_ID);
+                    regid = gcm.register(Constants.SENDER_ID);
                     msg = "Device registered, registration ID=" + regid;
 
                     //For this demo: we don't need to send it because the device will send
@@ -138,9 +122,9 @@ public class PlayServicesHelper {
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, currentActivity,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+                        Constants.PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
-                Log.i(TAG, "This device is not supported.");
+                Log.i(Constants.TAG, "This device is not supported.");
             }
             return false;
         }
@@ -167,10 +151,10 @@ public class PlayServicesHelper {
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
+        Log.i(Constants.TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.putString(Constants.PROPERTY_REG_ID, regId);
+        editor.putInt(Constants.PROPERTY_APP_VERSION, appVersion);
         editor.commit();
     }
 }

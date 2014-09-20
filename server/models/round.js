@@ -14,7 +14,7 @@ var roundSchema = new Schema({
 
 roundSchema.methods.start = function start(letter) {
   this.letter = letter;
-  this.status = 'PLAYING';
+  this.status = 'OPENED';
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
@@ -30,7 +30,16 @@ roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
 }
 
 roundSchema.methods.isPlaying = function isPlaying() {
-  return this.status === 'PLAYING';
+  return this.status === 'OPENED';
+}
+
+roundSchema.methods.getPlayersWhoHavePlayed = function getPlayersWhoHavePlayed() {
+  var players=[];
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+     players.push(this.lines[i].player);
+  };
+
+  return players;
 }
 
 roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(game) {
@@ -45,6 +54,7 @@ roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
   }).pop();  
   return existingLine !== undefined;
 }
+
 roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player){
   var existingLine = this.lines.filter(function (line) {
     return line.player[0].fbId == player.fbId && line.plays.length>0; 
@@ -67,7 +77,7 @@ roundSchema.methods.createScoresMap = function createScoresMap(game){
   return scoresMap;
 }
 roundSchema.methods.finish = function finish(game) {
-  this.status = "FINISHED";
+  this.status = "CLOSED";
   var scoresMap = this.createScoresMap(game);
   this.calculateAndSetPartialScores(scoresMap);
   this.calculateAndSetTotalScores();
@@ -160,14 +170,14 @@ roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScores
   }
   return scores;
 }
-roundSchema.methods.getScores = function getScores(players){
+roundSchema.methods.getScores = function getScores(players, showScores){
   var scores = [];
   var bestLineScore = 0; 
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var lineForPlayer = this.lines.filter(function (line) 
       {return line.player[0].fbId == aPlayer.fbId; }).pop();
-    if (lineForPlayer.score > bestLineScore){
+    if (showScores && lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 
     scores.push({ 'player' : lineForPlayer.player[0],
@@ -175,30 +185,33 @@ roundSchema.methods.getScores = function getScores(players){
                               'best'  : false},
                   'plays' : lineForPlayer.getSummarizedPlays() });
   }
-  var bestOfCategory = [];
-  for(var scoreI in scores){
-    var score = scores[scoreI];
-    for(var playI in score.plays){
-      var play = score.plays[playI];
-      if (bestOfCategory[play.category] == undefined){
-        bestOfCategory[play.category] = play.scoreInfo.score;
-      } else {
-        if (play.scoreInfo.score > bestOfCategory[play.category]){
+  if (showScores)
+  {
+    var bestOfCategory = [];
+    for(var scoreI in scores){
+      var score = scores[scoreI];
+      for(var playI in score.plays){
+        var play = score.plays[playI];
+        if (bestOfCategory[play.category] == undefined){
           bestOfCategory[play.category] = play.scoreInfo.score;
-        }  
+        } else {
+          if (play.scoreInfo.score > bestOfCategory[play.category]){
+            bestOfCategory[play.category] = play.scoreInfo.score;
+          }  
+        }
       }
     }
-  }
-  for(var scoreI in scores){
-    var scoreObject = scores[scoreI];
-    if (scoreObject.scoreInfo.score == bestLineScore){
-      scoreObject.scoreInfo.best = true;
-    }
-    for(var playI in scoreObject.plays){
-      var play = scoreObject.plays[playI];
-      if (play.scoreInfo.score == bestOfCategory[play.category]){
-        play.scoreInfo.best = true;
-      } 
+    for(var scoreI in scores){
+      var scoreObject = scores[scoreI];
+      if (scoreObject.scoreInfo.score == bestLineScore){
+        scoreObject.scoreInfo.best = true;
+      }
+      for(var playI in scoreObject.plays){
+        var play = scoreObject.plays[playI];
+        if (play.scoreInfo.score == bestOfCategory[play.category]){
+          play.scoreInfo.best = true;
+        } 
+      }
     }
   }
 

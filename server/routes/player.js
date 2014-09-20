@@ -60,11 +60,60 @@ module.exports = function(app) {
                     playersNameArray.push(game.players[i].name.split(' ')[0]); //Only first name
               };
 
-		        	gamesToReturn.push({"gameId":game.gameId, 
-                                  "status": game.status,
-                                  "mode": game.mode ,
-                                  "categoriesType": game.categoriesType ,
-                                  "players": playersNameArray});
+              var currentRound;
+              var playerHasPlayed = false;
+              var isFirstRound = true;
+              var statusCode;
+              // -2: notStarted
+              // -1: noPreviousRounds
+              // 1: resultsAvailable
+
+              if (!game.hasStarted())
+                statusCode = -2;
+              else
+              {
+                currentRound = game.getPlayingRound();
+                
+                //hay ronda abierta?
+                if (currentRound!=undefined)
+                {              
+                  playerHasPlayed = currentRound.hasPlayerSentHisLine(player);
+
+                  //la que esta abierta, es la primera?
+                  if (game.rounds.length == 1){
+                    isFirstRound = true;
+
+                    //el jugador ya jugo?
+                    if (playerHasPlayed)
+                      statusCode = 1;
+                    else
+                      statusCode = -1; //al ser la primera, no tengo anterior
+                  } 
+                  else 
+                  {
+                    isFirstRound = false;
+                    statusCode = 1;
+                  }    
+                } else {
+                  //hay rondas cerradas?
+                  if (game.rounds.length >= 1){
+                      statusCode = 1;
+                      isFirstRound = false;
+                  } else {
+                      statusCode  = -1;
+                      isFirstRound = true;                     
+                  }
+                }
+              }
+
+              gamesToReturn.push({"gameId":game.gameId, 
+                    "status": game.status,
+                    "mode": game.mode ,
+                    "categoriesType": game.categoriesType ,
+                    "players": playersNameArray,
+                   "isFirstRound":isFirstRound, 
+                     "statusCode":statusCode,
+                     "playerHasPlayedCurrentRound":playerHasPlayed});
 		        };
 	        }
 	      	res.send(gamesToReturn, 200); //add error manipulation

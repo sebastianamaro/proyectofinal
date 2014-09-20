@@ -16,7 +16,7 @@ var gameSchema = new Schema({
     opponentsType: { type: String },
     players: [ Player.schema ],
     creator: [ Player.schema ],
-    selectedFriends: [ { type: String } ],
+    selectedFriends: [ { fbId:{ type: String }, name:{ type: String } } ],
     randomPlayersCount: { type: Number }
 });
 
@@ -29,6 +29,14 @@ gameSchema.methods.getRound = function getRound(roundId) {
 
 gameSchema.methods.getPlayingRound = function getPlayingRound(){
   return this.rounds.filter(function (round) {return round.isPlaying(); }).pop();
+}
+
+gameSchema.methods.getLastRound = function getPlayingRound(){
+  return this.rounds[this.rounds.length-1];
+}
+
+gameSchema.methods.hasStarted = function hasStarted(){
+  return this.status != 'WAITINGFORPLAYERS';
 }
 
 gameSchema.methods.getNextLetter = function getNextLetter(){
@@ -260,7 +268,7 @@ gameSchema.methods.acceptInvitation = function(request, callback){
       
     //+1 porque todavia no lo guarde (porque necesito guardarlo sin las invitaciones y con el game)
     if (invitedPlayersCount == game.players.length + 1){
-      game.status = "PLAYING";  
+      game.status = "WAITINGFORNEXTROUND";  
       if (game.opponentsType == 'RANDOM')
         game.removeAllInvitations(player.fbId);        
     }
@@ -320,7 +328,7 @@ gameSchema.methods.rejectInvitation = function(request, callback){
           if (game.players.length == 1)
             game.status = "ALLPLAYERSREJECTED";
           else
-            game.status = "PLAYING";  
+            game.status = "WAITINGFORNEXTROUND";  
         }
 
     }
@@ -341,7 +349,9 @@ gameSchema.methods.asSummarized = function(){
       'opponentsType': this.opponentsType ,
       'owner': this.creator[0],
       'randomPlayersCount': this.randomPlayersCount ,
-      'selectedCategories':  this.selectedCategories
+      'selectedCategories':  this.categories,
+      'selectedFriends' : this.selectedFriends,
+      'players' : this.players
   };
 }
 

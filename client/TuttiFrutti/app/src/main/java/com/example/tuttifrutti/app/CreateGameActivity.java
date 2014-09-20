@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
@@ -60,16 +61,14 @@ public class CreateGameActivity extends ActionBarActivity {
         Game gs = new Game();
         gs.setSettings(mode, categories, oponents);
 
-        if (oponents) {
-            Intent intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
-            intent.putExtra("gameSettings", gs);
-            startActivity(intent);
-        }
-        else{
-            Intent intent = new Intent(getApplicationContext(), ChooseFriendsActivity.class);
-            intent.putExtra("gameSettings", gs);
-            startActivity(intent);
-        }
+        Intent intent;
+        if (oponents)
+            intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
+        else
+            intent = new Intent(getApplicationContext(), ChooseFriendsActivity.class);
+
+        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gs);
+        startActivity(intent);
     }
 
 

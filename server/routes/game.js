@@ -7,7 +7,7 @@ module.exports = function(app) {
   var Play = require('../models/play.js');
 
   getRound = function(req, res) {
-    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+    Game.findOne({ 'gameId': req.params.id, status: { $ne: 'WAITINGFORPLAYERS' } }, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
       
@@ -22,7 +22,7 @@ module.exports = function(app) {
   }
   alterRound = function(req, res) {
     var statusRequired = req.body.status;
-    if (statusRequired == 'PLAYING')
+    if (statusRequired == 'OPENED')
       startRound(req,res);
     else if (statusRequired == 'CLOSED')
       finishRound(req,res);
@@ -30,7 +30,7 @@ module.exports = function(app) {
       res.send('Incomplete request',500);      
   }
   startRound = function(req, res) {
-        Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+        Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
@@ -44,6 +44,7 @@ module.exports = function(app) {
             var round = new Round();
             round.start(assignedLetter);
             game.addRound(round);
+            game.status = 'PLAYING';
             game.save(function(err) {
               if(!err) {
                 console.log('Created round with letter '+assignedLetter);
@@ -57,7 +58,7 @@ module.exports = function(app) {
     });
   }
   finishRound = function(req, res) {
-        Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+        Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
           var reqRound = req.body;
 
           console.log(reqRound);
@@ -79,11 +80,13 @@ module.exports = function(app) {
               console.log('foundPlayer ' + foundPlayer);
               game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
                 currentRound.addLine(reqRound.line, foundPlayer);
-                console.log("ultima line antes de guardar " + currentRound.lines[currentRound.lines.length-1]);
                 
                 if (currentRound.checkAllPlayersFinished(game)){
                   currentRound.finish(game);
+                  game.status = 'WAITINGFORNEXTROUND';
                 }
+                else
+                  game.status = 'SHOWINGRESULTS';
 
                 game.save(function(err) {
                   if(!err) {
@@ -153,13 +156,46 @@ module.exports = function(app) {
     });
   }
   getRoundScores = function(req, res){
-    Game.findOne({ 'gameId': req.params.id , status: 'PLAYING'}, function (err, game){
+    Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
-      var currentRound = game.getRound(req.params.roundId);
-      if (!currentRound) return res.send('Round not found with roundId '+req.params.roundId, 404);
-      //if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
-      var response=currentRound.getScores(game.players);
+      
+      var roundToShow = game.getPlayingRound();
+      var showScores;
+      var playersWhoHaveLines;
+      var canPlayerPlay;
+
+      if (roundToShow == undefined)
+      {
+        //si todavia no hay actual, mostrame los resultados de la anterior que ya esta cerrada
+        roundToShow = game.getLastRound();
+        showScores = true;
+        playersWhoHaveLines = game.players;
+        canPlayerPlay = true; //la va a crear
+      }
+      else if (!playingRound.hasLineOfPlayer(req.params.fbId))
+      {
+        //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
+        roundToShow = game.getRound(playingRound.roundId -1);
+        showScores = true;
+        playersWhoHaveLines = game.players;
+        canPlayerPlay = true; //va a jugar la actual
+      }
+      else
+      {
+        //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
+        showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
+        playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
+        canPlayerPlay = false;
+      }
+
+      if (!roundToShow) return res.send('No round to show results of', 404);
+      
+      var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
+      
+      var roundScoresResult = { 'canPlayerPlay': canPlayerPlay,
+                            'scoresArray': scoresArray };
+
       console.log(response);
       res.send(response, 200);            
      });

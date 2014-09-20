@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.InvitationResponse;
@@ -28,7 +29,7 @@ public class ManageInvitationActivity extends ActionBarActivity {
         setContentView(R.layout.activity_manage_invitation);
 
         Intent intent = getIntent();
-        gameSettings = (FullGame)intent.getSerializableExtra("gameSettings");
+        gameSettings = (FullGame)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         TextView txtUserName=(TextView) this.findViewById(R.id.userNameTextView);
         TextView txtGameMode=(TextView) this.findViewById(R.id.gameModeTextView);

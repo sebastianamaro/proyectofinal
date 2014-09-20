@@ -2,10 +2,9 @@ package com.example.TuttiFruttiCore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Created by Sebastian on 21/06/2014.
- */
 public class Game implements Serializable {
     private String mode;
     private String categoriesType;
@@ -13,7 +12,8 @@ public class Game implements Serializable {
     private Player owner;
     private int randomPlayersCount;
     private ArrayList<Category> selectedCategories;
-    private ArrayList<String> selectedFriends;
+    private ArrayList<Player> selectedFriends;
+    private ArrayList<Player> players;
 
     public Game(){}
     public Game(String mode, String categoriesType, String opponentsType, int randomPlayersCount){
@@ -42,10 +42,14 @@ public class Game implements Serializable {
 
     }
     public String getMode(){return mode;}
-    public void setMode(String mode){this.mode=mode;}
+    public void setMode(String mode){
+        this.mode=mode;
+    }
 
     public String getCategoriesType(){return categoriesType;}
-    public void setCategoriesType(String categoriesType){this.categoriesType=categoriesType;}
+    public void setCategoriesType(String categoriesType){
+        this.categoriesType=categoriesType;
+    }
 
     public void setOwner(Player owner){this.owner = owner;}
 
@@ -72,19 +76,44 @@ public class Game implements Serializable {
         this.selectedCategories = selectedCategories;
     }
 
-    public ArrayList<String> getSelectedFriends() {
+    public ArrayList<Player> getSelectedFriends() {
         return selectedFriends;
     }
 
-    public void setSelectedFriends(ArrayList<String> selectedFriends) {
+    public void setSelectedFriends(ArrayList<Player> selectedFriends) {
         this.selectedFriends = selectedFriends;
     }
 
-    public void addSelectedFriend(String friendFbId)
+    public void addSelectedFriend(String friendFbId, String friendName)
     {
         if (this.selectedFriends == null)
-            setSelectedFriends(new ArrayList<String>());
+            setSelectedFriends(new ArrayList<Player>());
 
-        this.selectedFriends.add(friendFbId);
+        Player playerToAdd = new Player();
+        playerToAdd.setFbId(friendFbId);
+        playerToAdd.setName(friendName);
+        this.selectedFriends.add(playerToAdd);
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
+    public String getSpanishCategoriesType() {
+        if (categoriesType.equals("FIXED"))
+            return "Controladas";
+        else
+            return "Libres";
+    }
+
+    public String getSpanishOpponentsType() {
+        if (opponentsType.equals("FRIENDS"))
+            return "Amigos";
+        else
+            return "Aleatorios";
     }
 }

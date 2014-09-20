@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.TuttiFruttiCore.Constants;
 import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
 import com.example.tuttifrutti.app.Classes.StopNotificationData;
 import com.example.tuttifrutti.app.MainActivity;
@@ -46,7 +47,7 @@ public class GcmIntentService extends IntentService {
             String dataJson;
             dataJson = extras.getString("data");
             StopNotificationData stopNotificationData = new Gson().fromJson(dataJson, StopNotificationData.class);
-            intentActivity.putExtra(PlayRoundActivity.STOP_NOTIFICATION_DATA, stopNotificationData);
+            intentActivity.putExtra(Constants.STOP_NOTIFICATION_DATA, stopNotificationData);
         }
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
@@ -58,7 +59,7 @@ public class GcmIntentService extends IntentService {
         if (!extras.isEmpty()) {
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 //todo: sacar el gameId de lo q me manda el server
-                intentActivity.putExtra(MainActivity.GAME_ID_EXTRA_MESSAGE, 1);
+                intentActivity.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, 1);
                 sendBroadcast(intentActivity);
             }
         }

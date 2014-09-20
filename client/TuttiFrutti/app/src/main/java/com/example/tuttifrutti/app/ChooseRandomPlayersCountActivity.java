@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
 
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 
 public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
@@ -20,7 +21,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
 
-        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
+        gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         NumberPicker np = (NumberPicker)findViewById(R.id.randomPlayersCount);
         np.setMaxValue(4);
@@ -56,7 +57,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
         if (gameSettings.getCategoriesType().equals("FIXED")) {
             Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
-            intent.putExtra("gameSettings", gameSettings);
+            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
             startActivity(intent);
         }
         else
