@@ -22,4 +22,11 @@ public class Constants {
      * Tag used on log messages.
      */
     static final String TAG = "GCMDemo";
+
+    // -2: notStarted
+    // -1: noPreviousRounds
+    // 1: previousRoundsAvailable
+    public final static int GAME_STATUS_CODE_NOT_STARTED = -2;
+    public final static int GAME_STATUS_CODE_NO_PREV_ROUNDS = -1;
+    public final static int GAME_STATUS_CODE_RESULTS_AVAILABLE = 1;
 }

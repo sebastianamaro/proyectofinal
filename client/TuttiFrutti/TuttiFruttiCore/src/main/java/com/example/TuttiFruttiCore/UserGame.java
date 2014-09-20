@@ -13,7 +13,7 @@ public class UserGame implements Serializable {
     private String categoriesType;
     private ArrayList<String> playersName;
     private boolean playerHasPlayedCurrentRound;
-    private int roundId;
+    private int statusCode;
     private boolean isFirstRound;
 
     public void setGameId(int gameId) {
@@ -64,12 +64,12 @@ public class UserGame implements Serializable {
         this.playerHasPlayedCurrentRound = playerHasPlayedCurrentRound;
     }
 
-    public int getRoundId() {
-        return roundId;
+    public int getStatusCode() {
+        return statusCode;
     }
 
-    public void setRoundId(int currentRoundId) {
-        this.roundId = currentRoundId;
+    public void setStatusCode(int currentRoundId) {
+        this.statusCode = currentRoundId;
     }
 
     public boolean getIsFirstRound() {

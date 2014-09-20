@@ -159,10 +159,43 @@ module.exports = function(app) {
     Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
-      var currentRound = game.getRound(req.params.roundId);
-      if (!currentRound) return res.send('Round not found with roundId '+req.params.roundId, 404);
-      //if (!currentRound.isFinished()) return res.send('Round is not yet finished', 403);
-      var response=currentRound.getScores(game.players);
+      
+      var roundToShow = game.getPlayingRound();
+      var showScores;
+      var playersWhoHaveLines;
+      var canPlayerPlay;
+
+      if (roundToShow == undefined)
+      {
+        //si todavia no hay actual, mostrame los resultados de la anterior que ya esta cerrada
+        roundToShow = game.getLastRound();
+        showScores = true;
+        playersWhoHaveLines = game.players;
+        canPlayerPlay = true; //la va a crear
+      }
+      else if (!playingRound.hasLineOfPlayer(req.params.fbId))
+      {
+        //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
+        roundToShow = game.getRound(playingRound.roundId -1);
+        showScores = true;
+        playersWhoHaveLines = game.players;
+        canPlayerPlay = true; //va a jugar la actual
+      }
+      else
+      {
+        //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
+        showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
+        playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
+        canPlayerPlay = false;
+      }
+
+      if (!roundToShow) return res.send('No round to show results of', 404);
+      
+      var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
+      
+      var roundScoresResult = { 'canPlayerPlay': canPlayerPlay,
+                            'scoresArray': scoresArray };
+
       console.log(response);
       res.send(response, 200);            
      });

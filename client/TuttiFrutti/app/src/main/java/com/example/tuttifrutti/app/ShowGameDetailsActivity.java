@@ -1,6 +1,5 @@
 package com.example.tuttifrutti.app;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -37,7 +35,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class ShowGameDetailsActivity extends ActionBarActivity {
@@ -52,7 +49,8 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         Intent i = getIntent();
         game = (UserGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
-        if (game.getRoundId() == -2) {
+        //no pregunto si ya jugo, porque si ya jugo no va a estar en esta pantalla
+        if (game.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED) {
             Button b = (Button)findViewById(R.id.btnPlay);
             b.setEnabled(false);
         }
@@ -225,7 +223,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
 
         startActivity(intent);
-
     }
 
     private class SummarizedPlayer

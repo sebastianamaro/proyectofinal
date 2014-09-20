@@ -63,26 +63,20 @@ module.exports = function(app) {
               var currentRound;
               var playerHasPlayed = false;
               var isFirstRound = true;
-              var roundId;
+              var statusCode;
+              // -2: notStarted
+              // -1: noPreviousRounds
+              // 1: resultsAvailable
 
               if (!game.hasStarted())
+                statusCode = -2;
+              else
               {
-                roundId = -2;
-              }else{
                 currentRound = game.getPlayingRound();
                 
                 //hay ronda abierta?
-                if (currentRound==undefined)
-                {                  
-                  //hay rondas cerradas?
-                  if (game.rounds.length >= 1){
-                      roundId = game.rounds.length;
-                      isFirstRound = false;
-                  } else {
-                      roundId  = -1;
-                      isFirstRound = true;                     
-                  }
-                } else {
+                if (currentRound!=undefined)
+                {              
                   playerHasPlayed = currentRound.hasPlayerSentHisLine(player);
 
                   //la que esta abierta, es la primera?
@@ -91,17 +85,23 @@ module.exports = function(app) {
 
                     //el jugador ya jugo?
                     if (playerHasPlayed)
-                      roundId = currentRound.roundId;
+                      statusCode = 1;
                     else
-                      roundId = -1; //al ser la primera, no tengo anterior
-                  } else {
+                      statusCode = -1; //al ser la primera, no tengo anterior
+                  } 
+                  else 
+                  {
                     isFirstRound = false;
-
-                    //el jugador ya jugo?
-                    if (playerHasPlayed)
-                      roundId = currentRound.roundId;
-                    else
-                      roundId = currentRound.roundId-1;                    
+                    statusCode = 1;
+                  }    
+                } else {
+                  //hay rondas cerradas?
+                  if (game.rounds.length >= 1){
+                      statusCode = 1;
+                      isFirstRound = false;
+                  } else {
+                      statusCode  = -1;
+                      isFirstRound = true;                     
                   }
                 }
               }
@@ -112,7 +112,7 @@ module.exports = function(app) {
                     "categoriesType": game.categoriesType ,
                     "players": playersNameArray,
                    "isFirstRound":isFirstRound, 
-                    "roundId":roundId,
+                     "statusCode":statusCode,
                      "playerHasPlayedCurrentRound":playerHasPlayed});
 		        };
 	        }

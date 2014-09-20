@@ -117,20 +117,22 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     } else if (itemValue instanceof UserGame) {
 
                         UserGame ug = (UserGame) itemValue;
+                        Intent i;
 
                         //si no empezo el game
-                        // O (no hay ronda actual Y no hay anteriores(es la primera))
-                        // O (es la primera ronda Y yo NO jugue)
-                        if (ug.getRoundId() == -2 ||
-                                (ug.getRoundId() == -1 && ug.getIsFirstRound()) ||
-                                (ug.getRoundId() != -1 && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
-                            Intent i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
-                            i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
+                        // O (es la primera y no jugue)
+                        if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||
+                                (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound()))
+                        {
+                            i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
+                        }else
+                        {
+                            i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
 
-                            startActivity(i);
                         }
-
-                    }
+                        i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
+                        startActivity(i);
+                        }
                 }
 
             });

@@ -31,6 +31,10 @@ gameSchema.methods.getPlayingRound = function getPlayingRound(){
   return this.rounds.filter(function (round) {return round.isPlaying(); }).pop();
 }
 
+gameSchema.methods.getLastRound = function getPlayingRound(){
+  return this.rounds[this.rounds.length-1];
+}
+
 gameSchema.methods.hasStarted = function hasStarted(){
   return this.status != 'WAITINGFORPLAYERS';
 }
