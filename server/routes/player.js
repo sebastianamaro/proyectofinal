@@ -62,6 +62,29 @@ module.exports = function(app) {
     });
   }
 
+deleteFinishedGame = function(req,rest){
+     Player.findOne({ fbId: req.params.id }, function (err, player){
+        if (err) return res.send(err, 500);
+        if (!player) return res.send('Player not found', 404);   
+        
+        Game.findOne({ gameId: req.params.game, status: "CLOSED" }, function(err, game) {
+            if (err) return res.send(err, 500);
+            if (!game) return res.send('Game not found', 404);
+
+            var index = player.games.indexOf(req.params.game);
+            player.games.splice(index,1);
+            player.save(function(err) {
+            if(!err) {
+              console.log('Player '+player.getName()+' gameId '+ req.params.game+ ' deleted');
+            } else {
+              console.log('ERROR en delete game: ' + err);
+            }
+          });
+          res.send('Game deleted', 200); //add error manipulation
+      });
+    });
+  }
+
   getCategoriesForPlayer= function(req, res)  {
 
     Player.findOne({ fbId: req.params.id }, function (err, player){
