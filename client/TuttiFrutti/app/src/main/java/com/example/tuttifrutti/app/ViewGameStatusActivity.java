@@ -127,7 +127,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         Context context;
         private ArrayList<Object> games;
-        private int activeGamesSeparatorIndex=0; //ex staredCategoriesSeparatorIndex
+        private int activeGamesSeparatorIndex; //ex staredCategoriesSeparatorIndex
         private int invitationsSeparatorIndex; //ex fixedCategoriesSeparatorIndex
         private int finishedGamesSeparatorIndex; //ex allCategoriesSeparatorIndex
         private static final int ITEM_VIEW_TYPE_ACTIVE_GAMES_SEPARATOR = 0;
@@ -140,7 +140,11 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         private static final int ITEM_VIEW_TYPE_COUNT = 7; // 1,2,3) Headers  4) separador invisible 5) Full Game 6) userGame
         private static final String activeGamesText="Partidas Activas";
         private static final String invitationsText="Invitaciones";
-        private static final String finishedGamesText="Todas";
+        private static final String finishedGamesText="Partidas Finalizadas";
+        boolean showsActiveGames;
+        boolean showsInvitations;
+        boolean showsFinishedGames;
+
 
         public GamesAdapter(Context context,ArrayList<UserGame> activeGames, ArrayList<FullGame> invitations, ArrayList<UserGame> finishedGames)
         {
@@ -150,33 +154,83 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             this.games.addAll(invitations);
             this.games.addAll(finishedGames);
 
-            this.invitationsSeparatorIndex=activeGames.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
-            this.finishedGamesSeparatorIndex=activeGames.size() +invitations.size()  + 4;
 
-            this.games.add(activeGamesSeparatorIndex,activeGamesText);
-            this.games.add(invitationsSeparatorIndex,invitationsText);
-            this.games.add(finishedGamesSeparatorIndex,finishedGamesText);
+            showsActiveGames=activeGames.size()>0;
+            showsInvitations=invitations.size()>0;
+            showsFinishedGames=finishedGames.size()>0;
+
+
+            if(showsActiveGames)
+                this.invitationsSeparatorIndex=activeGames.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+            else
+                this.invitationsSeparatorIndex= 0; // Solo el header de invitaciones
+
+
+            if(showsActiveGames)
+                this.finishedGamesSeparatorIndex=activeGames.size() + 2;
+            else
+                this.finishedGamesSeparatorIndex= 0;
+
+
+            if(showsInvitations)
+                this.finishedGamesSeparatorIndex+= (invitations.size()+2);
+
+
+            if(showsActiveGames)
+                this.games.add(activeGamesSeparatorIndex,activeGamesText);
+
+            if(showsInvitations)
+            {
+                this.games.add(invitationsSeparatorIndex-1,null);
+                this.games.add(invitationsSeparatorIndex,invitationsText);
+            }
+
+            if(showsFinishedGames)
+            {
+                this.games.add(finishedGamesSeparatorIndex-1,null);
+                this.games.add(finishedGamesSeparatorIndex,finishedGamesText);
+            }
         }
 
 
         @Override
         public int getItemViewType(int position) {
 
-            if(position == activeGamesSeparatorIndex)
-                return ITEM_VIEW_TYPE_ACTIVE_GAMES_SEPARATOR;
+            if(showsActiveGames)
+            {
+                if(position == activeGamesSeparatorIndex)
+                    return ITEM_VIEW_TYPE_ACTIVE_GAMES_SEPARATOR;
 
+                if(showsInvitations)
+                {
+                    if(position == invitationsSeparatorIndex-1)
+                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+                }
+                else if (showsFinishedGames)
+                {
+                    if(position == finishedGamesSeparatorIndex-1)
+                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+                }
 
-            if(position == invitationsSeparatorIndex-1)
-                return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+            }
+            else if(showsInvitations)
+            {
+                if(position == invitationsSeparatorIndex)
+                    return ITEM_VIEW_TYPE_INVITATIONS_SEPARATOR;
 
-            if(position == invitationsSeparatorIndex)
-                return ITEM_VIEW_TYPE_INVITATIONS_SEPARATOR;
+                if (showsFinishedGames)
+                {
+                    if(position == finishedGamesSeparatorIndex-1)
+                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+                }
+            }
 
-            if(position == finishedGamesSeparatorIndex-1)
-                return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+            if (showsFinishedGames)
+            {
+                if(position == finishedGamesSeparatorIndex)
+                    return ITEM_VIEW_TYPE_FINISHED_GAMES_SEPARATOR;
+            }
 
-            if(position == finishedGamesSeparatorIndex)
-                return ITEM_VIEW_TYPE_FINISHED_GAMES_SEPARATOR;
 
             if(games.get(position) instanceof FullGame)
                 return ITEM_VIEW_TYPE_FULL_GAME_SEPARATOR;
@@ -322,7 +376,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             UserGame rowItem = (UserGame) getItem(position);
 
-            holder.text1.setText(rowItem.getGameId());
+            holder.text1.setText(String.valueOf(rowItem.getGameId()));
             holder.text2.setText(rowItem.getStatus());
 
             return convertView;
@@ -352,7 +406,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             return convertView;
         }
 
-        private View SetRowFinishedGamesViewHolder(int position, View convertView) {
+        private View SetRowFinishedGamesViewHolder(final int position, View convertView) {
             FinishedGamesViewHolder holder = null;
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -368,14 +422,45 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 holder = (FinishedGamesViewHolder) convertView.getTag();
             }
 
-            FullGame rowItem = (FullGame) getItem(position);
+            UserGame rowItem = (UserGame) getItem(position);
 
-            holder.text1.setText(rowItem.getOwner().getName());
+            holder.text1.setText(String.valueOf(rowItem.getGameId()));
+
+            View.OnClickListener deleteFinishedGameListener = new View.OnClickListener() {
+
+                UserGame s = (UserGame)games.get(position);
+
+                @Override
+                public void onClick(View v) {
+                    new DeleteFinishedGameAsyncTask().execute(s);
+                }
+            };
+
+            holder.imgDelete.setOnClickListener(deleteFinishedGameListener);
 
             return convertView;
         }
 
+        private class DeleteFinishedGameAsyncTask extends AsyncTask<UserGame, Void ,Void> {
+            TuttiFruttiAPI api;
+            UserGame ug;
+            protected void onPreExecute() {
+                api = new TuttiFruttiAPI(getString(R.string.server_url));
+            }
 
+            @Override
+            protected Void doInBackground(UserGame... userGames) {
+                ug=userGames[0];
+                fbId = FacebookHelper.getUserId();
+                api.deleteFinishedGame(fbId,ug.getGameId());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                GamesAdapter.this.games.remove(ug);
+                GamesAdapter.this.notifyDataSetChanged();
+            }
+        }
     }
-
 }
