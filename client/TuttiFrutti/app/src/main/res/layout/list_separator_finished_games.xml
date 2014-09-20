@@ -4,13 +4,12 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/activeGamesSeparator"
+        android:id="@+id/finishedGamesSeparator"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:background="#ffc85056"
-        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:background="@drawable/rounded_corner_finished_games"
+        android:textSize="20sp"
         android:text="Partidas Finalizadas"
-        android:textStyle="bold"
-        android:paddingLeft="30dp"/>
+        android:textStyle="bold"/>
 </LinearLayout>

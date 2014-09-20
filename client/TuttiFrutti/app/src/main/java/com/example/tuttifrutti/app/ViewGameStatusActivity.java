@@ -12,18 +12,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.FullGame;
-import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
@@ -49,7 +46,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.view_game_status, menu);
+        //getMenuInflater().inflate(R.menu.view_game_status, menu);
         return true;
     }
 
@@ -100,6 +97,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 else
                     activeGames.add(ug);
 
+
+            FullGame fg= new FullGame();
+            Player p= new Player();
+            p.setName("SEBA");
+            fg.setMode("ONLINE");
+            fg.setOwner(p);
+
+            invitations.add(fg);
             GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
             listViewGames.setAdapter(ga);
 
@@ -211,9 +216,10 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     if(position == finishedGamesSeparatorIndex-1)
                         return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
                 }
-
             }
-            else if(showsInvitations)
+
+
+            if(showsInvitations)
             {
                 if(position == invitationsSeparatorIndex)
                     return ITEM_VIEW_TYPE_INVITATIONS_SEPARATOR;
@@ -326,7 +332,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.empty_list_separator, null);
+                convertView = mInflater.inflate(R.layout.list_separator_empty, null);
             }
             return convertView;
         }
@@ -335,7 +341,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.active_games_list_separator, null);
+                convertView = mInflater.inflate(R.layout.list_separator_active_games, null);
             }
             return convertView;
         }
@@ -344,7 +350,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.invitations_list_separator, null);
+                convertView = mInflater.inflate(R.layout.list_separator_invitations, null);
             }
             return convertView;
         }
@@ -353,7 +359,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.finished_games_separator, null);
+                convertView = mInflater.inflate(R.layout.list_separator_finished_games, null);
             }
             return convertView;
         }
@@ -363,7 +369,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.active_game_row, null);
+                convertView = mInflater.inflate(R.layout.list_row_active_games, null);
 
                 holder = new ActiveGamesViewHolder();
                 holder.text1 = (TextView) convertView.findViewById(R.id.agtext1);
@@ -387,7 +393,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.invitation_row, null);
+                convertView = mInflater.inflate(R.layout.list_row_invitation, null);
 
                 holder = new InvitationsViewHolder();
                 holder.text1 = (TextView) convertView.findViewById(R.id.invtext1);
@@ -411,7 +417,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.finished_game_row, null);
+                convertView = mInflater.inflate(R.layout.list_row_finished_game, null);
 
                 holder = new FinishedGamesViewHolder();
                 holder.text1 = (TextView) convertView.findViewById(R.id.fgtext1);

@@ -7,7 +7,6 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:paddingLeft="10dip"
         android:orientation="vertical">
         <TextView android:id="@+id/fgtext1"
@@ -16,14 +15,11 @@
             android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
     </LinearLayout>
-
-
     <ImageView
         android:id="@+id/deleteFinishedGame"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:padding="5dp"
         android:src="@drawable/trash_can"
         android:layout_alignParentRight="true"/>

@@ -24,6 +24,8 @@
         android:layout_height="wrap_content"
         android:text="Crear Partida"
         android:id="@+id/createGame"
+        android:textColor="@color/black"
+        android:textStyle="bold"
         android:onClick="createGame" />
     </RelativeLayout>
 
