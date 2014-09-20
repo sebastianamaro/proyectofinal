@@ -87,24 +87,17 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void result) {
 
-
             ArrayList<UserGame> activeGames = new ArrayList<UserGame>();
             ArrayList<UserGame> finishedGames = new ArrayList<UserGame>();
 
             for (UserGame ug : games)
+            {
                 if (ug.getStatus().equals("CLOSED"))
                     finishedGames.add(ug);
                 else
                     activeGames.add(ug);
+            }
 
-
-            FullGame fg= new FullGame();
-            Player p= new Player();
-            p.setName("SEBA");
-            fg.setMode("ONLINE");
-            fg.setOwner(p);
-
-            invitations.add(fg);
             GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
             listViewGames.setAdapter(ga);
 
@@ -284,6 +277,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
         private class FinishedGamesViewHolder {
             TextView text1;
+            TextView text2;
             ImageView imgDelete;
         }
 
@@ -382,8 +376,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             UserGame rowItem = (UserGame) getItem(position);
 
-            holder.text1.setText(String.valueOf(rowItem.getGameId()));
-            holder.text2.setText(rowItem.getStatus());
+            holder.text1.setText(rowItem.getMode()+ " - "+ rowItem.getCategoriesType());
+
+            String namesToShow="";
+            for(String name : rowItem.getPlayersName())
+                namesToShow+= name + " - ";
+
+            namesToShow=namesToShow.substring(0,namesToShow.lastIndexOf(" - "));
+            holder.text2.setText(namesToShow);
 
             return convertView;
         }
@@ -407,7 +407,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             FullGame rowItem = (FullGame) getItem(position);
 
             holder.text1.setText(rowItem.getOwner().getName());
-            holder.text2.setText(rowItem.getMode());
+            holder.text2.setText(rowItem.getMode()+ " - "+ rowItem.getCategoriesType());
 
             return convertView;
         }
@@ -421,6 +421,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
                 holder = new FinishedGamesViewHolder();
                 holder.text1 = (TextView) convertView.findViewById(R.id.fgtext1);
+                holder.text2 = (TextView) convertView.findViewById(R.id.fgtext2);
                 holder.imgDelete = (ImageView) convertView.findViewById(R.id.deleteFinishedGame);
                 convertView.setTag(holder);
             }
@@ -430,7 +431,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
             UserGame rowItem = (UserGame) getItem(position);
 
-            holder.text1.setText(String.valueOf(rowItem.getGameId()));
+            holder.text1.setText(rowItem.getMode()+ " - "+ rowItem.getCategoriesType());
+
+            String namesToShow="";
+            for(String name : rowItem.getPlayersName())
+                namesToShow+= name + " - ";
+
+            namesToShow=namesToShow.substring(0,namesToShow.lastIndexOf(" - "));
+            holder.text2.setText(namesToShow);
 
             View.OnClickListener deleteFinishedGameListener = new View.OnClickListener() {
 

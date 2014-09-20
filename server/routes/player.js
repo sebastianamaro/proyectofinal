@@ -54,7 +54,17 @@ module.exports = function(app) {
 	        if (games){
 		        for (var i = games.length - 1; i >= 0; i--) {
 		        	var game = games[i];
-		        	gamesToReturn.push({"gameId":game.gameId, "status": game.status});
+              var playersNameArray =[];
+              for (var i = game.players.length - 1; i >= 0; i--) {
+                  if(game.players[i] != game.creator[0])
+                    playersNameArray.push(game.players[i].name.split(' ')[0]); //Only first name
+              };
+
+		        	gamesToReturn.push({"gameId":game.gameId, 
+                                  "status": game.status,
+                                  "mode": game.mode ,
+                                  "categoriesType": game.categoriesType ,
+                                  "players": playersNameArray});
 		        };
 	        }
 	      	res.send(gamesToReturn, 200); //add error manipulation
