@@ -88,6 +88,15 @@ public class TuttiFruttiAPI {
 
     }
 
+    public void deleteFinishedGame (String playerId,  int gameId)
+    {
+        String url= serverURL+"/player/"+playerId+"/game/"+gameId;
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.delete(url);
+    }
+
 
     public void createGame(Game game)
     {

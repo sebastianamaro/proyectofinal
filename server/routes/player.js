@@ -54,11 +54,44 @@ module.exports = function(app) {
 	        if (games){
 		        for (var i = games.length - 1; i >= 0; i--) {
 		        	var game = games[i];
-		        	gamesToReturn.push({"gameId":game.gameId, "status": game.status});
+              var playersNameArray =[];
+              for (var i = game.players.length - 1; i >= 0; i--) {
+                  if(game.players[i] != game.creator[0])
+                    playersNameArray.push(game.players[i].name.split(' ')[0]); //Only first name
+              };
+
+		        	gamesToReturn.push({"gameId":game.gameId, 
+                                  "status": game.status,
+                                  "mode": game.mode ,
+                                  "categoriesType": game.categoriesType ,
+                                  "players": playersNameArray});
 		        };
 	        }
 	      	res.send(gamesToReturn, 200); //add error manipulation
 	    });
+    });
+  }
+
+deleteFinishedGame = function(req,rest){
+     Player.findOne({ fbId: req.params.id }, function (err, player){
+        if (err) return res.send(err, 500);
+        if (!player) return res.send('Player not found', 404);   
+        
+        Game.findOne({ gameId: req.params.game, status: "CLOSED" }, function(err, game) {
+            if (err) return res.send(err, 500);
+            if (!game) return res.send('Game not found', 404);
+
+            var index = player.games.indexOf(req.params.game);
+            player.games.splice(index,1);
+            player.save(function(err) {
+            if(!err) {
+              console.log('Player '+player.getName()+' gameId '+ req.params.game+ ' deleted');
+            } else {
+              console.log('ERROR en delete game: ' + err);
+            }
+          });
+          res.send('Game deleted', 200); //add error manipulation
+      });
     });
   }
 
