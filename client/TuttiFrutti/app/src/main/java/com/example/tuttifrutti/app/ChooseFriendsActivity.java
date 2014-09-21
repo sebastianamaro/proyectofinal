@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
@@ -74,21 +75,25 @@ public class ChooseFriendsActivity extends FragmentActivity {
                         public void onDoneButtonClicked(PickerFragment<?> fragment) {
                             if (friendPickerFragment != null) {
                                 List<GraphUser> selectedFriends =  friendPickerFragment.getSelection();
+                                if (selectedFriends.size() <= 4) {
+                                    for (GraphUser g : selectedFriends) {
+                                        gameSettings.addSelectedFriend(g.getId(), g.getName());
+                                    }
 
-                                for(GraphUser g : selectedFriends)
-                                {
-                                    gameSettings.addSelectedFriend(g.getId(), g.getName());
-                                }
-                            }
-                            if (gameSettings.getCategoriesType().equals("FIXED")) {
-                                Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
-                                intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
-                                startActivity(intent);
-                            }
-                            else {
-                                Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
-                                intent.putExtra("gameSettings", gameSettings);
-                                startActivity(intent);   
+                                    if (gameSettings.getCategoriesType().equals("FIXED")) {
+                                        Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
+                                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
+                                        startActivity(intent);
+                                    }
+                                    else {
+                                        Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
+                                        intent.putExtra("gameSettings", gameSettings);
+                                        startActivity(intent);
+                                    }
+                                }else
+                                    Toast.makeText(getApplicationContext(),
+                                            "Elegí hasta 4 amigos!",
+                                            Toast.LENGTH_LONG).show();
                             }
                         }
                     });
