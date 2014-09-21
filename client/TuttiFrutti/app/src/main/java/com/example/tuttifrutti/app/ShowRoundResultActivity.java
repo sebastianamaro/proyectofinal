@@ -63,7 +63,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
             //caso2: NO jugue la ronda actual ->  boton ESTA ronda
             Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
-            if (result.getCanPlayerPlay())
+            if (!result.getCanPlayerPlay())
                 btnJugar.setEnabled(false);
 
             String[] categories = new String[result.getRoundScoreSummaries().get(0).getPlays().size()];

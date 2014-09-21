@@ -164,40 +164,52 @@ module.exports = function(app) {
       var showScores;
       var playersWhoHaveLines;
       var canPlayerPlay;
+      var isComplete;
 
       if (roundToShow == undefined)
       {
+        console.log('no hay ronda abierta');
         //si todavia no hay actual, mostrame los resultados de la anterior que ya esta cerrada
         roundToShow = game.getLastRound();
         showScores = true;
         playersWhoHaveLines = game.players;
         canPlayerPlay = true; //la va a crear
+        isComplete = true;
       }
-      else if (!playingRound.hasLineOfPlayer(req.params.fbId))
+      else if (!roundToShow.hasLineOfPlayer(req.params.fbId))
       {
+        console.log('hay ronda abierta y no jugue');
         //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
-        roundToShow = game.getRound(playingRound.roundId -1);
+        roundToShow = game.getRound(roundToShow.roundId -1);
         showScores = true;
         playersWhoHaveLines = game.players;
         canPlayerPlay = true; //va a jugar la actual
+        isComplete = true;
       }
       else
       {
+        console.log('hay ronda abierta y SI jugue');
         //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
         showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
         playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
+        console.log('playersWhoHaveLines: ' + playersWhoHaveLines);
         canPlayerPlay = false;
+        isComplete = false;
       }
 
-      if (!roundToShow) return res.send('No round to show results of', 404);
+      console.log('roundToShow ' + roundToShow);
+
+      if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
       
       var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
       
-      var roundScoresResult = { 'canPlayerPlay': canPlayerPlay,
-                            'scoresArray': scoresArray };
+      var roundScoresResult = { 
+                            'isComplete':isComplete,
+                            'canPlayerPlay': canPlayerPlay,
+                            'roundScoreSummaries': scoresArray };
 
-      console.log(response);
-      res.send(response, 200);            
+      console.log(roundScoresResult);
+      res.send(roundScoresResult, 200);            
      });
   }
   getGamesForPlayer = function(req, res) {

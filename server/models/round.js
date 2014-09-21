@@ -36,7 +36,7 @@ roundSchema.methods.isPlaying = function isPlaying() {
 roundSchema.methods.getPlayersWhoHavePlayed = function getPlayersWhoHavePlayed() {
   var players=[];
   for (var i = this.lines.length - 1; i >= 0; i--) {
-     players.push(this.lines[i].player);
+     players.push(this.lines[i].player[0]);
   };
 
   return players;
@@ -48,9 +48,9 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
   return playersCount == linesCount;
 }
 
-roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(player){
+roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(playerFbId){
   var existingLine = this.lines.filter(function (line) {
-    return line.player[0].fbId == player.fbId; 
+    return line.player[0].fbId == playerFbId; 
   }).pop();  
   return existingLine !== undefined;
 }
@@ -175,8 +175,18 @@ roundSchema.methods.getScores = function getScores(players, showScores){
   var bestLineScore = 0; 
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
+    var aPlayerFbId = aPlayer.fbId;
+    console.log('aPlayerFbId: ' + aPlayerFbId);
     var lineForPlayer = this.lines.filter(function (line) 
-      {return line.player[0].fbId == aPlayer.fbId; }).pop();
+      {
+        console.log('line.player[0].fbId: ' + line.player[0].fbId);
+        console.log('aPlayer: ' + aPlayer);
+        console.log('aPlayerFbId: ' + aPlayerFbId);
+        console.log('aPlayer.name: ' + aPlayer.name);
+        return line.player[0].fbId == aPlayerFbId; 
+      }).pop();
+
+    console.log('lineForPlayer: ' + lineForPlayer);
     if (showScores && lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 

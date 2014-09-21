@@ -199,7 +199,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
     }
 
-    private void play(View view)
+    public void play(View view)
     {
         Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
         // aca en algun lado deberia saber el ID de la partida
@@ -245,7 +245,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             if (object != null && object instanceof SummarizedPlayer)
             {
-                sameSame = this.fbId == ((SummarizedPlayer) object).fbId;
+                sameSame = this.fbId.equals(((SummarizedPlayer) object).fbId);
             }
 
             return sameSame;

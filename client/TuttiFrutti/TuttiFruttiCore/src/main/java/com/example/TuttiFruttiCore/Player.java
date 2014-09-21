@@ -48,4 +48,22 @@ public class Player implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        boolean sameSame = false;
+
+        if (object != null && object instanceof Player)
+        {
+            sameSame = this.fbId.equals(((Player) object).fbId);
+        }
+
+        return sameSame;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.valueOf(this.fbId);
+    }
 }
