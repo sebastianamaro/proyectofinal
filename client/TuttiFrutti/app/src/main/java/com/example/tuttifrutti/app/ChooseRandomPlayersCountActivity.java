@@ -14,6 +14,7 @@ import com.example.TuttiFruttiCore.Game;
 public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
     public Game gameSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,27 +28,6 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
         np.setMaxValue(4);
         np.setMinValue(1);
         np.setWrapSelectorWheel(false);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.choose_random_players_count, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public void createGame(View view) {

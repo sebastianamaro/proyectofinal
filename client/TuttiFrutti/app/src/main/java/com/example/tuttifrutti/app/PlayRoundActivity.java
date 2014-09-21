@@ -222,9 +222,6 @@ public class PlayRoundActivity extends FragmentActivity implements
             EndRoundAndSendData(true, "Tus datos fueron enviados exitosamente");
         }
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
