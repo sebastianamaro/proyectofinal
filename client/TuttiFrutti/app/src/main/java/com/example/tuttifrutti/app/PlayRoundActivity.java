@@ -51,7 +51,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("");
+
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
@@ -256,6 +256,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         protected void onPostExecute(FullRound result) {
 
             currentRound=result;
+            setTitle("Ronda "+ currentRound.getRoundId());
             fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(result.getGameId()) + "_" +  Integer.toString(result.getRoundId())  + ".txt";
 
             final ActionBar actionBar = getActionBar();
