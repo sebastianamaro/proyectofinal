@@ -94,7 +94,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
                     if (itemValue instanceof FullGame) {
                         Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
-                        intent.putExtra("gameSettings", (FullGame) itemValue);
+                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
                         startActivity(intent);
                     } else if (itemValue instanceof UserGame) {
 
@@ -175,12 +175,18 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     this.games.add(activeGamesSeparatorIndex, activeGamesText);
 
                 if (showsInvitations) {
-                    this.games.add(invitationsSeparatorIndex - 1, null);
+
+                    if(showsActiveGames)
+                        this.games.add(invitationsSeparatorIndex - 1, null);
+
                     this.games.add(invitationsSeparatorIndex, invitationsText);
                 }
 
                 if (showsFinishedGames) {
-                    this.games.add(finishedGamesSeparatorIndex - 1, null);
+
+                    if(showsActiveGames || showsInvitations)
+                        this.games.add(finishedGamesSeparatorIndex - 1, null);
+
                     this.games.add(finishedGamesSeparatorIndex, finishedGamesText);
                 }
             }

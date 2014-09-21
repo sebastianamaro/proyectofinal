@@ -88,7 +88,7 @@ public class ChooseFriendsActivity extends FragmentActivity {
                                     }
                                     else {
                                         Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
-                                        intent.putExtra("gameSettings", gameSettings);
+                                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
                                         startActivity(intent);
                                     }
                                 }else

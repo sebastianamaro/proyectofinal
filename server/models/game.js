@@ -214,8 +214,20 @@ gameSchema.methods.sendInvitations = function(callback){
   var creator = this.creator[0];
   var gameId = this.gameId;
   
+  var selectedFriendsFbsId = [];
+
+  for (var i = this.selectedFriends.length - 1; i >= 0; i--) {
+    selectedFriendsFbsId.push(this.selectedFriends[i].fbId);
+  };
+
+  console.log("selectedFriendsFbsId: " + selectedFriendsFbsId);
+
   if (this.opponentsType !== 'RANDOM'){
-    Player.find({ fbId: { $in: this.selectedFriends } }, function (err, players){
+    Player.find({ fbId: { $in: selectedFriendsFbsId } }, function (err, players){
+      if (err)
+        console.log(err);
+
+      console.log("players en el foreach: " + players);
       for(var iPlayer in players ){
         var player = players[iPlayer];
         player.sendInvitationToGameIfPossible(gameId, creator);
@@ -319,7 +331,7 @@ gameSchema.methods.rejectInvitation = function(request, callback){
 
     if (game.opponentsType !== 'RANDOM'){
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-        var index = game.selectedFriends.indexOf(player.fbId);
+        var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
         if (index > -1) 
           game.selectedFriends.splice(index, 1);
         

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
@@ -45,17 +46,23 @@ public class AndroidFacebookConnectActivity extends Activity {
                                     PlayServicesHelper helper = new PlayServicesHelper(AndroidFacebookConnectActivity.class.getSimpleName());
                                     regid = helper.getRegistrationId(getApplicationContext());
 
-                                    Player newPlayer = new Player();
-                                    newPlayer.setEmail(user.asMap().get("email").toString());
-                                    newPlayer.setName(user.getName());
-                                    newPlayer.setFbId(user.getId());
-                                    newPlayer.setRegistrationId(regid);
+                                    if (regid != null && !regid.isEmpty()) {
 
-                                    TuttiFruttiAPI api=new TuttiFruttiAPI(getString(R.string.server_url));
-                                    api.AddPlayer(newPlayer);
+                                        Player newPlayer = new Player();
+                                        newPlayer.setEmail(user.asMap().get("email").toString());
+                                        newPlayer.setName(user.getName());
+                                        newPlayer.setFbId(user.getId());
+                                        newPlayer.setRegistrationId(regid);
 
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
+                                        TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
+                                        api.AddPlayer(newPlayer);
+
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(intent);
+                                    }else
+                                        Toast.makeText(getApplicationContext(),
+                                                "EL REGISTRATION ID ES NULL",
+                                                Toast.LENGTH_LONG).show();
                                 }
                             }
                         }

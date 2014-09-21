@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
@@ -57,7 +58,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         categoriesList = (ListView) findViewById(R.id.categoriesList);
 
         Intent intent = getIntent();
-        gameSettings = (Game)intent.getSerializableExtra("gameSettings");
+        gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         new GetCategoriesAsyncTask().execute();
     }
