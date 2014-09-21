@@ -26,6 +26,7 @@ public class ManageInvitationActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_manage_invitation);
 
         Intent intent = getIntent();

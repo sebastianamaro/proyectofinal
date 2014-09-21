@@ -30,6 +30,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_choose_controlled_categories);
 
         Intent intent = getIntent();

@@ -29,7 +29,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_game_result);
-
+        setTitle("");
         new GetScoresAsyncTask().execute();
     }
 

@@ -28,6 +28,7 @@ public class CreateGameActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_create_game);
     }
 

@@ -53,7 +53,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_categories);
-
+        setTitle("");
         categoriesList = (ListView) findViewById(R.id.categoriesList);
 
         Intent intent = getIntent();

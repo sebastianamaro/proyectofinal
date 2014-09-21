@@ -44,6 +44,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_show_game_details);
 
         Intent i = getIntent();

@@ -18,6 +18,7 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_choose_random_players_count);
 
         Intent intent = getIntent();

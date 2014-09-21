@@ -35,6 +35,7 @@ public class ChooseFriendsActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_choose_friends);
 
         //getFriends();

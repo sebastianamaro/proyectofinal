@@ -36,10 +36,11 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_view_game_status);
-
         listViewGames = (ListView) findViewById(R.id.listGames);
         new FillListViewAsyncTask().execute();
+
     }
 
     @Override
@@ -366,7 +367,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 holder.text1.setText(rowItem.getMode() + " - " + rowItem.getCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayersName())
+                for (String name : rowItem.getPlayers())
                     namesToShow += name + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
@@ -419,7 +420,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 holder.text1.setText(rowItem.getMode() + " - " + rowItem.getCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayersName())
+                for (String name : rowItem.getPlayers())
                     namesToShow += name + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));

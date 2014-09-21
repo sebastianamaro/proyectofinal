@@ -51,6 +51,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
