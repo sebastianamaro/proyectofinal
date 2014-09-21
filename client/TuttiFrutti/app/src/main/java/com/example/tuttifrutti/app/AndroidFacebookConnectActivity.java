@@ -68,6 +68,7 @@ public class AndroidFacebookConnectActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_facebook_connect);
 
         PlayServicesHelper helper = new PlayServicesHelper(AndroidFacebookConnectActivity.class.getSimpleName());

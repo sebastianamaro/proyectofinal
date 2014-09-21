@@ -6,6 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@drawable/background"
     tools:context="com.example.tuttifrutti.app.CreateGameActivity">
 
     <Switch
@@ -44,6 +45,7 @@
         android:textOn="Controladas" />
 
     <Button
+        android:background="@drawable/largebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crear"

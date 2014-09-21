@@ -51,6 +51,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("");
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
@@ -222,9 +223,6 @@ public class PlayRoundActivity extends FragmentActivity implements
             EndRoundAndSendData(true, "Tus datos fueron enviados exitosamente");
         }
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
