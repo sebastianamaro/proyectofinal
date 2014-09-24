@@ -11,6 +11,7 @@
         android:background="@drawable/rounded_corner_active_games"
         android:textSize="20sp"
         android:text="Partidas Activas"
+        android:gravity="center"
         android:textStyle="bold"
        />
 </LinearLayout>
