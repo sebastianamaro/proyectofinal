@@ -16,23 +16,32 @@
         android:layout_marginTop="46dp"
         android:id="@+id/title"
         android:gravity="center"/>
-
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:id="@+id/layoutPicker"
+    android:layout_centerInParent="true"
+    android:background="@color/lightgrey">
     <NumberPicker
         android:id="@+id/randomPlayersCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" ></NumberPicker>
+    </RelativeLayout>
+
 
     <Button
         android:background="@drawable/largebutton"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Aceptar"
         android:id="@+id/create"
         android:onClick="createGame"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/randomPlayersCount"
-        android:layout_alignStart="@+id/randomPlayersCount"
+
         android:layout_marginBottom="63dp" />
 
 </RelativeLayout>
