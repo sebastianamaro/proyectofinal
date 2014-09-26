@@ -61,7 +61,6 @@ module.exports = function(app) {
         Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
           var reqRound = req.body;
 
-          console.log(reqRound);
           if (err) return res.send(err, 500);
           if (!game) return res.send('Game not found', 404);
           
@@ -77,7 +76,7 @@ module.exports = function(app) {
           Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
                 if (err) return res.send(err, 500);
                 if (!foundPlayer) return res.send('Player not found', 404);
-              console.log('foundPlayer ' + foundPlayer);
+              
               game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
                 currentRound.addLine(reqRound.line, foundPlayer);
                 
@@ -197,24 +196,25 @@ module.exports = function(app) {
         isComplete = false;
       }
 
-      console.log('roundToShow ' + roundToShow);
-
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
       
       var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
       
+      //roundNumber: para mostrar a que ronda pertenecen los resultados
+      //isComplete: para saber si muestra con scores o sin (si es parcial)
+      //canPlayerPlay: para saber si el usuario puede jugar la proxima ronda o todavía no
       var roundScoresResult = { 
+                            'roundNumber':roundToShow.roundId,
                             'isComplete':isComplete,
                             'canPlayerPlay': canPlayerPlay,
                             'roundScoreSummaries': scoresArray };
 
-      console.log(roundScoresResult);
       res.send(roundScoresResult, 200);            
      });
   }
   getGamesForPlayer = function(req, res) {
     var numId =  parseInt(req.params.id);
-    console.log(numId);
+    
     Player.findOne({ 'fbId': req.params.id }, function (err, player){
       if (err) return res.send(err, 500);
       if (!player) return res.send('Player not found', 404);     

@@ -176,17 +176,11 @@ roundSchema.methods.getScores = function getScores(players, showScores){
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var aPlayerFbId = aPlayer.fbId;
-    console.log('aPlayerFbId: ' + aPlayerFbId);
     var lineForPlayer = this.lines.filter(function (line) 
       {
-        console.log('line.player[0].fbId: ' + line.player[0].fbId);
-        console.log('aPlayer: ' + aPlayer);
-        console.log('aPlayerFbId: ' + aPlayerFbId);
-        console.log('aPlayer.name: ' + aPlayer.name);
         return line.player[0].fbId == aPlayerFbId; 
       }).pop();
 
-    console.log('lineForPlayer: ' + lineForPlayer);
     if (showScores && lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class PlayerRoundScoreSummary {
     private boolean isComplete;
     private boolean canPlayerPlay;
+    private int roundNumber;
     private ArrayList<RoundScoreSummary> roundScoreSummaries;
 
     public boolean getCanPlayerPlay() {
@@ -32,5 +33,13 @@ public class PlayerRoundScoreSummary {
 
     public void setIsComplete(boolean isComplete) {
         this.isComplete = isComplete;
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void setRoundNumber(int roundNumber) {
+        this.roundNumber = roundNumber;
     }
 }

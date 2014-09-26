@@ -74,8 +74,6 @@ gameSchema.methods.setValues = function setValues(game){
     this.categories.push(category);
   };
 
-  console.log(this.categories);
-
   this.selectedFriends = game.selectedFriends;
 }
 
@@ -102,7 +100,6 @@ gameSchema.methods.addPlayer = function addPlayer(player){
             console.log('ERROR en sendInvitations: ' + errInvitation);
           }    
         });
-        console.log('Added players to game');
       } else {
         console.log('ERROR: ' + err);
       }
@@ -165,11 +162,8 @@ gameSchema.methods.getPlayerNames = function(){
   var playerNames = [];
   
   for (var i = this.players.length - 1; i >= 0; i--) {
-    console.log("this.players[i].getName() " + this.players[i].getName());
     playerNames.push(this.players[i].getName());
   };
-
-  console.log("playerNames " + playerNames);
 
   return playerNames;
 }
@@ -224,14 +218,11 @@ gameSchema.methods.sendInvitations = function(callback){
     selectedFriendsFbsId.push(this.selectedFriends[i].fbId);
   };
 
-  console.log("selectedFriendsFbsId: " + selectedFriendsFbsId);
-
   if (this.opponentsType !== 'RANDOM'){
     Player.find({ fbId: { $in: selectedFriendsFbsId } }, function (err, players){
       if (err)
         console.log(err);
 
-      console.log("players en el foreach: " + players);
       for(var iPlayer in players ){
         var player = players[iPlayer];
         player.sendInvitationToGameIfPossible(gameId, creator);
@@ -240,7 +231,6 @@ gameSchema.methods.sendInvitations = function(callback){
     return callback();
   } else {    
     Player.find({}, function (err, players){
-      console.log(players);
       for(var iPlayer in players ){
         var player = players[iPlayer];
         player.sendInvitationToGameIfPossible(gameId, creator);
@@ -252,7 +242,6 @@ gameSchema.methods.sendInvitations = function(callback){
 gameSchema.methods.removeAllInvitations = function(playerWhoResponded){
   var gameId = this.gameId;
   Player.find({ invitations: gameId,  fbId: { $ne: playerWhoResponded } }, function (err, players){
-    console.log('removeAllInvitations players: ' + players)
     for(var iPlayer in players ){
       var player = players[iPlayer];
       player.removeInvitation(gameId);

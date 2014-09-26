@@ -13,6 +13,16 @@ android:orientation="vertical"
         android:layout_gravity="top"
         />
 
+    <TextView
+        android:text=""
+        android:textSize="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/roundResultTitle"
+        android:gravity="left"
+        android:layout_below="@+id/btnPlayNextRound"/>
+
 <ScrollView
     android:id="@+id/layout"
     android:layout_height="match_parent"

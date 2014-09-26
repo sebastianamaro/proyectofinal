@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -59,6 +60,12 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(PlayerRoundScoreSummary result) {
 
+            TextView txtTitle = (TextView) findViewById(R.id.roundResultTitle);
+            if (result.getIsComplete())
+                txtTitle.setText("Resultados de la ronda " + String.valueOf(result.getRoundNumber()));
+            else
+                txtTitle.setText("Resultados parciales de la ronda " + String.valueOf(result.getRoundNumber()));
+
             //caso1: jugue y NO se termino la ronda -> sin boton jugar
             //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
             //caso2: NO jugue la ronda actual ->  boton ESTA ronda
@@ -84,7 +91,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             TableRow playersRow=new TableRow(getApplicationContext());
 
             AddHeaderTextView(playersRow, "Categorias");
-            AddTotalTextView(totalScoreRow, -1); //la primera es la columna de las categorias
+            AddTotalTextView(totalScoreRow, -1);
 
             for (int i=0;i<categories.length;i++)
             {
@@ -94,12 +101,13 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                     //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
                     if (i==0) {
                         AddHeaderTextView(playersRow, result.getRoundScoreSummaries().get(j).getPlayer().getName());
-                        AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo().getScore());
+                        if(result.getIsComplete())
+                            AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo().getScore());
                     }
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
                     PlayScoreSummary linePlayForCategory = result.getRoundScoreSummaries().get(j).getPlays().get(i);
-                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScoreInfo().getScore());
+                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScoreInfo().getScore(), result.getIsComplete());
                 }
 
                 //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
@@ -110,7 +118,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             }
 
             // la ultima fila que agrego es la de los puntajes
-            table.addView(totalScoreRow);
+            if(result.getIsComplete())
+                table.addView(totalScoreRow);
 
             Dialog.dismiss();
         }
@@ -152,7 +161,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddContentTextView(TableRow row, String p, int PlayScore) {
+    private void AddContentTextView(TableRow row, String p, int PlayScore, boolean isComplete) {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
@@ -171,13 +180,15 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         layout.addView(text);
 
         TextView score=new TextView(this.getApplicationContext());
-        if (!p.isEmpty())
-            score.setText(Integer.toString(PlayScore));
-        score.setPadding(10, 40, 33, 26);
-        score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
-        score.setTextSize(15);
-        score.setTypeface(null, Typeface.NORMAL);
-        layout.addView(score);
+        if (isComplete) {
+            if (!p.isEmpty())
+                score.setText(Integer.toString(PlayScore));
+            score.setPadding(10, 40, 33, 26);
+            score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
+            score.setTextSize(15);
+            score.setTypeface(null, Typeface.NORMAL);
+            layout.addView(score);
+        }
 
         row.addView(layout);
     }
@@ -194,6 +205,14 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             color = "#0000FF"; //azul
 
         return color;
+    }
+
+    public void playNextRound(View v)
+    {
+        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
+
+        startActivity(intent);
     }
 
     public enum ScoresForPlay
