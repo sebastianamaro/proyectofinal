@@ -1,12 +1,14 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
@@ -24,13 +27,16 @@ import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
 
 
-public class ViewGameStatusActivity extends ActionBarActivity {
 
-    ListView listViewGames ;
+public class ViewGameStatusActivity extends ListActivity {
+
+    private PullToRefreshListView mPullToRefreshLayout;
     String fbId;
 
     @Override
@@ -38,10 +44,30 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
-        listViewGames = (ListView) findViewById(R.id.listGames);
+
+        mPullToRefreshLayout = (PullToRefreshListView) findViewById(R.id.pull_refresh_list);
+
+        mPullToRefreshLayout.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                String label = DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(),
+                        DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+                // Update the LastUpdatedLabel
+                refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+                // Do work to refresh the list here.
+                new FillListViewAsyncTask().execute();
+            }
+
+        });
+
+
         new FillListViewAsyncTask().execute();
 
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -56,12 +82,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+
     public class FillListViewAsyncTask extends AsyncTask<Void, Void, Void> {
         TuttiFruttiAPI api;
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
 
         protected void onPreExecute() {
+
             api = new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -87,14 +115,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             }
 
             GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
-            listViewGames.setAdapter(ga);
-            listViewGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mPullToRefreshLayout.getRefreshableView().setAdapter(ga);
+            mPullToRefreshLayout.getRefreshableView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
 
-                    Object itemValue = (Object) listViewGames.getItemAtPosition(position);
+                    Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
 
                     if (itemValue instanceof FullGame) {
                         Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
@@ -122,6 +150,9 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 }
 
             });
+            // Call onRefreshComplete when the list has been refreshed.
+            mPullToRefreshLayout.onRefreshComplete();
+
         }
 
         public class GamesAdapter extends BaseAdapter {

@@ -1,1 +1,1 @@
-include ':app', ':TuttiFruttiAPI', ':TuttiFruttiCore', ':facebook'
+include ':app', ':TuttiFruttiAPI', ':TuttiFruttiCore', ':facebook', ':library'
