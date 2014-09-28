@@ -110,6 +110,7 @@
     </RelativeLayout>
 
     <Button
+        android:background="@drawable/largebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Rechazar"
@@ -120,6 +121,7 @@
         android:layout_marginBottom="63dp" />
 
     <Button
+        android:background="@drawable/largebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Aceptar"
