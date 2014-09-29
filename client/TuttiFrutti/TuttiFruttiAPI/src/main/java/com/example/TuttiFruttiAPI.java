@@ -136,7 +136,7 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,GameScoreSummary.class);
     }
 
-    public void finishRound(int gameId, int roundId, String playerFbId, String regId ,Date startTimeStamp, ArrayList<Play> plays)
+    public void finishRound(int gameId, int roundId, String playerFbId, String regId ,Date startTimeStamp,Date finishTimeStamp, ArrayList<Play> plays)
     {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
@@ -152,7 +152,8 @@ public class TuttiFruttiAPI {
 
         Line rl= new Line();
         rl.setPlayer(p);
-        rl.setTimestamp(startTimeStamp);
+        rl.setStartTimestamp(startTimeStamp);
+        rl.setFinishTimestamp(finishTimeStamp);
         rl.setPlays(plays);
 
         pr.setLine(rl);

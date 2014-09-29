@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema;
+    Schema   = mongoose.Schema,
+    moment   = require('moment');
 
 var Play = require('./play.js');
 var Line = require('./line.js');
@@ -18,13 +19,11 @@ roundSchema.methods.start = function start(letter) {
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
-  console.log('newLine.player.fbId ' + newLine.player.fbId);
   var existingLine = this.lines.filter(function (line) {return line.player[0].fbId == newLine.player.fbId; }).pop();
   
   if (existingLine===undefined){
     var myLine = new Line();
     myLine.setValues(newLine, foundPlayer);
-    console.log('myline ' + myLine);
     this.lines.push(myLine);
   }
 }
@@ -67,20 +66,47 @@ roundSchema.methods.createScoresMap = function createScoresMap(game){
     var line = this.lines[iLine];
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
-      if (!play.validatePlay(game, this.letter)){ //checks it's correct and accepted
-        play.setInvalidResult();
-        continue;
+      if ( ! play.hasLateResult() ){
+        if (!play.validatePlay(game, this.letter)){ //checks it's correct and accepted
+          play.setInvalidResult();
+          continue;
+        }
+        this.addToScoresMap(scoresMap, play, iLine, iPlay); 
       }
-      this.addToScoresMap(scoresMap, play, iLine, iPlay); 
     };
   };
   return scoresMap;
 }
 roundSchema.methods.finish = function finish(game) {
   this.status = "CLOSED";
+  this.setLateResults();
   var scoresMap = this.createScoresMap(game);
   this.calculateAndSetPartialScores(scoresMap);
   this.calculateAndSetTotalScores();
+}
+roundSchema.methods.setLateResults = function setLateResults(){
+  var bestLine;
+  var bestTime = Number.MAX_VALUE;
+  var iLine = -1;
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    var finishTimestamp = moment(line.finishTimestamp);
+    var startTimestamp = moment(line.startTimestamp);
+    var time = finishTimestamp.diff(startTimestamp, 'seconds');
+    if (time <= bestTime){
+      bestLine = line;
+      bestTime = time;
+      iLine = i;
+    }
+  };
+  console.log("Best time is "+bestTime+" seconds for line of player "+bestLine.player.getName());
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    if (iLine !== i){
+      var line = this.lines[i];
+      line.setLateResults(bestTime);
+    }
+  };
+   
 }
 roundSchema.methods.calculateAndSetTotalScores = function calculateAndSetTotalScores(){
   for (var i = this.lines.length - 1; i >= 0; i--) {
