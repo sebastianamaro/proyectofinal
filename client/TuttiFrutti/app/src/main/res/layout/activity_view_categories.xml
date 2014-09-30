@@ -24,9 +24,10 @@
             android:inputType="text"/>
 
         <Button
+            android:background="@drawable/smallbutton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Terminar"
+            android:text="Listo!"
             android:id="@+id/finish"
             android:layout_toRightOf="@id/searchView"
             android:layout_weight="17"

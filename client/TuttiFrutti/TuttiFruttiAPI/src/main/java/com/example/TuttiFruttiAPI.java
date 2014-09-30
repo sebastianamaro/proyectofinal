@@ -219,7 +219,7 @@ public class TuttiFruttiAPI {
 
     }
 
-    public ArrayList<Category> getStaredCategories(String playerId)
+    public ArrayList<Category> getCategoriesForPlayer(String playerId)
     {
         String url= serverURL+"player/"+ playerId+"/category";
         RestTemplate restTemplate = new RestTemplate();

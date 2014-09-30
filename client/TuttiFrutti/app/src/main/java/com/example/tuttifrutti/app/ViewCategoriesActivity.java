@@ -4,43 +4,37 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Spannable;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
-import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView;
-import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ViewCategoriesActivity extends ActionBarActivity implements TokenCompleteTextView.TokenListener{
@@ -49,7 +43,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     ArrayList<Category> selectedCategories= new ArrayList<Category>();
     Game gameSettings;
     CategoryAdapter adapter;
-
+    TuttiFruttiAutoCompleteTextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +54,61 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         Intent intent = getIntent();
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
+        textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
+        textView.allowDuplicates(false);
+
+        textView.setFilters(new InputFilter[]{new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+
+                if (source instanceof SpannableStringBuilder) {
+                    return source;
+                } else {
+                    StringBuilder filteredStringBuilder = new StringBuilder();
+                    for (int i = start; i < end; i++) {
+                        char currentChar = source.charAt(i);
+                        if (Character.isLetter(currentChar)) {
+                            filteredStringBuilder.append(currentChar);
+                        }
+                    }
+                    return filteredStringBuilder.toString();
+                }
+            }
+        }});
+        textView.addTextChangedListener(new TextWatcher() {
+
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s != null && adapter != null){
+                    System.out.println("Text ["+s+"]");
+
+                    String currentWord=s.toString();
+
+                    currentWord=currentWord.replace(",, ","").trim();
+
+                    if(currentWord.length()>0 && !currentWord.equals(","))
+                        adapter.getFilter().filter(currentWord);
+                    else
+                    {
+                        adapter.filteredCategories=adapter.originalCategories;
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+
+            }
+        });
         new GetCategoriesAsyncTask().execute();
     }
 
@@ -80,7 +129,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
     @Override
     public void onTokenRemoved(Object token) {
-        if(this.selectedCategories.remove((Category)token))
+        if(this.selectedCategories.remove(token))
             adapter.notifyDataSetChanged();
     }
 
@@ -109,10 +158,11 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
     }
 
-    public class CategoryAdapter extends BaseAdapter{
+    public class CategoryAdapter extends BaseAdapter implements Filterable{
 
         Context context;
-        private ArrayList<Object> categories;
+        public ArrayList<Object> originalCategories;
+        public ArrayList<Object> filteredCategories;
         private int staredCategoriesSeparatorIndex=0;
         private int fixedCategoriesSeparatorIndex;
         private int allCategoriesSeparatorIndex;
@@ -122,28 +172,29 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         private static final String staredCategoriesText="Favoritas";
         private static final String fixedCategoriesText="Controladas";
         private static final String allCategoriesText="Todas";
-        public int selectedPosition;
+        private ItemFilter itemFilter= new ItemFilter();
 
         public CategoryAdapter(Context context,ArrayList<Category> allCategories, ArrayList<Category> staredCategories, ArrayList<Category> fixedCategories)
         {
             this.context=context;
-            this.categories= new ArrayList<Object>();
-            this.categories.addAll(staredCategories);
-            this.categories.addAll(fixedCategories);
-            this.categories.addAll(allCategories);
+            this.originalCategories= new ArrayList<Object>();
+            this.originalCategories.addAll(staredCategories);
+            this.originalCategories.addAll(fixedCategories);
+            this.originalCategories.addAll(allCategories);
 
             this.fixedCategoriesSeparatorIndex=staredCategories.size() + 1;
             this.allCategoriesSeparatorIndex=staredCategories.size() +fixedCategories.size()  + 2;
 
-            this.categories.add(staredCategoriesSeparatorIndex,staredCategoriesText);
-            this.categories.add(fixedCategoriesSeparatorIndex,fixedCategoriesText);
-            this.categories.add(allCategoriesSeparatorIndex,allCategoriesText);
+            this.originalCategories.add(staredCategoriesSeparatorIndex,staredCategoriesText);
+            this.originalCategories.add(fixedCategoriesSeparatorIndex,fixedCategoriesText);
+            this.originalCategories.add(allCategoriesSeparatorIndex,allCategoriesText);
+            this.filteredCategories=originalCategories;
         }
 
 
         @Override
         public int getItemViewType(int position) {
-            return (categories.get(position) instanceof String) ? ITEM_VIEW_TYPE_SEPARATOR:ITEM_VIEW_TYPE_CATEGORY;
+            return (filteredCategories.get(position) instanceof String) ? ITEM_VIEW_TYPE_SEPARATOR:ITEM_VIEW_TYPE_CATEGORY;
         }
 
         @Override
@@ -151,12 +202,12 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
         @Override
         public int getCount() {
-            return categories.size();
+            return filteredCategories.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return categories.get(i);
+            return filteredCategories.get(i);
         }
 
         @Override
@@ -166,7 +217,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
         @Override
         public boolean isEnabled(int position) {
-            // A separator cannot be clicked !
             return getItemViewType(position) != ITEM_VIEW_TYPE_SEPARATOR;
         }
 
@@ -180,13 +230,12 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             TextView txtSeparator;
         }
 
-
         @Override
         public View getView(final int i, View convertView, ViewGroup viewGroup) {
 
 
             View.OnClickListener starCategoryListener = new View.OnClickListener() {
-                Object s = categories.get(i);
+                Object s = filteredCategories.get(i);
                 @Override
                 public void onClick(View v) {
                     if(s instanceof Category)
@@ -199,20 +248,15 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             View.OnClickListener reportCategoryListener = new View.OnClickListener() {
 
-                Object s = categories.get(i);
+                Object s = filteredCategories.get(i);
 
                 @Override
                 public void onClick(View v) {
                     if(s instanceof Category)
                     {
                         if(!((Category) s).isReported())
-                        {
                             new ReportCategoryAsyncTask().execute(((Category) s));
-
-                        }
-
                     }
-
                 }
             };
 
@@ -223,10 +267,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             else
                 convertView = SetRowSeparatorViewHolder(i, convertView);
 
-
-
             return convertView;
-
 
         }
 
@@ -266,6 +307,11 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 holder.reportImageView.setImageResource(R.drawable.attention2_off);
                 holder.reportImageView.setEnabled(true);
             }
+
+            if(rowItem.isFixed())
+                holder.reportImageView.setVisibility(View.INVISIBLE);
+            else
+                holder.reportImageView.setVisibility(View.VISIBLE);
 
             holder.starImageView.setOnClickListener(starCategoryListener);
             holder.reportImageView.setOnClickListener(reportCategoryListener);
@@ -328,8 +374,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             }
         }
 
-
-
         public class StarCategoryAsyncTask extends AsyncTask<Category, Void, Category>
         {
             TuttiFruttiAPI api;
@@ -352,6 +396,58 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 CategoryAdapter.this.notifyDataSetChanged();
             }
         }
+
+        @Override
+        public Filter getFilter() {
+            return itemFilter;
+        }
+
+
+
+        private class ItemFilter extends Filter {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+
+                String filterString = constraint.toString().toLowerCase();
+
+                FilterResults results = new FilterResults();
+
+                final ArrayList<Object> list = originalCategories;
+
+                int count = list.size();
+                final ArrayList<Object> nlist = new ArrayList<Object>(count);
+
+                String filterableString ;
+
+                for (int i = 0; i < count; i++) {
+
+                    if((list.get(i) instanceof Category))
+                    {
+                        filterableString = ((Category)list.get(i)).getName();
+                        if (filterableString.toLowerCase().contains(filterString)) {
+                            nlist.add(list.get(i) );
+                        }
+                    }
+                    else
+                        nlist.add(list.get(i) );
+
+                }
+
+                results.values = nlist;
+                results.count = nlist.size();
+
+                return results;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredCategories = (ArrayList<Object>) results.values;
+                notifyDataSetChanged();
+            }
+
+        }
+
     }
 
 
@@ -360,7 +456,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         @Override
         protected ArrayList<Category> doInBackground(Void... voids) {
 
-            ArrayList<Category> staredCategories= api.getStaredCategories(FacebookHelper.getUserId());
+            ArrayList<Category> staredCategories= api.getCategoriesForPlayer(FacebookHelper.getUserId());
             return staredCategories;
         }
 
@@ -374,62 +470,35 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         protected void onPostExecute(ArrayList<Category> result) {
 
             ArrayList<String> categoriesNames= new ArrayList<String>();
+            ArrayList<Category> categories=new ArrayList<Category>();
             ArrayList<Category> staredCategories=new ArrayList<Category>();
             ArrayList<Category> fixedCategories=new ArrayList<Category>();
+
             for(Category category : result){
+
                 if(category.isStared())
                     staredCategories.add(category);
                 else if(category.isFixed())
                     fixedCategories.add(category);
+                else
+                    categories.add(category);
 
-                categoriesNames.add(category.getName());
-
+                    categoriesNames.add(category.getName());
             }
 
-            ArrayAdapter<Category> adapter = new FilteredArrayAdapter<Category>(ViewCategoriesActivity.this, R.layout.category_autocomplete, result) {
-                        @Override
-                        public View getView(int position, View convertView, ViewGroup parent) {
-                            if (convertView == null) {
-
-                                LayoutInflater l = (LayoutInflater)getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-                                convertView = (View)l.inflate(R.layout.category_autocomplete, parent, false);
-                            }
-
-                            Category p = getItem(position);
-                            ((TextView)convertView.findViewById(R.id.name)).setText(p.getName());
-
-                            return convertView;
-                        }
-
-                        @Override
-                        protected boolean keepObject(Category obj, String mask) {
-                            mask = mask.toLowerCase();
-                            return obj.getName().toLowerCase().startsWith(mask);
-                        }
-                    };
-
             final TuttiFruttiAutoCompleteTextView textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
-            textView.setAdapter(adapter);
             textView.setTokenListener(ViewCategoriesActivity.this);
 
+            ViewCategoriesActivity.this.adapter= new CategoryAdapter(getApplicationContext(), categories, staredCategories, fixedCategories);
 
-             ViewCategoriesActivity.this.adapter= new CategoryAdapter(getApplicationContext(), result, staredCategories, fixedCategories);
-
-
-            // Assign adapter to ListView
             categoriesList.setAdapter(ViewCategoriesActivity.this.adapter);
 
-            // ListView Item Click Listener
             categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                //SELECT Category
+
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
-                    // ListView Clicked item value
                     Category itemValue = (Category) categoriesList.getItemAtPosition(position);
-
 
                     if (selectedCategories.contains(itemValue)) {
                         selectedCategories.remove(itemValue);
