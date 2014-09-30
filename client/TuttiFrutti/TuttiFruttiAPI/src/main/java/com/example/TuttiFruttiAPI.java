@@ -1,6 +1,8 @@
 package com.example;
 
+import android.content.Context;
 import android.os.StrictMode;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.FullGame;
@@ -17,7 +19,9 @@ import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Array;
@@ -211,12 +215,12 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"category";
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomErrorHandler());
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         Category[] lineArray= restTemplate.getForObject(url,Category[].class);
         return new ArrayList<Category>(Arrays.asList(lineArray));
-
     }
 
     public ArrayList<Category> getStaredCategories(String playerId)
@@ -233,13 +237,24 @@ public class TuttiFruttiAPI {
 
     public ArrayList<Category> getFixedCategories()
     {
-        String url= serverURL+"category?isFixed=1";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        try {
+            String url = serverURL + "category?isFixed=1";
 
-        Category[] lineArray= restTemplate.getForObject(url,Category[].class);
-        return new ArrayList<Category>(Arrays.asList(lineArray));
+            HttpComponentsClientHttpRequestFactory s = new HttpComponentsClientHttpRequestFactory();
+            s.setReadTimeout(5000);
+            s.setConnectTimeout(1000);
+
+            RestTemplate restTemplate = new RestTemplate(s);
+            //restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+            restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+            Category[] lineArray = restTemplate.getForObject(url, Category[].class);
+            return new ArrayList<Category>(Arrays.asList(lineArray));
+        }catch (RestClientException ex)
+        {
+            String mess = ex.getMessage();
+            return null;
+        }
 
     }
 }

@@ -52,6 +52,12 @@ public class PlayRoundActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
@@ -309,7 +315,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected Void doInBackground(FinishedRound... finishedRounds) {
             String regid = new PlayServicesHelper(MainActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
-            String fbId=FacebookHelper.getUserId();
+            String fbId= FacebookHelper.getUserId();
             api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(), finishedRounds[0].getPlays());
             return null;
             }
@@ -405,8 +411,6 @@ public class PlayRoundActivity extends FragmentActivity implements
                    play.setTimeStamp(currentFilePlay.CategoriesTimeStamp[index]);
                    plays.add(play);
                }
-               
-
 
                 new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(), currentFilePlay.StartTime,plays));
                File file = new File(fileName);

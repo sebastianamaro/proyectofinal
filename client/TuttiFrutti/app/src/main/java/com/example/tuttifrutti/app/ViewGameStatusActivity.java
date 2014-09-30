@@ -24,6 +24,8 @@ import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app.Classes.NoLoggedUserException;
+import com.example.tuttifrutti.app.Classes.UncaughtExceptionHandler;
 
 import java.util.ArrayList;
 
@@ -36,9 +38,17 @@ public class ViewGameStatusActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
         listViewGames = (ListView) findViewById(R.id.listGames);
+
         new FillListViewAsyncTask().execute();
 
     }
