@@ -36,10 +36,23 @@
     </LinearLayout>
 
     <ListView
+
+        android:layout_marginTop="20dp"
         android:id="@+id/categoriesList"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_below="@+id/topText">
     </ListView>
 
+    <Button
+        android:background="@drawable/largebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crea la categoría!"
+        android:id="@+id/addCategory"
+        android:layout_below="@id/categoriesList"
+        android:layout_weight="17"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:onClick="addCategory" />
 </RelativeLayout>
