@@ -134,6 +134,29 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     }
 
     public void addCategory(View view) {
+        Category cat= new Category();
+        cat.setName(textView.getText().toString());
+        new CreateCategoryAsyncTask().execute(cat);
+    }
+
+    public class CreateCategoryAsyncTask extends AsyncTask<Category, Void,Category>
+    {
+        TuttiFruttiAPI api;
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected Category doInBackground(Category... categories) {
+
+            return api.createCategory(categories[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Category result) {
+            new GetCategoriesAsyncTask(result).execute();
+        }
     }
 
     public class CreateGameFreeCategoriesAsyncTask extends CreateGameAsyncTask {
@@ -164,6 +187,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
     public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
 
+        Category recentlyCreatedCategory;
+        public GetCategoriesAsyncTask(){
+
+        }
+
+        public GetCategoriesAsyncTask(Category recentlyCreatedCategory){
+            this.recentlyCreatedCategory=recentlyCreatedCategory;
+        }
         @Override
         protected ArrayList<Category> doInBackground(Void... voids) {
 
@@ -194,7 +225,10 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 else
                     categories.add(category);
 
-                    categoriesNames.add(category.getName());
+                if(category.equals(recentlyCreatedCategory)) //if the server returned the recently created category
+                    selectedCategories.add(category); //we mark it as selected at first
+
+                 categoriesNames.add(category.getName());
             }
 
             final TuttiFruttiAutoCompleteTextView textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);

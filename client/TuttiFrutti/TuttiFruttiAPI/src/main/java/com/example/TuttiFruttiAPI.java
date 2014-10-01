@@ -242,5 +242,18 @@ public class TuttiFruttiAPI {
         return new ArrayList<Category>(Arrays.asList(lineArray));
 
     }
+
+    public Category createCategory(Category category)
+    {
+        String url= serverURL+"category";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        ResponseEntity<Category> e=restTemplate.postForEntity(url, category, Category.class);
+        Category cat=e.getBody();//the server returns an object with id, then we set that id to the created category
+        category.setId(cat.getId());
+        return category;
+    }
 }
 
