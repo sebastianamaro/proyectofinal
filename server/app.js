@@ -19,6 +19,7 @@ app.put('/game/:id/invitation', respondInvitation);
 app.get('/game/:id', getGame);
 app.get('/game/:id/scores', getGameScores);
 app.put('/game/:id/round', alterRound); 
+app.put('/game/:id/round/qualification/:fbId', setQualification); 
 app.get('/game/:id/round', getRound);
 app.get('/game/:id/round/scores/for/:fbId', getRoundScores);
 app.post('/player', createPlayer);

@@ -6,6 +6,19 @@ module.exports = function(app) {
   var Player = require('../models/player.js');
   var Play = require('../models/play.js');
 
+  setQualification = function(req,res){
+    Game.findOne({ 'gameId': req.params.id, status: { $ne: 'WAITINGFORQUALIFICATIONS' } }, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+      
+      var round = game.getLastRound();
+      
+      round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.player);
+      
+      res.send('Qualification set', 200);   
+    })
+  }
+
   getRound = function(req, res) {
     Game.findOne({ 'gameId': req.params.id, status: { $ne: 'WAITINGFORPLAYERS' } }, function (err, game){
       if (err) return res.send(err, 500);

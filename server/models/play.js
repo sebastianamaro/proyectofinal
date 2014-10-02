@@ -12,10 +12,21 @@ var playSchema = new Schema({
   validations: [{ fbId:{ type: String }, isValid:{ type: Boolean }}]
 }, { _id : false });
 
+<<<<<<< HEAD
 playSchema.methods.hasLateResult = function hasLateResult(){
   return this.result == 'LATE';
 }
 playSchema.methods.setValues = function setValues(newPlay) {
+=======
+
+playSchema.methods.setQualification= function (judge,isValid) {
+  var existingValidation = this.validations.filter(function (val) { return val.fbId == judge;}).pop();  
+  if (! existingValidation == undefined){
+    this.validations.push({'fbId': judge, 'isValid': isValid});
+  }
+}
+playSchema.methods.setValues = function (newPlay) {
+>>>>>>> Not tested! Server can receive qualifications
   
   this.category = newPlay.category;
   this.timeStamp = newPlay.timeStamp;
@@ -29,7 +40,7 @@ playSchema.methods.setValues = function setValues(newPlay) {
   return this;
 }
 
-playSchema.methods.setOnlyResult = function setOnlyResult() {
+playSchema.methods.setOnlyResult = function () {
   this.score = 20;
   this.result = 'ONLY';
 }
@@ -39,7 +50,7 @@ playSchema.methods.setLateResult = function setLateResult() {
   this.result = 'LATE';
 }
 
-playSchema.methods.setUniqueResult = function setUniqueResult() {
+playSchema.methods.setUniqueResult = function () {
   this.score = 10;
   this.result = 'UNIQUE';
 }

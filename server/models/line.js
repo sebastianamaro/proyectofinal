@@ -14,7 +14,11 @@ var lineSchema = new Schema({
   finishTimestamp: { type: Date }
 }, { _id : false });
 
-lineSchema.methods.setValues = function setValues(line, foundPlayer) {
+lineSchema.methods.setQualification = function (judge, category, isValid) {
+  var playToQualify = this.plays.filter(function (play) { return play.category == category;}).pop();  
+  playToQualify.setQualification(judge,isValid);
+}
+lineSchema.methods.setValues = function (line, foundPlayer) {
   var thisLine = this;
   thisLine.player = { fbId: foundPlayer.fbId, name: foundPlayer.name };
   thisLine.startTimestamp = line.startTimestamp;
@@ -33,7 +37,7 @@ lineSchema.methods.setLateResults = function setLateResults(bestTime) {
     }
   };
 }
-lineSchema.methods.addPlays = function addPlays(playsArray) {
+lineSchema.methods.addPlays = function (playsArray) {
   for (var i = playsArray.length - 1; i >= 0; i--) {
     var newPlay= new Play();
 

@@ -22,7 +22,7 @@ var gameSchema = new Schema({
 
 
 gameSchema.methods.changeToStatusShowingResults = function () {
-  this.status = "SHOWING RESULTS";
+  this.status = "SHOWINGRESULTS";
 }
 gameSchema.methods.moveToShowingResults = function () {
   this.getLastRound().moveToShowingResults(this);

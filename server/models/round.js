@@ -27,6 +27,10 @@ roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
   }
 }
 
+roundSchema.methods.setQualification = function (judge, category, isValid, lineOwner) {
+  var lineToQualify = this.lines.filter(function (line) {return line.player[0].fbId == lineOwner; }).pop();
+  lineToQualify.setQualification(judge, category, isValid);
+}
 roundSchema.methods.isPlaying = function () {
   return this.status === 'OPENED';
 }
