@@ -50,14 +50,15 @@ module.exports = function(app) {
       	if (!player) return res.send('Player not found', 404);   
       	
       	Game.find({ gameId: { $in : player.games } }, function(err, games) {
+          console.log("games.length:" + games.length);
 	        var gamesToReturn = [];
 	        if (games){
 		        for (var i = games.length - 1; i >= 0; i--) {
 		        	var game = games[i];
               var playersNameArray =[];
-              for (var i = game.players.length - 1; i >= 0; i--) {
-                  if(game.players[i] != game.creator[0])
-                    playersNameArray.push(game.players[i].name.split(' ')[0]); //Only first name
+              for (var j = game.players.length - 1; j >= 0; j--) {
+                  if(game.players[j] != game.creator[0])
+                    playersNameArray.push(game.players[j].name.split(' ')[0]); //Only first name
               };
 
               var currentRound;
@@ -114,8 +115,11 @@ module.exports = function(app) {
                    "isFirstRound":isFirstRound, 
                      "statusCode":statusCode,
                      "playerHasPlayedCurrentRound":playerHasPlayed});
+              console.log("gamesToReturn " + gamesToReturn.length);
 		        };
 	        }
+
+          console.log("gamesToReturn al final: " + gamesToReturn.length);
 	      	res.send(gamesToReturn, 200); //add error manipulation
 	    });
     });

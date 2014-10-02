@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app.Classes.InternalFileHelper;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,6 +35,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -221,19 +224,32 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             this.fbId = fullPlayer.getFbId();
             this.name = fullPlayer.getName();
 
-            try {
-                InputStream inputStream;
-                HttpGet httpRequest = new HttpGet(URI.create("http://graph.facebook.com/" + this.fbId.toString() + "/picture?type=normal") );
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
-                HttpEntity entity = response.getEntity();
-                BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
-                Bitmap bmp = BitmapFactory.decodeStream(bufHttpEntity.getContent());
-                httpRequest.abort();
+            ContextWrapper cw = new ContextWrapper(getApplicationContext());
+            // path to /data/data/yourapp/app_data/imageDir
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+            // Create imageDir
+            File mypath=new File(directory,this.fbId.toString()+".png");
 
-                this.image = bmp;
-            } catch (Exception e) {
-                e.printStackTrace();
+            InternalFileHelper helper = new InternalFileHelper();
+            Bitmap image = helper.loadImageFromStorage(mypath);
+            if (image != null)
+                this.image = image;
+            else {
+                try {
+                    InputStream inputStream;
+                    HttpGet httpRequest = new HttpGet(URI.create("http://graph.facebook.com/" + this.fbId.toString() + "/picture?type=normal"));
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
+                    HttpEntity entity = response.getEntity();
+                    BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+                    Bitmap bmp = BitmapFactory.decodeStream(bufHttpEntity.getContent());
+                    httpRequest.abort();
+
+                    this.image = bmp;
+                    helper.saveToInternalSorage(mypath, bmp);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
         }

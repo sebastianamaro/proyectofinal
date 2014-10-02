@@ -405,8 +405,6 @@ public class PlayRoundActivity extends FragmentActivity implements
                    play.setTimeStamp(currentFilePlay.CategoriesTimeStamp[index]);
                    plays.add(play);
                }
-               
-
 
                 new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(), currentFilePlay.StartTime,plays));
                File file = new File(fileName);
