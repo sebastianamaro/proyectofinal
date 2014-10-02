@@ -196,7 +196,7 @@ module.exports = function(app) {
       category.hits = req.body.hits;
 
       category.acceptedWords = [];
-      if (req.body.acceptedWords.values !== undefined){
+      if (req.body.acceptedWords!== undefined && req.body.acceptedWords.values !== undefined){
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
           var valueWord = wordReq.value.toUpperCase().trim();

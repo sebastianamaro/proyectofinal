@@ -20,7 +20,17 @@ var gameSchema = new Schema({
     randomPlayersCount: { type: Number }
 });
 
-gameSchema.methods.getRound = function getRound(roundId) {
+
+gameSchema.methods.changeToStatusShowingResults = function () {
+  this.status = "SHOWING RESULTS";
+}
+gameSchema.methods.moveToShowingResults = function () {
+  this.getLastRound().moveToShowingResults(this);
+}
+gameSchema.methods.isFixedCategoriesType = function () {
+  return this.categoriesType == "FIXED";
+}
+gameSchema.methods.getRound = function (roundId) {
 	var round = this.rounds.filter(function (round) {
               return round.roundId == roundId;
             }).pop();

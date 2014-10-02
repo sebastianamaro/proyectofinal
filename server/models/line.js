@@ -43,6 +43,18 @@ lineSchema.methods.addPlays = function addPlays(playsArray) {
   };
 }
 
+lineSchema.methods.isFullyValidated = function (categories, playersAmount) {
+  for (var i = this.plays.length - 1; i >= 0; i--) {
+    var play = this.plays[i];
+    var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+    if (!category.isFixed){
+      if (! play.isValidated(playersAmount)){
+        return false;
+      }  
+    }
+  }
+  return true;
+}
 lineSchema.methods.getPlaySimilarTo = function getPlaySimilarTo(searchedPlay) {
   return this.plays.filter(function (play) {
     return play.isSimilarTo(searchedPlay);
@@ -57,10 +69,12 @@ lineSchema.methods.setTotalScore = function setTotalScore(gameId, roundId) {
   };
   this.score = totalScore;
 }
-lineSchema.methods.getSummarizedPlays = function getSummarizedPlays(){
+lineSchema.methods.getSummarizedPlays = function getSummarizedPlays(fbId,categories){
   var summarizedPlays = [];
   for (var i = this.plays.length - 1; i >= 0; i--) {
-    summarizedPlays.push( this.plays[i].asSummarized() );
+    var play = this.plays[i];
+    var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+    summarizedPlays.push( play.asSummarized(fbId,category) );
   };
   return summarizedPlays;
 }

@@ -8,7 +8,8 @@ var playSchema = new Schema({
   timeStamp: { type: Date }, 
   word:   { type: String },
   score: { type: Number },
-  result: { type: String }
+  result: { type: String },
+  validations: [{ fbId:{ type: String }, isValid:{ type: Boolean }}]
 }, { _id : false });
 
 playSchema.methods.hasLateResult = function hasLateResult(){
@@ -57,28 +58,46 @@ playSchema.methods.setInvalidResult = function setInvalidResult() {
 	this.result = 'INVALID';
 }
 
-
-playSchema.methods.validatePlay = function validatePlay(game, letter) {
-  if (letter == undefined){
-    return false;
-  }
-  if (this.word.charAt(0).toUpperCase() !== letter.toUpperCase() ){
-    return false;
-  } //for now it's almost a dummy
-  if (game.categoriesType == "FIXED"){
-    var categoryInstance = new Category();
-    return categoryInstance.isWordValid(this.word, this.category);
-  }
-  return true;
+playSchema.methods.isValidated = function(playersAmount){
+  return this.validations.length == playersAmount -1;
 }
 
-playSchema.methods.asSummarized = function asSummarized() {
+playSchema.methods.validatePlay = function (category, letter, callback) {
+  if (letter == undefined){
+    return callback(false);
+  }
+  if (this.word.charAt(0).toUpperCase() !== letter.toUpperCase() ){
+    return callback(false);
+  } 
+  if (category.isFixed){
+    var play = this;
+    Category.findOne({ 'name': category.name }, function (err, foundCategory){
+      return callback(foundCategory.isWordValid(play.word, play.category));
+    });
+  } else {
+    var upVotes = this.validations.filter(function (val) {return val.isValid; }).pop();
+    var downVotes = this.validations.filter(function (val) {return !val.isValid; }).pop();
+    return callback(upVotes >= downVotes);
+  }
+}
+
+playSchema.methods.asSummarized = function asSummarized(fbId,category) {
   var scoreToSend = this.hasLateResult() ? -1 : this.score;
+  var validation = this.validations.filter(function (val) {return val.fbId == fbId; }).pop();
+  var validated = false;
+  var isValid = false;
+  if (validation !== undefined){
+    validated = true;
+    isValid = validation.isValid;
+  }
   return {'result': this.result,
            'scoreInfo': {'score': scoreToSend,
                      'best':false},
           'word': this.word,
-          'category':this.category
+          'category': category.name,
+          'isFixed': category.isFixed,
+          'validated': validated,
+          'isValid': isValid
           };
 }
 module.exports = mongoose.model('Play', playSchema);

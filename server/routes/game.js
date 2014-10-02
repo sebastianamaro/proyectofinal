@@ -198,7 +198,7 @@ module.exports = function(app) {
 
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
       
-      var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
+      var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
       
       //roundNumber: para mostrar a que ronda pertenecen los resultados
       //isComplete: para saber si muestra con scores o sin (si es parcial)

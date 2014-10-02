@@ -13,14 +13,13 @@ var roundSchema = new Schema({
   lines: [Line.schema] 
 }, { _id : false });
 
-roundSchema.methods.start = function start(letter) {
+roundSchema.methods.start = function (letter) {
   this.letter = letter;
   this.status = 'OPENED';
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
   var existingLine = this.lines.filter(function (line) {return line.player.fbId == newLine.player.fbId; }).pop();
-  
   if (existingLine===undefined){
     var myLine = new Line();
     myLine.setValues(newLine, foundPlayer);
@@ -28,11 +27,11 @@ roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
   }
 }
 
-roundSchema.methods.isPlaying = function isPlaying() {
+roundSchema.methods.isPlaying = function () {
   return this.status === 'OPENED';
 }
 
-roundSchema.methods.getPlayersWhoHavePlayed = function getPlayersWhoHavePlayed() {
+roundSchema.methods.getPlayersWhoHavePlayed = function () {
   var players=[];
   for (var i = this.lines.length - 1; i >= 0; i--) {
      players.push(this.lines[i].player);
@@ -41,49 +40,52 @@ roundSchema.methods.getPlayersWhoHavePlayed = function getPlayersWhoHavePlayed()
   return players;
 }
 
-roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(game) {
+roundSchema.methods.checkAllPlayersFinished = function (game) {
   var playersCount = game.players.length;
   var linesCount = this.lines.length;
   return playersCount == linesCount;
 }
 
-roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(playerFbId){
+roundSchema.methods.hasLineOfPlayer = function (playerFbId){
   var existingLine = this.lines.filter(function (line) {
     return line.player.fbId == playerFbId; 
   }).pop();  
   return existingLine !== undefined;
 }
 
-roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player){
+roundSchema.methods.hasPlayerSentHisLine = function (player){
   var existingLine = this.lines.filter(function (line) {
     return line.player.fbId == player.fbId && line.plays.length>0; 
   }).pop();  
   return existingLine !== undefined;
 }
-roundSchema.methods.createScoresMap = function createScoresMap(game){
+roundSchema.methods.createScoresMap = function (categories){
   var scoresMap = [];
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
     var line = this.lines[iLine];
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
-      if ( ! play.hasLateResult() ){
-        if (!play.validatePlay(game, this.letter)){ //checks it's correct and accepted
+      var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+      var round = this;
+      play.validatePlay(category, this.letter, function(result){
+        if (result){
+          round.addToScoresMap(scoresMap, play, iLine, iPlay); 
+        } else {
           play.setInvalidResult();
-          continue;
         }
-        this.addToScoresMap(scoresMap, play, iLine, iPlay); 
-      }
+      })
     };
   };
   return scoresMap;
 }
-roundSchema.methods.finish = function finish(game) {
+roundSchema.methods.finish = function () {
   this.status = "CLOSED";
   this.setLateResults();
   var scoresMap = this.createScoresMap(game);
   this.calculateAndSetPartialScores(scoresMap);
   this.calculateAndSetTotalScores();
 }
+
 roundSchema.methods.setLateResults = function setLateResults(){
   var bestLine;
   var bestTime = Number.MAX_VALUE;
@@ -108,7 +110,33 @@ roundSchema.methods.setLateResults = function setLateResults(){
   };
    
 }
-roundSchema.methods.calculateAndSetTotalScores = function calculateAndSetTotalScores(){
+
+roundSchema.methods.isClosed = function () {
+  return this.status == "CLOSED";
+}
+
+roundSchema.methods.moveToShowingResults = function (game){
+  if (!this.isClosed()){
+    return;
+  }
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    if (!line.isFullyValidated(game.categories, game.players.length)){
+      return;
+    }
+  };
+  game.changeToStatusShowingResults();
+  this.calculateScores();
+  return game;
+}
+
+roundSchema.methods.calculateScores = function (game){
+  var scoresMap = this.createScoresMap(game.categories);
+  this.calculateAndSetPartialScores(scoresMap);
+  this.calculateAndSetTotalScores();
+1}
+
+roundSchema.methods.calculateAndSetTotalScores = function (){
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
     var totalScore = 0;
@@ -120,7 +148,7 @@ roundSchema.methods.calculateAndSetTotalScores = function calculateAndSetTotalSc
   };
 }
 
-roundSchema.methods.calculateAndSetPartialScores = function calculateAndSetPartialScores(scoresMap){
+roundSchema.methods.calculateAndSetPartialScores = function (scoresMap){
   for (var category in scoresMap) {
     var words = scoresMap[category];
     if (Object.keys(words).length == 1){ //only one word was set for this category, means it's repeated or only
@@ -196,7 +224,7 @@ roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScores
   }
   return scores;
 }
-roundSchema.methods.getScores = function getScores(players, showScores){
+roundSchema.methods.getScores = function getScores(fbId, categories, players, showScores){
   var scores = [];
   var bestLineScore = 0; 
   for (var i = players.length - 1; i >= 0; i--) {
@@ -216,7 +244,7 @@ roundSchema.methods.getScores = function getScores(players, showScores){
     scores.push({ 'player' : lineForPlayer.player,
                   'scoreInfo' : { 'score' : lineForPlayer.score,
                               'best'  : false},
-                  'plays' : lineForPlayer.getSummarizedPlays() });
+                  'plays' : lineForPlayer.getSummarizedPlays(fbId, categories) });
   }
   if (showScores)
   {
