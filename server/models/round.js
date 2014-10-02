@@ -13,9 +13,16 @@ var roundSchema = new Schema({
   lines: [Line.schema] 
 }, { _id : false });
 
+roundSchema.methods.getStatus = function () {
+  return {
+    OPENED   : 'OPENED',
+    CLOSED   : 'CLOSED'
+  };
+}
+
 roundSchema.methods.start = function (letter) {
   this.letter = letter;
-  this.status = 'OPENED';
+  this.status = this.getStatus().OPENED;
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
@@ -32,7 +39,7 @@ roundSchema.methods.setQualification = function (judge, category, isValid, lineO
   lineToQualify.setQualification(judge, category, isValid);
 }
 roundSchema.methods.isPlaying = function () {
-  return this.status === 'OPENED';
+  return this.status === this.getStatus().OPENED;
 }
 
 roundSchema.methods.getPlayersWhoHavePlayed = function () {
@@ -63,6 +70,7 @@ roundSchema.methods.hasPlayerSentHisLine = function (player){
   }).pop();  
   return existingLine !== undefined;
 }
+
 roundSchema.methods.createScoresMap = function (categories){
   var scoresMap = [];
   for (var iLine = this.lines.length - 1; iLine >= 0; iLine--) {
@@ -82,8 +90,9 @@ roundSchema.methods.createScoresMap = function (categories){
   };
   return scoresMap;
 }
+
 roundSchema.methods.finish = function () {
-  this.status = "CLOSED";
+  this.status = this.getStatus().CLOSED;
   this.setLateResults();
   var scoresMap = this.createScoresMap(game);
   this.calculateAndSetPartialScores(scoresMap);
@@ -112,14 +121,13 @@ roundSchema.methods.setLateResults = function setLateResults(){
       line.setLateResults(bestTime);
     }
   };
-   
 }
 
 roundSchema.methods.isClosed = function () {
-  return this.status == "CLOSED";
+  return this.status == this.getStatus().CLOSED;
 }
 
-roundSchema.methods.moveToShowingResults = function (game){
+roundSchema.methods.moveToShowingResultsIfPossible = function (game){
   if (!this.isClosed()){
     return;
   }
@@ -138,7 +146,7 @@ roundSchema.methods.calculateScores = function (game){
   var scoresMap = this.createScoresMap(game.categories);
   this.calculateAndSetPartialScores(scoresMap);
   this.calculateAndSetTotalScores();
-1}
+}
 
 roundSchema.methods.calculateAndSetTotalScores = function (){
   for (var i = this.lines.length - 1; i >= 0; i--) {
@@ -178,18 +186,18 @@ roundSchema.methods.calculateAndSetPartialScores = function (scoresMap){
     } 
   }
 }
-roundSchema.methods.setAllRepeated = function setAllRepeated(dataForPlays){
+roundSchema.methods.setAllRepeated = function (dataForPlays){
   for (var i = dataForPlays.length - 1; i >= 0; i--) {
     var playToScore = this.getPlay(dataForPlays, i);
     playToScore.setRepeatedResult();
   }
 }
-roundSchema.methods.getPlay = function getPlay(dataForPlays, iData){
+roundSchema.methods.getPlay = function (dataForPlays, iData){
   var iLine = dataForPlays[iData].iLine;
   var iPlay = dataForPlays[iData].iPlay;
   return this.lines[iLine].plays[iPlay];
 }
-roundSchema.methods.addToScoresMap = function addToScoresMap(scoresMap, play, iLine, iPlay){
+roundSchema.methods.addToScoresMap = function (scoresMap, play, iLine, iPlay){
   if (!(play.category in scoresMap)){
     scoresMap[play.category] = [];
   }
@@ -199,13 +207,13 @@ roundSchema.methods.addToScoresMap = function addToScoresMap(scoresMap, play, iL
   scoresMap[play.category][play.word].push({'iLine':iLine, 'iPlay':iPlay});
 }
 
-roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
+roundSchema.methods.setNotificationSentForPlayer = function (player){
   var line = new Line();
   line.player = { fbId: player.fbId, name: player.name };
   this.addLine(line);
 }
 
-roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScoresForPlayers(players){
+roundSchema.methods.getSummarizedScoresForPlayers = function (players){
   var scores = [];
   var bestScore = 0;
   
@@ -228,7 +236,8 @@ roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScores
   }
   return scores;
 }
-roundSchema.methods.getScores = function getScores(fbId, categories, players, showScores){
+
+roundSchema.methods.getScores = function (fbId, categories, players, showScores){
   var scores = [];
   var bestLineScore = 0; 
   for (var i = players.length - 1; i >= 0; i--) {
@@ -281,5 +290,19 @@ roundSchema.methods.getScores = function getScores(fbId, categories, players, sh
   }
 
   return scores;
+}
+roundSchema.methods.asSummarized = function asSummarized(game) {
+  var categories=[];
+  for (var i = game.categories.length - 1; i >= 0; i--) {
+    categories.push(game.categories[i].name);
+  };
+  return {'letter': this.letter,
+          'status': this.status,
+          'roundId': this.roundId,
+          'gameId': game.gameId,
+          'categories': categories,
+          'gameStatus': game.status,
+          'gameMode':game.mode
+          };
 }
 module.exports = mongoose.model('Round', roundSchema);

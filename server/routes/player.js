@@ -2,7 +2,6 @@ module.exports = function(app) {
  
   var Game = require('../models/game.js');
   var Round = require('../models/round.js');
-  var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
   var Category = require('../models/category.js');
   var url = require('url');
@@ -126,7 +125,9 @@ deleteFinishedGame = function(req,rest){
         if (err) return res.send(err, 500);
         if (!player) return res.send('Player not found', 404);   
         
-        Game.findOne({ gameId: req.params.game, status: "CLOSED" }, function(err, game) {
+        var finishedStatus = new Game().getStatus().FINISHED;
+
+        Game.findOne({ gameId: req.params.game, status: finishedStatus }, function(err, game) {
             if (err) return res.send(err, 500);
             if (!game) return res.send('Game not found', 404);
 
