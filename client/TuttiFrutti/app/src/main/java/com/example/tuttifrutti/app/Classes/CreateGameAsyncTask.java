@@ -34,7 +34,6 @@ public abstract class CreateGameAsyncTask extends AsyncTask<Game,Void, Void> {
     protected Void doInBackground(Game... settings) {
 
         Game gs=settings[0];
-        gs.setOwner(new Player(FacebookHelper.getUserId()));
         api.createGame(gs);
         return null;
     }

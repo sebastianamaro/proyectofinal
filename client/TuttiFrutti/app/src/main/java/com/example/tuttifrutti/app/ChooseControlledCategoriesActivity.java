@@ -19,7 +19,9 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Player;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import java.util.ArrayList;
 
@@ -30,6 +32,13 @@ public class ChooseControlledCategoriesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
         setTitle("");
         setContentView(R.layout.activity_choose_controlled_categories);
 
@@ -129,9 +138,8 @@ public class ChooseControlledCategoriesActivity extends Activity {
 
 
         if (selectedCategories.size() >= 4) {
-
             gameSettings.setSelectedCategories(selectedCategories);
-
+            gameSettings.setOwner(new Player(FacebookHelper.getUserId()));
             CreateGameControlledCategoriesAsyncTask task = new CreateGameControlledCategoriesAsyncTask(getString(R.string.server_url),this);
             task.execute(gameSettings);
 

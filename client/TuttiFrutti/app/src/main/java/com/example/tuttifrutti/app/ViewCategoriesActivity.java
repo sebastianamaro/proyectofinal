@@ -29,6 +29,8 @@ import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.Player;
+import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView;
@@ -48,6 +50,13 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
         setContentView(R.layout.activity_view_categories);
         setTitle("");
         categoriesList = (ListView) findViewById(R.id.categoriesList);
@@ -119,6 +128,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         if(selectedCategories.size()>=4)
         {
             gameSettings.setSelectedCategories(selectedCategories);
+            gameSettings.setOwner(new Player(FacebookHelper.getUserId()));
             new CreateGameFreeCategoriesAsyncTask(getString(R.string.server_url), this).execute(gameSettings);
         }
         else

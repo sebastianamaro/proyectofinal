@@ -23,6 +23,8 @@ import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.example.tuttifrutti.app.Classes.NoLoggedUserException;
+import com.example.tuttifrutti.app.Classes.UncaughtExceptionHandler;
 
 import java.util.ArrayList;
 
@@ -36,6 +38,13 @@ public class ViewGameStatusActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
 
