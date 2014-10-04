@@ -325,8 +325,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected void onPostExecute(FilePlay result) {
 
-            // 120000 = 2 min
-            timer = new CountDownTimer(60000, 1000) {
+            timer = new CountDownTimer(currentRound.getCategories().length * 1000 * 20, 1000) {
 
                 public void onTick(long millisUntilFinished) {
                     //ver donde mostrarlo
