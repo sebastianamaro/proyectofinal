@@ -180,9 +180,10 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         layout.addView(text);
 
         TextView score=new TextView(this.getApplicationContext());
+        String scoreToShow = Integer.toString(( PlayScore == -1 ) ? 0 : PlayScore);
         if (isComplete) {
             if (!p.isEmpty())
-                score.setText(Integer.toString(PlayScore));
+                score.setText(scoreToShow);
             score.setPadding(10, 40, 33, 26);
             score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
             score.setTextSize(15);
@@ -203,6 +204,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             color = "#6B078F"; //violeta
         else if (playScore == ScoresForPlay.REPEATED.getValue())
             color = "#0000FF"; //azul
+        else if (playScore == ScoresForPlay.LATE.getValue())
+            color = "#999966"; //gris
 
         return color;
     }
@@ -218,6 +221,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
     public enum ScoresForPlay
     {
         INVALID(0),
+        LATE(-1),
         REPEATED(5),
         UNIQUE(10),
         ONLY(20);

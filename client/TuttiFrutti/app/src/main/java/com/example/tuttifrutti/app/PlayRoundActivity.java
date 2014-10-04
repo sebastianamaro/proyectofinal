@@ -38,6 +38,7 @@ import com.example.tuttifrutti.app.Classes.StopNotificationData;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 
 
@@ -310,7 +311,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         protected Void doInBackground(FinishedRound... finishedRounds) {
             String regid = new PlayServicesHelper(MainActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
             String fbId=FacebookHelper.getUserId();
-            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(), finishedRounds[0].getPlays());
+            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(),finishedRounds[0].getFinishTime(), finishedRounds[0].getPlays());
             return null;
             }
 
@@ -407,7 +408,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                
 
 
-                new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(), currentFilePlay.StartTime,plays));
+                new APIFinishRoundTask().execute(new FinishedRound(currentRound.getGameId(),currentRound.getRoundId(), currentFilePlay.StartTime,new Date(),plays));
                File file = new File(fileName);
                try {
                    file.getCanonicalFile().delete();

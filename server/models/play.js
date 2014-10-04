@@ -11,7 +11,9 @@ var playSchema = new Schema({
   result: { type: String }
 }, { _id : false });
 
-
+playSchema.methods.hasLateResult = function hasLateResult(){
+  return this.result == 'LATE';
+}
 playSchema.methods.setValues = function setValues(newPlay) {
   
   this.category = newPlay.category;
@@ -29,6 +31,11 @@ playSchema.methods.setValues = function setValues(newPlay) {
 playSchema.methods.setOnlyResult = function setOnlyResult() {
   this.score = 20;
   this.result = 'ONLY';
+}
+
+playSchema.methods.setLateResult = function setLateResult() {
+  this.score = 0;
+  this.result = 'LATE';
 }
 
 playSchema.methods.setUniqueResult = function setUniqueResult() {
@@ -66,8 +73,9 @@ playSchema.methods.validatePlay = function validatePlay(game, letter) {
 }
 
 playSchema.methods.asSummarized = function asSummarized() {
+  var scoreToSend = this.hasLateResult() ? -1 : this.score;
   return {'result': this.result,
-           'scoreInfo': {'score': this.score,
+           'scoreInfo': {'score': scoreToSend,
                      'best':false},
           'word': this.word,
           'category':this.category
