@@ -49,8 +49,27 @@ gameSchema.methods.getModes = function () {
         OFFLINE     : 'OFFLINE'
       };
 }
+gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round){
+  if (!round.isClosed()){
+    return;
+  }
+  if (round.isFullyValidated(this)){
+    this.changeToWaitingForNextRound();
+    round.calculateScores(this);
+    for (var i = round.lines.length - 1; i >= 0; i--) {
+      var line = round.lines[i];
+      for (var j = line.plays.length - 1; j >= 0; j--) {
+        console.log(line.plays[j]);
+      };
+    };
+  }
+}
+
 gameSchema.methods.changeToStatusShowingResults = function () {
   this.status = this.getStatus().SHOWING_RESULTS;
+}
+gameSchema.methods.changeToWaitingForNextRound = function () {
+  this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
 }
 gameSchema.methods.moveToShowingResults = function () {
   this.getLastRound().moveToShowingResults(this);
@@ -204,6 +223,16 @@ gameSchema.methods.getPlayerNames = function(){
   };
 
   return playerNames;
+}
+gameSchema.methods.getOtherPlayersFirstNames = function(){
+  var playersNameArray = [];
+  for (var j = this.players.length - 1; j >= 0; j--) {
+      if(this.players[j] != this.creator[0]){
+        playersNameArray.push(this.players[j].getFirstName()); //Only first name
+      }
+  };
+
+  return playersNameArray;
 }
 gameSchema.methods.getRoundResults = function(){
   var roundResults = [];

@@ -66,6 +66,9 @@ playerSchema.methods.getGames = function () {
 playerSchema.methods.getName = function () {
   return this.name;
 }
+playerSchema.methods.getFirstName = function () {
+  return this.name.split(' ')[0];
+}
 playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
   if (this.fbId == from.fbId){
     console.log("wont send the invitation to the creator");
@@ -80,16 +83,17 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
     return; //wont send the invitation to sb already invited. this validation is just in case
   }
   var notification = new Notification();
-    notification.setRegistrationId(this.registrationId);
-    notification.setValues({'gameId':gameId, 'reason' : 'INVITATION'});
-    var player = this;
-    notification.send(function(err){
-      if (err){
-        console.log("Error when send invitations");
-      } else {
-        player.setNotificationSentForGame(gameId);
-      }
-    });
+  /*notification.setRegistrationId(this.registrationId);
+  notification.setValues({'gameId':gameId, 'reason' : 'INVITATION'});
+  var player = this;
+  notification.send(function(err){
+    if (err){
+      console.log("Error when send invitations");
+    } else {
+      player.setNotificationSentForGame(gameId);
+    }
+  });*/
+  player.setNotificationSentForGame(gameId);
 }
 
 playerSchema.methods.setNotificationSentForGame = function(gameId){

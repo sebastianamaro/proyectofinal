@@ -16,6 +16,7 @@ var lineSchema = new Schema({
 
 lineSchema.methods.setQualification = function (judge, category, isValid) {
   var playToQualify = this.plays.filter(function (play) { return play.category == category;}).pop();  
+  console.log("this is the playToQualify "+playToQualify);
   playToQualify.setQualification(judge,isValid);
 }
 lineSchema.methods.setValues = function (line, foundPlayer) {
@@ -40,9 +41,7 @@ lineSchema.methods.setLateResults = function setLateResults(bestTime) {
 lineSchema.methods.addPlays = function (playsArray) {
   for (var i = playsArray.length - 1; i >= 0; i--) {
     var newPlay= new Play();
-
     newPlay.setValues(playsArray[i]);
-    newPlay.setUniqueResult();
     this.plays.push(newPlay);
   };
 }
@@ -53,19 +52,22 @@ lineSchema.methods.isFullyValidated = function (categories, playersAmount) {
     var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
     if (!category.isFixed){
       if (! play.isValidated(playersAmount)){
+        console.log('Category '+category.name+' is not fixed and is not validated');
         return false;
-      }  
+      }  else {
+        console.log('Category '+category.name+' is not fixed and is validated');
+      }
     }
   }
   return true;
 }
-lineSchema.methods.getPlaySimilarTo = function getPlaySimilarTo(searchedPlay) {
+lineSchema.methods.getPlaySimilarTo = function (searchedPlay) {
   return this.plays.filter(function (play) {
     return play.isSimilarTo(searchedPlay);
   }).pop();
 }
 
-lineSchema.methods.setTotalScore = function setTotalScore(gameId, roundId) {
+lineSchema.methods.setTotalScore = function (gameId, roundId) {
   var totalScore = 0;
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];
@@ -73,7 +75,7 @@ lineSchema.methods.setTotalScore = function setTotalScore(gameId, roundId) {
   };
   this.score = totalScore;
 }
-lineSchema.methods.getSummarizedPlays = function getSummarizedPlays(fbId,categories){
+lineSchema.methods.getSummarizedPlays = function (fbId,categories){
   var summarizedPlays = [];
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];

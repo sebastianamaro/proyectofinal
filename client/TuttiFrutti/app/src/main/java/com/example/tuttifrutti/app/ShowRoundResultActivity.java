@@ -7,17 +7,20 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.PlayerRoundScoreSummary;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
@@ -114,7 +117,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
                     PlayScoreSummary linePlayForCategory = result.getRoundScoreSummaries().get(j).getPlays().get(i);
-                    AddContentTextView(contentRow, linePlayForCategory.getWord(), linePlayForCategory.getScoreInfo().getScore(), result.getIsComplete());
+                    AddContentTextView(contentRow, linePlayForCategory, result.getIsComplete(), result.getRoundScoreSummaries().get(j).getPlayer().getFbId());
                 }
 
                 //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
@@ -168,35 +171,59 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddContentTextView(TableRow row, String p, int PlayScore, boolean isComplete) {
+    private void AddContentTextView(TableRow row, final PlayScoreSummary playScoreSummary, boolean isComplete, final String fbId) {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
 
         TextView text=new TextView(getApplicationContext());
-        if (p.isEmpty()) {
+        if (playScoreSummary.getWord().isEmpty()) {
             text.setGravity(Gravity.CENTER);
             text.setText("-");
         }
         else
-            text.setText(p);
+            text.setText(playScoreSummary.getWord());
         text.setPadding(33, 33, 10, 33);
-        text.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
+        text.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
         text.setTextSize(25);
         text.setTypeface(null, Typeface.NORMAL);
         layout.addView(text);
 
         TextView score=new TextView(this.getApplicationContext());
-        String scoreToShow = Integer.toString(( PlayScore == -1 ) ? 0 : PlayScore);
         if (isComplete) {
-            if (!p.isEmpty())
-                score.setText(scoreToShow);
+
+            if (!playScoreSummary.getWord().isEmpty())
+                score.setText(Integer.toString(playScoreSummary.getScoreInfo().getScore()));
+
             score.setPadding(10, 40, 33, 26);
-            score.setTextColor(Color.parseColor(getColorForScore(PlayScore)));
+            score.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
             score.setTextSize(15);
             score.setTypeface(null, Typeface.NORMAL);
             layout.addView(score);
         }
+
+        String myFbId = FacebookHelper.getUserId();
+
+        if (!playScoreSummary.isFixed() && !playScoreSummary.isValidated() && !myFbId.equals(fbId) && !playScoreSummary.getWord().isEmpty()) {
+            //aca primero preguntar si es libre Y si NO la mande ya Y si no es la mia Y si no esta vacia
+            ImageView imgOk = new ImageView(this.getApplicationContext());
+            imgOk.setImageResource(R.drawable.icon_star);
+            imgOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        new SetQualificationAsyncTask(true, playScoreSummary.getCategory(), fbId).execute();
+                    }catch (Exception ex)
+                    {
+                        Log.e("LALA", ex.getMessage());
+                    }
+
+                }
+            });
+
+            layout.addView(imgOk);
+        }
+
 
         row.addView(layout);
     }
@@ -223,6 +250,36 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
 
         startActivity(intent);
+    }
+
+    public class SetQualificationAsyncTask extends AsyncTask<Void, Void, Void>
+    {
+        TuttiFruttiAPI api;
+        boolean isValid;
+        String category;
+        String judgedPlayer;
+
+        public SetQualificationAsyncTask(boolean isValid, String category, String judgedPlayer)
+        {
+            this.isValid = isValid;
+            this.category = category;
+            this.judgedPlayer = judgedPlayer;
+        }
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected Void doInBackground(Void... smth) {
+            api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameInfo.getGameId());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //aca ocultar las imagenes
+        }
     }
 
     public enum ScoresForPlay

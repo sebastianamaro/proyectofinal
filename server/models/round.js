@@ -33,8 +33,19 @@ roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
     this.lines.push(myLine);
   }
 }
+roundSchema.methods.isFullyValidated = function(game){
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    if (!line.isFullyValidated(game.categories, game.players.length)){
+      console.log('la line no esta fully validated, piola!'+line);
+      return false;
+    }
+  };
+  return true;
+}
 
 roundSchema.methods.setQualification = function (judge, category, isValid, lineOwner) {
+  console.log(lineOwner+" is the number of the lineOwner and "+judge+" is the judge");
   var lineToQualify = this.lines.filter(function (line) {return line.player[0].fbId == lineOwner; }).pop();
   lineToQualify.setQualification(judge, category, isValid);
 }
@@ -53,7 +64,7 @@ roundSchema.methods.getPlayersWhoHavePlayed = function () {
 
 roundSchema.methods.checkAllPlayersFinished = function (game) {
   var playersCount = game.players.length;
-  var linesCount = this.lines.length;
+  var linesCount = this.lines.filter(function (line) { return line.plays.length > 0;}).length;
   return playersCount == linesCount;
 }
 
@@ -79,16 +90,27 @@ roundSchema.methods.createScoresMap = function (categories){
       var play = line.plays[iPlay];
       var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
       var round = this;
-      play.validatePlay(category, this.letter, function(result){
+      round.addToScoresMap(scoresMap, play, iLine, iPlay); 
+      //ACA HACE EL BARDO
+      /*play.validatePlay(category, this.letter, function(result){
         if (result){
+          console.log('agrego al scoresMap '+play);
           round.addToScoresMap(scoresMap, play, iLine, iPlay); 
         } else {
+          console.log('no agrego al scoresMap y seteo invalid'+play);
           play.setInvalidResult();
         }
-      })
+      })*/
     };
   };
   return scoresMap;
+}
+
+roundSchema.methods.finishIfAllPlayersFinished = function (game) {
+  if (this.checkAllPlayersFinished(game)){
+
+    this.finish(game);
+  }
 }
 
 roundSchema.methods.finish = function () {
@@ -127,21 +149,6 @@ roundSchema.methods.isClosed = function () {
   return this.status == this.getStatus().CLOSED;
 }
 
-roundSchema.methods.moveToShowingResultsIfPossible = function (game){
-  if (!this.isClosed()){
-    return;
-  }
-  for (var i = this.lines.length - 1; i >= 0; i--) {
-    var line = this.lines[i];
-    if (!line.isFullyValidated(game.categories, game.players.length)){
-      return;
-    }
-  };
-  game.changeToStatusShowingResults();
-  this.calculateScores();
-  return game;
-}
-
 roundSchema.methods.calculateScores = function (game){
   var scoresMap = this.createScoresMap(game.categories);
   this.calculateAndSetPartialScores(scoresMap);
@@ -176,7 +183,7 @@ roundSchema.methods.calculateAndSetPartialScores = function (scoresMap){
     } else { //more than one word, each of them can be either repeated or unique
       for (var word in words){
         var dataForPlays = words[word];
-        if (dataForPlays.length == 1){ //only one player chose this word, it's only
+        if (dataForPlays.length == 1){ //only one player chose this word, it's unique
           var playToScore = this.getPlay(dataForPlays, 0);
           playToScore.setUniqueResult();
         } else { //more than a player chose this word, they are all repeated

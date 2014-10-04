@@ -9,7 +9,9 @@ public class PlayScoreSummary {
     private ScoreInfo scoreInfo;
     private String word;
     private String category;
-
+    private boolean validated;
+    private boolean isValid;
+    private boolean isFixed;
 
     public String getCategory() {
         return category;
@@ -41,5 +43,29 @@ public class PlayScoreSummary {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean isValid) {
+        this.isValid = isValid;
+    }
+
+    public boolean isFixed() {
+        return isFixed;
+    }
+
+    public void setFixed(boolean isFixed) {
+        this.isFixed = isFixed;
     }
 }

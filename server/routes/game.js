@@ -7,13 +7,14 @@ module.exports = function(app) {
 
    setQualification = function(req,res){
     var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
-    Game.findOne({ 'gameId': req.params.id, status: { $ne: statusRequired } }, function (err, game){
+    Game.findOne({ 'gameId': req.params.id, status: statusRequired }, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
       
       var round = game.getLastRound();
       
-      round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.player);
+      round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
+      game.moveToWaitingForNextRoundIfPossible(round);
       game.save(function(err) {
         if(!err) {
           console.log('Qualification set ');
@@ -34,7 +35,7 @@ module.exports = function(app) {
       
       var playingRound = game.getPlayingRound();
       if (!playingRound) return res.send('No playing round', 404);
-      playingRound.asSummarized(game);
+      var roundWithCategories = playingRound.asSummarized(game);
       res.send(roundWithCategories);      
     })
   }
@@ -76,6 +77,14 @@ module.exports = function(app) {
       res.send('Round started', 200);
     });
   }
+  test= function(req,res){
+    Game.findOne({ 'gameId': 1}, function (err, game){
+      var currentRound = game.getRound(1);
+      var linesCount = currentRound.lines.filter(function (line) { return line.plays.length > 0;}).length;
+      console.log("linesCount: " +linesCount);
+        });
+    
+  }
   finishRound = function(req, res) {
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
@@ -99,14 +108,16 @@ module.exports = function(app) {
           
           game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
             currentRound.addLine(reqRound.line, foundPlayer);
-            
-            if (currentRound.checkAllPlayersFinished(game)){
-              currentRound.finish(game);
-              game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-              currentRound.moveToShowingResultsIfPossible(game);
-            }
-            else
-              game.status = game.getStatus().SHOWING_RESULTS;
+            currentRound.finishIfAllPlayersFinished(game);
+            console.log(currentRound.status+" is the round status");
+            if (game.getCategoriesType().FREE == game.categoriesType){
+              game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
+              game.moveToWaitingForNextRoundIfPossible(currentRound); // solo sirve si son todas controladas aunque eligio free
+            } else {
+              if (currentRound.status == currentRound.getStatus().CLOSED){
+                game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+              }
+            } 
 
             game.save(function(err) {
               if(!err) {

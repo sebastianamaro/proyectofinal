@@ -15,6 +15,7 @@ import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayedRound;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.PlayerRoundScoreSummary;
+import com.example.TuttiFruttiCore.Qualification;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.UserGame;
 import org.springframework.http.ResponseEntity;
@@ -261,6 +262,21 @@ public class TuttiFruttiAPI {
         Category cat=e.getBody();//the server returns an object with id, then we set that id to the created category
         category.setId(cat.getId());
         return category;
+    }
+
+    public void sendQualification(String userId, boolean isValid, String category, String judgedPlayer, int gameId) {
+        String url= serverURL+"game/"+gameId+"/round/qualification/"+userId;
+        //req.body.category, req.body.isValid, req.body.player
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        Qualification q = new Qualification();
+        q.setCategory(category);
+        q.setJudgedPlayer(judgedPlayer);
+        q.setValid(isValid);
+
+        restTemplate.put(url, q);
     }
 }
 

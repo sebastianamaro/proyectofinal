@@ -11,11 +11,11 @@ var categorySchema = new Schema({
   isReported:   {type: Boolean}
 });
 
-categorySchema.methods.isWordValid = function isWordValid(word, category) {
+categorySchema.methods.isWordValid = function (word, category) {
   return true;//for now just a dummy
 }
 
-categorySchema.methods.setValues = function setValues(category) {
+categorySchema.methods.setValues = function (category) {
 	this.name=category.name;
 	this.acceptedWords=category.acceptedWords;
 	this.isStared=category.isStared;
@@ -25,7 +25,7 @@ categorySchema.methods.setValues = function setValues(category) {
 
 categorySchema.methods.asSummarized = function asSummarized() {
 	return {
-    'id': this.id,
+    	'id': this.id,
 		'name': this.name,
 		'isReported': this.isReported,
 		'isFixed': this.isFixed
