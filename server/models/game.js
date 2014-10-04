@@ -214,11 +214,13 @@ gameSchema.methods.sendInvitations = function(callback){
   
   var selectedFriendsFbsId = [];
 
-  for (var i = this.selectedFriends.length - 1; i >= 0; i--) {
-    selectedFriendsFbsId.push(this.selectedFriends[i].fbId);
-  };
 
   if (this.opponentsType !== 'RANDOM'){
+    
+    for (var i = this.selectedFriends.length - 1; i >= 0; i--) {
+      selectedFriendsFbsId.push(this.selectedFriends[i].fbId);
+    };
+
     Player.find({ fbId: { $in: selectedFriendsFbsId } }, function (err, players){
       if (err)
         console.log(err);

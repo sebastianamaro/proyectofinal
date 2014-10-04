@@ -36,16 +36,8 @@ public class ChooseRandomPlayersCountActivity extends ActionBarActivity {
 
         gameSettings.setRandomPlayersCount(np.getValue());
 
-        if (gameSettings.getCategoriesType().equals("FIXED")) {
-            Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
-            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
-            startActivity(intent);
-        }
-        else
-        {
-            Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
-            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
+        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
+        startActivity(intent);
     }
 }

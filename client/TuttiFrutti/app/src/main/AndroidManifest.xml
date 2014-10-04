@@ -90,12 +90,6 @@
             android:screenOrientation = "portrait">
         </activity>
         <activity
-            android:name=".ChooseControlledCategoriesActivity"
-            android:label="@string/title_activity_choose_controlled_categories"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
-            android:screenOrientation = "portrait">
-        </activity>
-        <activity
             android:name=".ManageInvitationActivity"
             android:label="@string/title_activity_manage_invitation"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
