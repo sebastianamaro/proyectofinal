@@ -23,6 +23,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
@@ -92,6 +93,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                         adapter.getFilter().filter(currentWord);
                     else
                     {
+
                         adapter.filteredCategories=adapter.originalCategories;
                         adapter.notifyDataSetChanged();
                     }
@@ -105,7 +107,8 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if(s.toString().equals(","))
+                    s.clear();
 
             }
         });
@@ -113,8 +116,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     }
 
     public void finish(View view) {
-        gameSettings.setSelectedCategories(selectedCategories);
-        new CreateGameFreeCategoriesAsyncTask(getString(R.string.server_url), this).execute(gameSettings);
+        if(selectedCategories.size()>=4)
+        {
+            gameSettings.setSelectedCategories(selectedCategories);
+            new CreateGameFreeCategoriesAsyncTask(getString(R.string.server_url), this).execute(gameSettings);
+        }
+        else
+            Toast.makeText(getApplicationContext(), "Debe seleccionar al menos 4 categorias", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -135,7 +144,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
     public void addCategory(View view) {
         Category cat= new Category();
-        cat.setName(textView.getText().toString());
+        cat.setName(textView.getText().toString().toUpperCase().replace(",","").trim());
         new CreateCategoryAsyncTask().execute(cat);
     }
 
@@ -225,11 +234,10 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 else
                     categories.add(category);
 
-                if(category.equals(recentlyCreatedCategory)) //if the server returned the recently created category
-                    selectedCategories.add(category); //we mark it as selected at first
-
                  categoriesNames.add(category.getName());
             }
+
+
 
             final TuttiFruttiAutoCompleteTextView textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
             textView.setTokenListener(ViewCategoriesActivity.this);
@@ -257,6 +265,9 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 }
 
             });
+
+            if(recentlyCreatedCategory != null)
+                textView.addObject(recentlyCreatedCategory);
         }
     }
 
@@ -331,9 +342,8 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 this.originalCategories.add(allCategoriesSeparatorIndex,allCategoriesText);
             }
 
-            this.originalCategories.add(allCategoriesSeparatorIndex,allCategoriesText);
             this.filteredCategories=originalCategories;
-            if(filteredCategories.size()>0)
+            if(filteredCategories.size()==0)
                 addCategoryButton.setVisibility(View.VISIBLE);
             else
                 addCategoryButton.setVisibility(View.INVISIBLE);
@@ -343,35 +353,20 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         @Override
         public int getItemViewType(int position) {
 
-            if (showsStaredCategories) {
-                if (position == staredCategoriesSeparatorIndex)
+            if(filteredCategories.get(position) ==null)
+                return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+
+            if(filteredCategories.get(position) instanceof String)
+            {
+                String separator=(String)filteredCategories.get(position);
+                if(separator.equals(staredCategoriesText))
                     return ITEM_VIEW_TYPE_STARED_CATEGORIES_SEPARATOR;
-
-                if (showsFixedCategories) {
-                    if (position == fixedCategoriesSeparatorIndex - 1)
-                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
-                } else if (showsAllCategories) {
-                    if (position == allCategoriesSeparatorIndex - 1)
-                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
-                }
-            }
-
-
-            if (showsFixedCategories) {
-                if (position == fixedCategoriesSeparatorIndex)
+                else if (separator.equals(fixedCategoriesText))
                     return ITEM_VIEW_TYPE_FIXED_CATEGORIES_SEPARATOR;
-
-                if (showsAllCategories) {
-                    if (position == allCategoriesSeparatorIndex - 1)
-                        return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
-                }
-            }
-
-            if (showsAllCategories) {
-                if (position == allCategoriesSeparatorIndex)
+                else if(separator.equals(allCategoriesText))
                     return ITEM_VIEW_TYPE_ALL_CATEGORIES_SEPARATOR;
-            }
 
+            }
 
             if (filteredCategories.get(position) instanceof Category)
                 return ITEM_VIEW_TYPE_CATEGORY;
@@ -633,9 +628,12 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 int count = list.size();
                 final ArrayList<Object> nlist = new ArrayList<Object>(count);
 
-                int staredCategories=-1;
-                int fixedCategories=-1;
-                int allCategories=-1;
+                int staredCategories=0;
+                int fixedCategories=0;
+                int allCategories=0;
+                boolean hasStaredCategories=false;
+                boolean hasFixedCategories=false;
+                boolean hasFreeCategories=false;
 
 
                 for (int i = 0; i < count; i++) {
@@ -649,22 +647,22 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
                             if(((Category)item).isStared())
                             {
-                                if(staredCategories ==-1)
-                                    staredCategories=0;
+                                if(!hasStaredCategories)
+                                    hasStaredCategories=true;
 
                                 staredCategories++;
                             }
                             else if (((Category)item).isFixed())
                             {
-                                if(fixedCategories ==-1)
-                                    fixedCategories=0;
+                                if(!hasFixedCategories)
+                                    hasFixedCategories=true;
 
                                 fixedCategories++;
                             }
                             else
                             {
-                                if(allCategories ==-1)
-                                    allCategories=0;
+                                if(!hasFreeCategories)
+                                    hasFreeCategories=true;
 
                                 allCategories++;
                             }
@@ -673,30 +671,59 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     else
                     {
                        nlist.add(item);
-                        if(staredCategories==0)
-                        {
-                            nlist.remove(0);//stared
-                            nlist.remove(0);//empty
-                            staredCategories=-1;
-                        }
-
-                        if(fixedCategories ==0)
-                        {
-                            nlist.remove(staredCategories);//empty
-                            nlist.remove(staredCategories);//fixed
-                            fixedCategories=-1;
-                        }
-
-
                     }
                 }
 
-                if(allCategories ==0)
+                if(!hasFreeCategories && showsAllCategories)
                 {
-                    nlist.remove(staredCategories+fixedCategories);//empty
-                    nlist.remove(staredCategories+fixedCategories);//all
-                    allCategories=-1;
+                    nlist.remove(nlist.size()-1);//all
+                    nlist.remove(nlist.size()-1);//empty  //because we allways have fixed categories
                 }
+
+                if(!hasStaredCategories && showsStaredCategories)
+                {
+                    if(!(nlist.get(1) instanceof Category))  //VEEEERY UGLY FIX. IF WE DON'T DO THIS, THE USER CAN UNSTAR A CATEGORY,
+                    {
+                        nlist.remove(0);//stared            // THEN FILTER THAT CATEGORY AND THE SEPARATOR DISSAPEARS (BECAUSE WE DON'T HAVE ANY MORE STARED CATEGORIES)
+                        nlist.remove(0);
+                    }
+
+                }
+
+
+                if(!hasFixedCategories && showsFixedCategories)
+                {
+                    if(hasStaredCategories)
+                    {
+                        nlist.remove(staredCategories+1);//empty
+                        nlist.remove(staredCategories+1);//fixed
+                    }
+                    else
+                    {
+                        nlist.remove(0);//empty
+                        nlist.remove(0);//fixed
+                    }
+                }
+
+                if(hasStaredCategories)
+                    fixedCategoriesSeparatorIndex=staredCategories+2;
+                else
+                    fixedCategoriesSeparatorIndex=0;
+
+                if(hasFreeCategories)
+                {
+                    if(hasStaredCategories)
+                        allCategoriesSeparatorIndex=staredCategories+fixedCategories+4;
+                    else if(hasFixedCategories)
+                        allCategoriesSeparatorIndex=fixedCategories+2;
+                    else
+                    {
+                        fixedCategoriesSeparatorIndex=-1;
+                        allCategoriesSeparatorIndex=0;
+                    }
+                }
+                else
+                    allCategoriesSeparatorIndex=-1;
 
                 results.values = nlist;
                 results.count = nlist.size();
@@ -720,7 +747,10 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 filteredCategories = (ArrayList<Object>) results.values;
 
-                if(filteredCategories.size()>0)
+               if(filteredCategories == null)
+                    filteredCategories= new ArrayList<Object>();
+
+                if(filteredCategories.size()==0)
                     addCategoryButton.setVisibility(View.VISIBLE);
                 else
                     addCategoryButton.setVisibility(View.INVISIBLE);

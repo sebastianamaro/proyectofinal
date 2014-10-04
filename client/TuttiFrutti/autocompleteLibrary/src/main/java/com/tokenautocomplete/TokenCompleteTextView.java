@@ -649,6 +649,12 @@ public abstract class TokenCompleteTextView extends MultiAutoCompleteTextView im
                             editable.delete(editable.toString().lastIndexOf(',')+2,editable.length());
                             offset = editable.toString().lastIndexOf(',')+2;
                         }
+                        else
+                            if(!editable.toString().contains(",") && ssb.toString().contains(",, "))
+                            {
+                                editable.clear();
+                                offset=0;
+                            }
 
                         editable.append(ssb);
 
