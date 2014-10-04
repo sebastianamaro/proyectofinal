@@ -47,6 +47,7 @@ public class Category implements Serializable{
     }
 
     public void setName(String name) {
+
         this.name = name;
     }
 
@@ -76,6 +77,9 @@ public class Category implements Serializable{
 
     @Override
     public boolean equals(Object o) {
+        if(o ==null)
+            return false;
+
         if(getId() != 0 && ((Category)o).getId() != 0)
             return ((Category)o).getId() == (getId());
         else

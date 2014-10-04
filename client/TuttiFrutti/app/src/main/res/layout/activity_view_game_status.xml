@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,6 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="@drawable/background"
+    android:orientation="vertical"
     tools:context="com.example.tuttifrutti.app.ViewGameStatusActivity">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,7 +17,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="25dp"
         android:id="@+id/divBoton">
 
     <Button
@@ -27,14 +29,23 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:onClick="createGame" />
+
+
     </RelativeLayout>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dp"
+            android:id="@+id/divider"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/divBoton"
+            android:background="@color/blue"/>
+
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            android:id="@+id/pull_refresh_list"
+            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/divider"
+           />
 
 
-    <ListView
-        android:id="@+id/listGames"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/divBoton">
-    </ListView>
-
-</RelativeLayout>
+    </RelativeLayout>

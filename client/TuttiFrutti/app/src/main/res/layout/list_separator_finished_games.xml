@@ -11,5 +11,6 @@
         android:background="@drawable/rounded_corner_finished_games"
         android:textSize="20sp"
         android:text="Partidas Finalizadas"
+        android:gravity="center"
         android:textStyle="bold"/>
 </LinearLayout>

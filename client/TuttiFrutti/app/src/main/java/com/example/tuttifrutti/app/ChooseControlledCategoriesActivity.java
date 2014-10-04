@@ -61,7 +61,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
         @Override
         protected void onPostExecute(ArrayList<Category> result) {
             //create an ArrayAdaptar from the String Array
-            dataAdapter = new MyCustomAdapter(getApplicationContext(), R.layout.controlled_category_row, result);
+            dataAdapter = new MyCustomAdapter(getApplicationContext(), R.layout.list_row_controlled_category, result);
             ListView listView = (ListView) findViewById(R.id.categoryList);
             listView.setAdapter(dataAdapter);
         }
@@ -90,7 +90,7 @@ public class ChooseControlledCategoriesActivity extends Activity {
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.controlled_category_row, null);
+                convertView = vi.inflate(R.layout.list_row_controlled_category, null);
 
                 holder = new ViewHolder();
                 holder.code = (TextView) convertView.findViewById(R.id.textViewTitle);

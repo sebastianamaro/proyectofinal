@@ -226,14 +226,14 @@ module.exports = function(app) {
       }
       var category = new Category();
       category.id = largerId;
-      category.name = req.body.name;
+      category.name = req.body.name.toUpperCase().trim();
       category.isFixed = req.body.isFixed;
       category.isReported = false;
       category.hits = 0;
 
       category.reportedWords = [];
       category.acceptedWords = [];
-      if (req.body.acceptedWords.values !== undefined){
+      if (req.body.acceptedWords !== undefined && req.body.acceptedWords.values !== undefined){
         for (var i = req.body.acceptedWords.values.length - 1; i >= 0; i--) {
           var wordReq = req.body.acceptedWords.values[i];
           var valueWord = wordReq.value.toUpperCase().trim(); 

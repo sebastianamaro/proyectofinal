@@ -30,14 +30,18 @@
         </activity>
         <activity
             android:name=".PlayRoundActivity"
-            android:label="@string/title_activity_play_round" >
+            android:label="@string/title_activity_play_round"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
             android:name=".CreateGameActivity"
-            android:label="@string/title_activity_create_game" >
+            android:label="@string/title_activity_create_game"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
 
         <receiver
@@ -62,31 +66,46 @@
 
         <activity
             android:name=".ShowRoundResultActivity"
-            android:label="@string/title_activity_show_round_result" >
+            android:label="@string/title_activity_show_round_result"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name=".ChooseRandomPlayersCountActivity"
-            android:label="@string/title_activity_choose_random_players_count" >
+            android:label="@string/title_activity_choose_random_players_count"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait"
+            >
         </activity>
         <activity
             android:name=".ViewGameStatusActivity"
-            android:label="@string/title_activity_view_game_status" >
+            android:label="@string/title_activity_view_game_status"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name=".ShowGameResultActivity"
-            android:label="@string/title_activity_show_game_result" >
+            android:label="@string/title_activity_show_game_result"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name=".ChooseControlledCategoriesActivity"
-            android:label="@string/title_activity_choose_controlled_categories" >
+            android:label="@string/title_activity_choose_controlled_categories"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name=".ManageInvitationActivity"
-            android:label="@string/title_activity_manage_invitation" >
+            android:label="@string/title_activity_manage_invitation"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name=".AndroidFacebookConnectActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -95,21 +114,29 @@
         </activity>
         <activity
             android:name=".ChooseFriendsActivity"
-            android:label="@string/title_activity_choose_friends" >
+            android:label="@string/title_activity_choose_friends"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
         <activity
             android:name="com.facebook.LoginActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
         <activity
             android:name=".ViewCategoriesActivity"
-            android:label="@string/title_activity_view_categories" >
+            android:label="@string/title_activity_view_categories"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
 
         <activity
             android:name=".ShowGameDetailsActivity"
-            android:label="@string/title_activity_show_game_details" >
+            android:label="@string/title_activity_show_game_details"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:screenOrientation = "portrait">
         </activity>
 
     </application>

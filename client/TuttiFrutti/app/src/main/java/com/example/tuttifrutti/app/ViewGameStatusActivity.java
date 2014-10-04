@@ -1,15 +1,13 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,16 +19,18 @@ import android.widget.TextView;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
-import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
 
 
-public class ViewGameStatusActivity extends ActionBarActivity {
 
-    ListView listViewGames ;
+public class ViewGameStatusActivity extends ListActivity {
+
+    private PullToRefreshListView mPullToRefreshLayout;
     String fbId;
 
     @Override
@@ -38,13 +38,35 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
-        listViewGames = (ListView) findViewById(R.id.listGames);
+
+        mPullToRefreshLayout = (PullToRefreshListView) findViewById(R.id.pull_refresh_list);
+
+        mPullToRefreshLayout.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                String label = DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(),
+                        DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+                // Update the LastUpdatedLabel
+                refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+                // Do work to refresh the list here.
+                new FillListViewAsyncTask().execute();
+            }
+
+        });
+
+
         new FillListViewAsyncTask().execute();
 
     }
 
     @Override
     public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     public void createGame(View view) {
@@ -52,12 +74,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+
     public class FillListViewAsyncTask extends AsyncTask<Void, Void, Void> {
         TuttiFruttiAPI api;
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
 
         protected void onPreExecute() {
+
             api = new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -83,14 +107,14 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             }
 
             GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
-            listViewGames.setAdapter(ga);
-            listViewGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mPullToRefreshLayout.getRefreshableView().setAdapter(ga);
+            mPullToRefreshLayout.getRefreshableView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
 
-                    Object itemValue = (Object) listViewGames.getItemAtPosition(position);
+                    Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
 
                     if (itemValue instanceof FullGame) {
                         Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
@@ -118,22 +142,25 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                 }
 
             });
+            // Call onRefreshComplete when the list has been refreshed.
+            mPullToRefreshLayout.onRefreshComplete();
+
         }
 
         public class GamesAdapter extends BaseAdapter {
 
             Context context;
             private ArrayList<Object> games;
-            private int activeGamesSeparatorIndex; //ex staredCategoriesSeparatorIndex
+            private int activeGamesSeparatorIndex=0; //ex staredCategoriesSeparatorIndex
             private int invitationsSeparatorIndex; //ex fixedCategoriesSeparatorIndex
             private int finishedGamesSeparatorIndex; //ex allCategoriesSeparatorIndex
             private static final int ITEM_VIEW_TYPE_ACTIVE_GAMES_SEPARATOR = 0;
             private static final int ITEM_VIEW_TYPE_INVITATIONS_SEPARATOR = 1;
             private static final int ITEM_VIEW_TYPE_FINISHED_GAMES_SEPARATOR = 2;
             private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 3;
-            private static final int ITEM_VIEW_TYPE_FULL_GAME_SEPARATOR = 4;
-            private static final int ITEM_VIEW_TYPE_USER_GAME_SEPARATOR = 5;
-            private static final int ITEM_VIEW_TYPE_FINISHED_USER_GAME_SEPARATOR = 6;
+            private static final int ITEM_VIEW_TYPE_FULL_GAME = 4;
+            private static final int ITEM_VIEW_TYPE_USER_GAME = 5;
+            private static final int ITEM_VIEW_TYPE_FINISHED_USER_GAME = 6;
             private static final int ITEM_VIEW_TYPE_COUNT = 7; // 1,2,3) Headers  4) separador invisible 5) Full Game 6) userGame
             private static final String activeGamesText = "Partidas Activas";
             private static final String invitationsText = "Invitaciones";
@@ -226,15 +253,15 @@ public class ViewGameStatusActivity extends ActionBarActivity {
 
 
                 if (games.get(position) instanceof FullGame)
-                    return ITEM_VIEW_TYPE_FULL_GAME_SEPARATOR;
+                    return ITEM_VIEW_TYPE_FULL_GAME;
 
 
                 if (games.get(position) instanceof UserGame) {
                     UserGame ug = (UserGame) games.get(position);
                     if (ug.getStatus().equals("CLOSED"))
-                        return ITEM_VIEW_TYPE_FINISHED_USER_GAME_SEPARATOR;
+                        return ITEM_VIEW_TYPE_FINISHED_USER_GAME;
                     else
-                        return ITEM_VIEW_TYPE_USER_GAME_SEPARATOR;
+                        return ITEM_VIEW_TYPE_USER_GAME;
                 }
 
                 return -1;
@@ -263,7 +290,7 @@ public class ViewGameStatusActivity extends ActionBarActivity {
             @Override
             public boolean isEnabled(int position) {
                 // A separator cannot be clicked !
-                return getItemViewType(position) == ITEM_VIEW_TYPE_FULL_GAME_SEPARATOR || getItemViewType(position) == ITEM_VIEW_TYPE_USER_GAME_SEPARATOR;
+                return getItemViewType(position) == ITEM_VIEW_TYPE_FULL_GAME || getItemViewType(position) == ITEM_VIEW_TYPE_USER_GAME;
             }
 
             private class ActiveGamesViewHolder {
@@ -300,13 +327,13 @@ public class ViewGameStatusActivity extends ActionBarActivity {
                     case ITEM_VIEW_TYPE_FINISHED_GAMES_SEPARATOR:
                         convertView = SetRowFinishedSeparatorViewHolder(convertView);
                         break;
-                    case ITEM_VIEW_TYPE_USER_GAME_SEPARATOR:
+                    case ITEM_VIEW_TYPE_USER_GAME:
                         convertView = SetRowActiveGamesViewHolder(i, convertView);
                         break;
-                    case ITEM_VIEW_TYPE_FULL_GAME_SEPARATOR:
+                    case ITEM_VIEW_TYPE_FULL_GAME:
                         convertView = SetRowInvitationsViewHolder(i, convertView);
                         break;
-                    case ITEM_VIEW_TYPE_FINISHED_USER_GAME_SEPARATOR:
+                    case ITEM_VIEW_TYPE_FINISHED_USER_GAME:
                         convertView = SetRowFinishedGamesViewHolder(i, convertView);
                         break;
 

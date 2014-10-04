@@ -10,5 +10,8 @@
         android:background="@drawable/rounded_corner_invitations"
         android:textSize="20sp"
         android:text="Invitaciones"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:gravity="center"
+
+        />
 </LinearLayout>
