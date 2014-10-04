@@ -121,6 +121,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             }
         });
+
         new GetCategoriesAsyncTask().execute();
     }
 
@@ -204,7 +205,9 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     }
 
 
-    public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
+
+
+        public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
 
         Category recentlyCreatedCategory;
         public GetCategoriesAsyncTask(){
@@ -217,8 +220,12 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         @Override
         protected ArrayList<Category> doInBackground(Void... voids) {
 
-            ArrayList<Category> staredCategories= api.getCategoriesForPlayer(FacebookHelper.getUserId());
-            return staredCategories;
+            ArrayList<Category> categories;
+            if(gameSettings.getCategoriesType().equals("FIXED"))
+                categories=api.getFixedCategories();
+            else
+                categories  = api.getCategoriesForPlayer(FacebookHelper.getUserId());
+            return categories;
         }
 
         TuttiFruttiAPI api;
@@ -353,7 +360,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             }
 
             this.filteredCategories=originalCategories;
-            if(filteredCategories.size()==0)
+            if(filteredCategories.size()==0 && !gameSettings.getCategoriesType().equals("FIXED"))
                 addCategoryButton.setVisibility(View.VISIBLE);
             else
                 addCategoryButton.setVisibility(View.INVISIBLE);
@@ -758,7 +765,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                if(filteredCategories == null)
                     filteredCategories= new ArrayList<Object>();
 
-                if(filteredCategories.size()==0)
+                if(filteredCategories.size()==0 && !gameSettings.getCategoriesType().equals("FIXED"))
                     addCategoryButton.setVisibility(View.VISIBLE);
                 else
                     addCategoryButton.setVisibility(View.INVISIBLE);

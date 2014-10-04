@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
-import com.example.tuttifrutti.app.ChooseControlledCategoriesActivity;
 import com.example.tuttifrutti.app.MainActivity;
 import com.example.tuttifrutti.app.R;
 

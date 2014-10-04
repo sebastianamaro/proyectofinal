@@ -238,24 +238,15 @@ public class TuttiFruttiAPI {
 
     public ArrayList<Category> getFixedCategories()
     {
-        try {
             String url = serverURL + "category?isFixed=1";
 
-            HttpComponentsClientHttpRequestFactory s = new HttpComponentsClientHttpRequestFactory();
-            s.setReadTimeout(5000);
-            s.setConnectTimeout(1000);
 
-            RestTemplate restTemplate = new RestTemplate(s);
-            //restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
             restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
             Category[] lineArray = restTemplate.getForObject(url, Category[].class);
             return new ArrayList<Category>(Arrays.asList(lineArray));
-        }catch (RestClientException ex)
-        {
-            String mess = ex.getMessage();
-            return null;
-        }
 
     }
 

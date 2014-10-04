@@ -81,16 +81,9 @@ public class ChooseFriendsActivity extends FragmentActivity {
                                         gameSettings.addSelectedFriend(g.getId(), g.getName());
                                     }
 
-                                    if (gameSettings.getCategoriesType().equals("FIXED")) {
-                                        Intent intent = new Intent(getApplicationContext(), ChooseControlledCategoriesActivity.class);
-                                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
-                                        startActivity(intent);
-                                    }
-                                    else {
-                                        Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
-                                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
-                                        startActivity(intent);
-                                    }
+                                    Intent intent = new Intent(getApplicationContext(), ViewCategoriesActivity.class);
+                                    intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, gameSettings);
+                                    startActivity(intent);
                                 }else
                                     Toast.makeText(getApplicationContext(),
                                             "Elegí hasta 4 amigos!",
