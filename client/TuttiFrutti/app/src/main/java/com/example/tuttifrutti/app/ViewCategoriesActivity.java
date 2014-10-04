@@ -144,7 +144,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
     public void addCategory(View view) {
         Category cat= new Category();
-        cat.setName(textView.getText().toString().toUpperCase().replace(",","").trim());
+        cat.setName(textView.getText().toString().toUpperCase().replace(",", "").trim());
         new CreateCategoryAsyncTask().execute(cat);
     }
 
@@ -279,7 +279,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         public ArrayList<Object> filteredCategories;
         private int staredCategoriesSeparatorIndex=0;
         private int fixedCategoriesSeparatorIndex;
-        private int allCategoriesSeparatorIndex;
+        private int freeCategoriesSeparatorIndex;
         private static final int ITEM_VIEW_TYPE_STARED_CATEGORIES_SEPARATOR = 0;
         private static final int ITEM_VIEW_TYPE_FIXED_CATEGORIES_SEPARATOR = 1;
         private static final int ITEM_VIEW_TYPE_ALL_CATEGORIES_SEPARATOR = 2;
@@ -288,24 +288,24 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         private static final int ITEM_VIEW_TYPE_COUNT = 5; // 1,2,3) Headers  4) separador invisible 5) Full Game 6) userGame
         boolean showsStaredCategories;
         boolean showsFixedCategories;
-        boolean showsAllCategories;
+        boolean showsFreeCategories;
         private static final String staredCategoriesText="Favoritas";
         private static final String fixedCategoriesText="Controladas";
-        private static final String allCategoriesText="Todas";
+        private static final String freeCategoriesText ="Libres";
         private ItemFilter itemFilter= new ItemFilter();
 
-        public CategoryAdapter(Context context,ArrayList<Category> allCategories, ArrayList<Category> staredCategories, ArrayList<Category> fixedCategories)
+        public CategoryAdapter(Context context,ArrayList<Category> freeCategories, ArrayList<Category> staredCategories, ArrayList<Category> fixedCategories)
         {
             this.context=context;
             this.originalCategories= new ArrayList<Object>();
             this.originalCategories.addAll(staredCategories);
             this.originalCategories.addAll(fixedCategories);
-            this.originalCategories.addAll(allCategories);
+            this.originalCategories.addAll(freeCategories);
 
 
             showsStaredCategories = staredCategories.size() > 0;
             showsFixedCategories = fixedCategories.size() > 0;
-            showsAllCategories = allCategories.size() > 0;
+            showsFreeCategories = freeCategories.size() > 0;
 
 
             if (showsStaredCategories)
@@ -314,13 +314,13 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 this.fixedCategoriesSeparatorIndex = 0;
 
             if (showsStaredCategories)
-                this.allCategoriesSeparatorIndex = staredCategories.size() + 2;
+                this.freeCategoriesSeparatorIndex = staredCategories.size() + 2;
             else
-                this.allCategoriesSeparatorIndex = 0;
+                this.freeCategoriesSeparatorIndex = 0;
 
 
             if (showsFixedCategories)
-                this.allCategoriesSeparatorIndex += (fixedCategories.size() + 2);
+                this.freeCategoriesSeparatorIndex += (fixedCategories.size() + 2);
 
 
             if (showsStaredCategories)
@@ -334,12 +334,12 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 this.originalCategories.add(fixedCategoriesSeparatorIndex,fixedCategoriesText);
             }
 
-            if (showsAllCategories) {
+            if (showsFreeCategories) {
 
                 if(showsStaredCategories || showsFixedCategories)
-                    this.originalCategories.add(allCategoriesSeparatorIndex - 1, null);
+                    this.originalCategories.add(freeCategoriesSeparatorIndex - 1, null);
 
-                this.originalCategories.add(allCategoriesSeparatorIndex,allCategoriesText);
+                this.originalCategories.add(freeCategoriesSeparatorIndex, freeCategoriesText);
             }
 
             this.filteredCategories=originalCategories;
@@ -363,7 +363,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     return ITEM_VIEW_TYPE_STARED_CATEGORIES_SEPARATOR;
                 else if (separator.equals(fixedCategoriesText))
                     return ITEM_VIEW_TYPE_FIXED_CATEGORIES_SEPARATOR;
-                else if(separator.equals(allCategoriesText))
+                else if(separator.equals(freeCategoriesText))
                     return ITEM_VIEW_TYPE_ALL_CATEGORIES_SEPARATOR;
 
             }
@@ -437,11 +437,11 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             return convertView;
         }
 
-        private View SetRowAllCategoriesSeparatorViewHolder(View convertView) {
+        private View SetRowFreeCategoriesSeparatorViewHolder(View convertView) {
 
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.list_separator_categories_all, null);
+                convertView = mInflater.inflate(R.layout.list_separator_categories_free, null);
             }
             return convertView;
         }
@@ -463,7 +463,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     convertView = SetRowFixedCategoriesSeparatorViewHolder(convertView);
                     break;
                 case ITEM_VIEW_TYPE_ALL_CATEGORIES_SEPARATOR:
-                    convertView = SetRowAllCategoriesSeparatorViewHolder(convertView);
+                    convertView = SetRowFreeCategoriesSeparatorViewHolder(convertView);
                     break;
                 case ITEM_VIEW_TYPE_CATEGORY:
                     convertView = SetRowCategoryViewHolder(i, convertView);
@@ -630,7 +630,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
                 int staredCategories=0;
                 int fixedCategories=0;
-                int allCategories=0;
                 boolean hasStaredCategories=false;
                 boolean hasFixedCategories=false;
                 boolean hasFreeCategories=false;
@@ -664,7 +663,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                                 if(!hasFreeCategories)
                                     hasFreeCategories=true;
 
-                                allCategories++;
                             }
                         }
                     }
@@ -674,7 +672,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     }
                 }
 
-                if(!hasFreeCategories && showsAllCategories)
+                if(!hasFreeCategories && showsFreeCategories)
                 {
                     nlist.remove(nlist.size()-1);//all
                     nlist.remove(nlist.size()-1);//empty  //because we allways have fixed categories
@@ -713,17 +711,17 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if(hasFreeCategories)
                 {
                     if(hasStaredCategories)
-                        allCategoriesSeparatorIndex=staredCategories+fixedCategories+4;
+                        freeCategoriesSeparatorIndex =staredCategories+fixedCategories+4;
                     else if(hasFixedCategories)
-                        allCategoriesSeparatorIndex=fixedCategories+2;
+                        freeCategoriesSeparatorIndex =fixedCategories+2;
                     else
                     {
                         fixedCategoriesSeparatorIndex=-1;
-                        allCategoriesSeparatorIndex=0;
+                        freeCategoriesSeparatorIndex =0;
                     }
                 }
                 else
-                    allCategoriesSeparatorIndex=-1;
+                    freeCategoriesSeparatorIndex =-1;
 
                 results.values = nlist;
                 results.count = nlist.size();
