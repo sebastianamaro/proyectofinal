@@ -49,19 +49,17 @@ gameSchema.methods.getModes = function () {
         OFFLINE     : 'OFFLINE'
       };
 }
-gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round){
+gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
   if (!round.isClosed()){
     return;
   }
   if (round.isFullyValidated(this)){
     this.changeToWaitingForNextRound();
-    round.calculateScores(this);
-    for (var i = round.lines.length - 1; i >= 0; i--) {
-      var line = round.lines[i];
-      for (var j = line.plays.length - 1; j >= 0; j--) {
-        console.log(line.plays[j]);
-      };
-    };
+    round.calculateScores(this, function(){
+      callback();
+    });
+  } else {
+    callback();
   }
 }
 

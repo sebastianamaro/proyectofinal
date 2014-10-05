@@ -25,13 +25,13 @@ playSchema.methods.setQualification= function (judge,isValid) {
 
 playSchema.methods.setValues = function (newPlay) {
   
-  this.category = newPlay.category;
+  this.category = newPlay.category.toUpperCase();
   this.timeStamp = newPlay.timeStamp;
   
   if(newPlay.word == undefined) {
   	this.word='';
   } else {
-	  this.word = newPlay.word;
+	  this.word = newPlay.word.toUpperCase();
   }
 
   return this;
@@ -70,24 +70,19 @@ playSchema.methods.isValidated = function(playersAmount){
   return this.word == '' || this.validations.length == playersAmount -1;
 }
 
-playSchema.methods.validatePlay = function (category, letter, callback) {
+playSchema.methods.validatePlay = function (category, letter) {
   if (letter == undefined){
-    return callback(false);
+    return false;
   }
-  if (this.word.charAt(0).toUpperCase() !== letter.toUpperCase() ){
-    return callback(false);
+  if (this.word.charAt(0) !== letter ){
+    return false;
   } 
   if (category.isFixed){
-    var play = this;
-    Category.findOne({ 'name': category.name }, function (err, foundCategory){
-      var result= foundCategory.isWordValid(play.word, play.category);
-      console.log("la category isFixed y me da resultado isWordValid "+result);
-      return callback(result);
-    });
+    return  category.isWordValid(this.word, this.category);
   } else {
     var upVotes = this.validations.filter(function (val) {return val.isValid; }).length;
     var downVotes = this.validations.filter(function (val) {return !val.isValid; }).length;
-    return callback(upVotes >= downVotes);
+    return upVotes >= downVotes;
   }
 }
 

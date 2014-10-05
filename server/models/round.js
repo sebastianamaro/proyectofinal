@@ -89,18 +89,16 @@ roundSchema.methods.createScoresMap = function (categories){
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
       var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
-      var round = this;
-      round.addToScoresMap(scoresMap, play, iLine, iPlay); 
-      //ACA HACE EL BARDO
-      /*play.validatePlay(category, this.letter, function(result){
-        if (result){
-          console.log('agrego al scoresMap '+play);
-          round.addToScoresMap(scoresMap, play, iLine, iPlay); 
-        } else {
-          console.log('no agrego al scoresMap y seteo invalid'+play);
-          play.setInvalidResult();
-        }
-      })*/
+      this.addToScoresMap(scoresMap, play, iLine, iPlay); 
+      var result = play.validatePlay(category, this.letter);
+      if (result){
+        console.log('agrego al scoresMap '+play);
+        this.addToScoresMap(scoresMap, play, iLine, iPlay); 
+      } else {
+        console.log('no agrego al scoresMap y seteo invalid'+play);
+        play.setInvalidResult();
+      }
+      
     };
   };
   return scoresMap;
@@ -149,10 +147,15 @@ roundSchema.methods.isClosed = function () {
   return this.status == this.getStatus().CLOSED;
 }
 
-roundSchema.methods.calculateScores = function (game){
-  var scoresMap = this.createScoresMap(game.categories);
-  this.calculateAndSetPartialScores(scoresMap);
-  this.calculateAndSetTotalScores();
+roundSchema.methods.calculateScores = function (game, callback){
+  var round = this;
+  Category.find({ 'name': { $in : game.categories } }, function (err, categories){
+    var scoresMap = round.createScoresMap(categories);
+    round.calculateAndSetPartialScores(scoresMap);
+    round.calculateAndSetTotalScores();
+    return callback();
+  });
+
 }
 
 roundSchema.methods.calculateAndSetTotalScores = function (){
@@ -173,7 +176,6 @@ roundSchema.methods.calculateAndSetPartialScores = function (scoresMap){
     if (Object.keys(words).length == 1){ //only one word was set for this category, means it's repeated or only
       var theWord = Object.keys(words)[0]; 
       var dataForPlays = words[theWord]; //array of objects that have iLine and iPlay
-      
       if (dataForPlays.length == 1){ //only one player chose this word, it's only
         var playToScore = this.getPlay(dataForPlays, 0);
         playToScore.setOnlyResult();
