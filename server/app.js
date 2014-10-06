@@ -41,7 +41,6 @@ app.delete('/category/:id/:word?reject', removeReportedWordFromCategory);
 app.delete('/category/:id/:word', removeAcceptedWordFromCategory); 
 app.delete('/category/:id', removeCategory); 
 app.post('/category', createCategory); 
-app.get('/test', test); 
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
