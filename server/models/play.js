@@ -101,7 +101,7 @@ playSchema.methods.asSummarized = function (fbId,category) {
           'word': this.word,
           'category': category.name,
           'isFixed': category.isFixed,
-          'validated': validated,
+          'validated': false,
           'isValid': isValid
           };
 }

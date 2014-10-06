@@ -14,19 +14,20 @@ module.exports = function(app) {
       var round = game.getLastRound();
       
       round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
-      game.moveToWaitingForNextRoundIfPossible(round);
-      game.save(function(err) {
-        if(!err) {
-          console.log('Qualification set ');
-          res.send('Qualification set', 200);   
-        } else {
-          console.log('ERROR: ' + err);
-          res.send('ERROR: ' + err,500);   
-        }
+      game.moveToWaitingForNextRoundIfPossible(round, function(){
+
+        game.save(function(err) {
+          if(!err) {
+            console.log('Qualification set ');
+            res.send('Qualification set', 200);   
+          } else {
+            console.log('ERROR: ' + err);
+            res.send('ERROR: ' + err,500);   
+          }
+        });
       });
     })
   }
-
   getRound = function(req, res) {
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id, status: { $ne: statusRequired } }, function (err, game){
@@ -77,14 +78,6 @@ module.exports = function(app) {
       res.send('Round started', 200);
     });
   }
-  test= function(req,res){
-    Game.findOne({ 'gameId': 1}, function (err, game){
-      var currentRound = game.getRound(1);
-      var linesCount = currentRound.lines.filter(function (line) { return line.plays.length > 0;}).length;
-      console.log("linesCount: " +linesCount);
-        });
-    
-  }
   finishRound = function(req, res) {
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
@@ -112,20 +105,29 @@ module.exports = function(app) {
             console.log(currentRound.status+" is the round status");
             if (game.getCategoriesType().FREE == game.categoriesType){
               game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
-              game.moveToWaitingForNextRoundIfPossible(currentRound); // solo sirve si son todas controladas aunque eligio free
+              game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
+                game.save(function(err) {
+                  if(!err) {
+                    console.log('Finished round');
+                  } else {
+                    console.log('ERROR: ' + err);
+                  }
+                });    
+              }); // solo sirve si son todas controladas aunque eligio free
             } else {
               if (currentRound.status == currentRound.getStatus().CLOSED){
                 game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+                game.save(function(err) {
+                  if(!err) {
+                    console.log('Finished round');
+                  } else {
+                    console.log('ERROR: ' + err);
+                  }
+                });
               }
             } 
 
-            game.save(function(err) {
-              if(!err) {
-                console.log('Finished round');
-              } else {
-                console.log('ERROR: ' + err);
-              }
-            });
+            
           });
           res.send('Round finished', 200);
       });

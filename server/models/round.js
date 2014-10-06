@@ -37,12 +37,12 @@ roundSchema.methods.isFullyValidated = function(game){
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
     if (!line.isFullyValidated(game.categories, game.players.length)){
-      console.log('la line no esta fully validated, piola!'+line);
       return false;
     }
   };
   return true;
 }
+
 
 roundSchema.methods.setQualification = function (judge, category, isValid, lineOwner) {
   console.log(lineOwner+" is the number of the lineOwner and "+judge+" is the judge");
@@ -89,13 +89,10 @@ roundSchema.methods.createScoresMap = function (categories){
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
       var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
-      this.addToScoresMap(scoresMap, play, iLine, iPlay); 
       var result = play.validatePlay(category, this.letter);
       if (result){
-        console.log('agrego al scoresMap '+play);
         this.addToScoresMap(scoresMap, play, iLine, iPlay); 
       } else {
-        console.log('no agrego al scoresMap y seteo invalid'+play);
         play.setInvalidResult();
       }
       
@@ -149,7 +146,11 @@ roundSchema.methods.isClosed = function () {
 
 roundSchema.methods.calculateScores = function (game, callback){
   var round = this;
-  Category.find({ 'name': { $in : game.categories } }, function (err, categories){
+  var categoriesNames = [];
+  for (var i = game.categories.length - 1; i >= 0; i--) {
+    categoriesNames.push(game.categories[i].name);
+  };
+  Category.find({ 'name': { $in : categoriesNames } }, function (err, categories){
     var scoresMap = round.createScoresMap(categories);
     round.calculateAndSetPartialScores(scoresMap);
     round.calculateAndSetTotalScores();
