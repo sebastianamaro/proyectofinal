@@ -224,8 +224,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             layout.addView(imgOk);
 
             ImageView imgNo = new ImageView(this.getApplicationContext());
-            imgOk.setImageResource(R.drawable.qualification_no);
-            imgOk.setOnClickListener(new View.OnClickListener() {
+            imgNo.setImageResource(R.drawable.qualification_no);
+            imgNo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
