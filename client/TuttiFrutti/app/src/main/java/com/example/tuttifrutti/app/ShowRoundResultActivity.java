@@ -207,7 +207,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         if (!playScoreSummary.isFixed() && !playScoreSummary.isValidated() && !myFbId.equals(fbId) && !playScoreSummary.getWord().isEmpty()) {
             //aca primero preguntar si es libre Y si NO la mande ya Y si no es la mia Y si no esta vacia
             ImageView imgOk = new ImageView(this.getApplicationContext());
-            imgOk.setImageResource(R.drawable.icon_star);
+            imgOk.setImageResource(R.drawable.qualification_ok);
             imgOk.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -222,6 +222,23 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             });
 
             layout.addView(imgOk);
+
+            ImageView imgNo = new ImageView(this.getApplicationContext());
+            imgOk.setImageResource(R.drawable.qualification_no);
+            imgOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        new SetQualificationAsyncTask(false, playScoreSummary.getCategory(), fbId).execute();
+                    }catch (Exception ex)
+                    {
+                        Log.e("LALA", ex.getMessage());
+                    }
+
+                }
+            });
+
+            layout.addView(imgNo);
         }
 
 
