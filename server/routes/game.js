@@ -5,7 +5,7 @@ module.exports = function(app) {
   var Player = require('../models/player.js');
   var Play = require('../models/play.js');
 
-   setQualification = function(req,res){
+  setQualification = function(req,res){
     var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
     Game.findOne({ 'gameId': req.params.id, status: statusRequired }, function (err, game){
       if (err) return res.send(err, 500);

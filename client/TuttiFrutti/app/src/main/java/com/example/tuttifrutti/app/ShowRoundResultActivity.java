@@ -205,14 +205,31 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         String myFbId = FacebookHelper.getUserId();
 
         if (!playScoreSummary.isFixed() && !playScoreSummary.isValidated() && !myFbId.equals(fbId) && !playScoreSummary.getWord().isEmpty()) {
-            //aca primero preguntar si es libre Y si NO la mande ya Y si no es la mia Y si no esta vacia
-            ImageView imgOk = new ImageView(this.getApplicationContext());
+            final ImageView imgOk = new ImageView(this.getApplicationContext());
             imgOk.setImageResource(R.drawable.qualification_ok);
+
+            final ImageView imgNo = new ImageView(this.getApplicationContext());
+            imgNo.setImageResource(R.drawable.qualification_no);
+            imgNo.setPadding(10, 40, 33, 26);
+
             imgOk.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
-                        new SetQualificationAsyncTask(true, playScoreSummary.getCategory(), fbId).execute();
+                        new SetQualificationAsyncTask(true, playScoreSummary.getCategory(), fbId, view, imgNo).execute();
+                    }catch (Exception ex)
+                    {
+                        Log.e("LALA", ex.getMessage());
+                    }
+
+                }
+            });
+
+            imgNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        new SetQualificationAsyncTask(false, playScoreSummary.getCategory(), fbId, imgOk, view).execute();
                     }catch (Exception ex)
                     {
                         Log.e("LALA", ex.getMessage());
@@ -222,22 +239,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             });
 
             layout.addView(imgOk);
-
-            ImageView imgNo = new ImageView(this.getApplicationContext());
-            imgNo.setImageResource(R.drawable.qualification_no);
-            imgNo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    try {
-                        new SetQualificationAsyncTask(false, playScoreSummary.getCategory(), fbId).execute();
-                    }catch (Exception ex)
-                    {
-                        Log.e("LALA", ex.getMessage());
-                    }
-
-                }
-            });
-
             layout.addView(imgNo);
         }
 
@@ -275,15 +276,23 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         boolean isValid;
         String category;
         String judgedPlayer;
+        View imgYes;
+        View imgNo;
 
-        public SetQualificationAsyncTask(boolean isValid, String category, String judgedPlayer)
+        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
+
+        public SetQualificationAsyncTask(boolean isValid, String category, String judgedPlayer, View imgYes, View imgNo)
         {
             this.isValid = isValid;
             this.category = category;
             this.judgedPlayer = judgedPlayer;
+            this.imgNo = imgNo;
+            this.imgYes = imgYes;
         }
 
         protected void onPreExecute(){
+            Dialog.setMessage("Enviando calificación...");
+            Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -295,7 +304,9 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            //aca ocultar las imagenes
+            this.imgYes.setVisibility(View.GONE);
+            this.imgNo.setVisibility(View.GONE);
+            Dialog.dismiss();
         }
     }
 
