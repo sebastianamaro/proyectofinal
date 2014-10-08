@@ -12,7 +12,7 @@ module.exports = function(app) {
       if (!game) return res.send('Game not found', 404);
       
       var playingRound = game.getPlayingRound();
-      
+    
       if (!playingRound) return res.send('No playing round', 404);
       
       var roundWithCategories = new FullRound();
@@ -218,6 +218,7 @@ module.exports = function(app) {
     Player.findOne({ 'fbId': req.params.id }, function (err, player){
       if (err) return res.send(err, 500);
       if (!player) return res.send('Player not found', 404);     
+
       res.send(player.getGames(), 200); //add error manipulation
     });
   } 

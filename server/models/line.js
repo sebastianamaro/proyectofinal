@@ -7,7 +7,7 @@ var Player = require('./player.js');
 var Game = require('./game.js');
 
 var lineSchema = new Schema({
-  player:   [ Player.schema ],
+  player:  { fbId:{ type: String }, name:{ type: String } },
   plays:   [ Play.schema ],
   score: { type: Number },
   startTimestamp: { type: Date },
@@ -16,7 +16,7 @@ var lineSchema = new Schema({
 
 lineSchema.methods.setValues = function setValues(line, foundPlayer) {
   var thisLine = this;
-  thisLine.player.push(foundPlayer);
+  thisLine.player = { fbId: foundPlayer.fbId, name: foundPlayer.name };
   thisLine.startTimestamp = line.startTimestamp;
   thisLine.finishTimestamp = line.finishTimestamp;
   thisLine.addPlays(line.plays);

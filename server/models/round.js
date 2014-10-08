@@ -19,7 +19,7 @@ roundSchema.methods.start = function start(letter) {
 }
 
 roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
-  var existingLine = this.lines.filter(function (line) {return line.player[0].fbId == newLine.player.fbId; }).pop();
+  var existingLine = this.lines.filter(function (line) {return line.player.fbId == newLine.player.fbId; }).pop();
   
   if (existingLine===undefined){
     var myLine = new Line();
@@ -35,7 +35,7 @@ roundSchema.methods.isPlaying = function isPlaying() {
 roundSchema.methods.getPlayersWhoHavePlayed = function getPlayersWhoHavePlayed() {
   var players=[];
   for (var i = this.lines.length - 1; i >= 0; i--) {
-     players.push(this.lines[i].player[0]);
+     players.push(this.lines[i].player);
   };
 
   return players;
@@ -49,14 +49,14 @@ roundSchema.methods.checkAllPlayersFinished = function checkAllPlayersFinished(g
 
 roundSchema.methods.hasLineOfPlayer = function hasLineOfPlayer(playerFbId){
   var existingLine = this.lines.filter(function (line) {
-    return line.player[0].fbId == playerFbId; 
+    return line.player.fbId == playerFbId; 
   }).pop();  
   return existingLine !== undefined;
 }
 
 roundSchema.methods.hasPlayerSentHisLine = function hasPlayerSentHisLine(player){
   var existingLine = this.lines.filter(function (line) {
-    return line.player[0].fbId == player.fbId && line.plays.length>0; 
+    return line.player.fbId == player.fbId && line.plays.length>0; 
   }).pop();  
   return existingLine !== undefined;
 }
@@ -99,7 +99,7 @@ roundSchema.methods.setLateResults = function setLateResults(){
       iLine = i;
     }
   };
-  console.log("Best time is "+bestTime+" seconds for line of player "+bestLine.player.getName());
+  console.log("Best time is "+bestTime+" seconds for line of player "+bestLine.player.name);
   for (var i = this.lines.length - 1; i >= 0; i--) {
     if (iLine !== i){
       var line = this.lines[i];
@@ -169,7 +169,7 @@ roundSchema.methods.addToScoresMap = function addToScoresMap(scoresMap, play, iL
 
 roundSchema.methods.setNotificationSentForPlayer = function setNotificationSentForPlayer(player){
   var line = new Line();
-  line.player.push(player);
+  line.player = { fbId: player.fbId, name: player.name };
   this.addLine(line);
 }
 
@@ -180,7 +180,7 @@ roundSchema.methods.getSummarizedScoresForPlayers = function getSummarizedScores
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var lineForPlayer = this.lines.filter(function (line) 
-      {return line.player[0].fbId == aPlayer.fbId; }).pop();
+      {return line.player.fbId == aPlayer.fbId; }).pop();
     
     var unScore = { 'score': lineForPlayer.score, 'best' : false };
     scores.push(unScore);
@@ -202,15 +202,18 @@ roundSchema.methods.getScores = function getScores(players, showScores){
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var aPlayerFbId = aPlayer.fbId;
+    console.log('this.lines ' + this.lines);
     var lineForPlayer = this.lines.filter(function (line) 
       {
-        return line.player[0].fbId == aPlayerFbId; 
+        console.log('line.player.fbId ' + line.player.fbId);
+        console.log('aPlayerFbId ' + aPlayerFbId);
+        return line.player.fbId == aPlayerFbId; 
       }).pop();
 
     if (showScores && lineForPlayer.score > bestLineScore){
       bestLineScore = lineForPlayer.score;
     } 
-    scores.push({ 'player' : lineForPlayer.player[0],
+    scores.push({ 'player' : lineForPlayer.player,
                   'scoreInfo' : { 'score' : lineForPlayer.score,
                               'best'  : false},
                   'plays' : lineForPlayer.getSummarizedPlays() });
