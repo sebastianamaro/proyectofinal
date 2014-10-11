@@ -79,6 +79,7 @@ module.exports = function(app) {
     });
   }
   finishRound = function(req, res) {
+    console.log('finishing round');
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       var reqRound = req.body;
@@ -91,6 +92,7 @@ module.exports = function(app) {
       if (!currentRound) return res.send('Round not found', 404);
 
       if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
+        console.log('player: ' +reqRound.line.player+' has already sent his line.')
         return res.send('Added line to round', 200);
       }; 
       console.log("The player who stopped is "+reqRound.line.player.fbId);
@@ -105,29 +107,21 @@ module.exports = function(app) {
             console.log(currentRound.status+" is the round status");
             if (game.getCategoriesType().FREE == game.categoriesType){
               game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
-              game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
-                game.save(function(err) {
-                  if(!err) {
-                    console.log('Finished round');
-                  } else {
-                    console.log('ERROR: ' + err);
-                  }
-                });    
-              }); // solo sirve si son todas controladas aunque eligio free
             } else {
               if (currentRound.status == currentRound.getStatus().CLOSED){
                 game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-                game.save(function(err) {
-                  if(!err) {
-                    console.log('Finished round');
-                  } else {
-                    console.log('ERROR: ' + err);
-                  }
-                });
               }
             } 
-
             
+            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
+              game.save(function(err) {
+                if(!err) {
+                  console.log('Finished round');
+                } else {
+                  console.log('ERROR: ' + err);
+                }
+              });    
+            }); // solo sirve si son todas controladas aunque eligio free
           });
           res.send('Round finished', 200);
       });

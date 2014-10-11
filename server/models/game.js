@@ -51,15 +51,16 @@ gameSchema.methods.getModes = function () {
 }
 gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
   if (!round.isClosed()){
-    return;
-  }
-  if (round.isFullyValidated(this)){
-    this.changeToWaitingForNextRound();
-    round.calculateScores(this, function(){
-      callback();
-    });
+     callback();
   } else {
-    callback();
+    if (round.isFullyValidated(this)){
+      this.changeToWaitingForNextRound();
+      round.calculateScores(this, function(){
+        callback();
+      });
+    } else {
+      callback();
+    }
   }
 }
 

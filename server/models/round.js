@@ -92,10 +92,7 @@ roundSchema.methods.createScoresMap = function (categories){
       var result = play.validatePlay(category, this.letter);
       if (result){
         this.addToScoresMap(scoresMap, play, iLine, iPlay); 
-      } else {
-        play.setInvalidResult();
-      }
-      
+      } 
     };
   };
   return scoresMap;
@@ -108,12 +105,8 @@ roundSchema.methods.finishIfAllPlayersFinished = function (game) {
   }
 }
 
-roundSchema.methods.finish = function () {
+roundSchema.methods.finish = function (game) {
   this.status = this.getStatus().CLOSED;
-  this.setLateResults();
-  var scoresMap = this.createScoresMap(game);
-  this.calculateAndSetPartialScores(scoresMap);
-  this.calculateAndSetTotalScores();
 }
 
 roundSchema.methods.setLateResults = function setLateResults(){
@@ -145,6 +138,7 @@ roundSchema.methods.isClosed = function () {
 }
 
 roundSchema.methods.calculateScores = function (game, callback){
+  this.setLateResults();
   var round = this;
   var categoriesNames = [];
   for (var i = game.categories.length - 1; i >= 0; i--) {

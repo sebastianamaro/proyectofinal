@@ -71,19 +71,30 @@ playSchema.methods.isValidated = function(playersAmount){
 }
 
 playSchema.methods.validatePlay = function (category, letter) {
+  if(this.hasLateResult()){
+    return false;
+  }
+  var valid = true;
   if (letter == undefined){
-    return false;
-  }
-  if (this.word.charAt(0) !== letter ){
-    return false;
-  } 
-  if (category.isFixed){
-    return  category.isWordValid(this.word, this.category);
+    valid = false;
   } else {
-    var upVotes = this.validations.filter(function (val) {return val.isValid; }).length;
-    var downVotes = this.validations.filter(function (val) {return !val.isValid; }).length;
-    return upVotes >= downVotes;
+    if (this.word.charAt(0) !== letter ){
+      valid = false;
+    } else {
+      if (category.isFixed){
+        valid = category.isWordValid(this.word, this.category);
+      } else {
+        var upVotes = this.validations.filter(function (val) {return val.isValid; }).length;
+        var downVotes = this.validations.filter(function (val) {return !val.isValid; }).length;
+        valid = upVotes >= downVotes;
+      }
+    }
   }
+  if (!valid){
+    this.setInvalidResult();
+  }
+  return valid;
+
 }
 
 playSchema.methods.asSummarized = function (fbId,category) {
