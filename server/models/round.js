@@ -46,7 +46,7 @@ roundSchema.methods.isFullyValidated = function(game){
 
 roundSchema.methods.setQualification = function (judge, category, isValid, lineOwner) {
   console.log(lineOwner+" is the number of the lineOwner and "+judge+" is the judge");
-  var lineToQualify = this.lines.filter(function (line) {return line.player[0].fbId == lineOwner; }).pop();
+  var lineToQualify = this.lines.filter(function (line) {return line.player.fbId == lineOwner; }).pop();
   lineToQualify.setQualification(judge, category, isValid);
 }
 roundSchema.methods.isPlaying = function () {
