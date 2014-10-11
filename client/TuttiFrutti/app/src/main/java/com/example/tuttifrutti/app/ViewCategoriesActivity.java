@@ -466,7 +466,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         @Override
         public View getView(final int i, View convertView, ViewGroup viewGroup) {
 
-
             final int type = getItemViewType(i);
 
             switch (type) {
@@ -494,7 +493,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
 
         private View SetRowCategoryViewHolder(final int position, View convertView) {
-
             View.OnClickListener starCategoryListener = new View.OnClickListener() {
                 Object s = filteredCategories.get(position);
                 @Override

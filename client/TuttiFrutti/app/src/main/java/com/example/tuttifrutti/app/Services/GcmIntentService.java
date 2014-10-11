@@ -65,8 +65,6 @@ public class GcmIntentService extends IntentService {
         }
 
         GcmBroadcastReceiver.completeWakefulIntent(intent);
-
-
     }
 
     private void mostrarNotification(String msg)

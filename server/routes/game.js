@@ -2,91 +2,121 @@ module.exports = function(app) {
  
   var Game = require('../models/game.js');
   var Round = require('../models/round.js');
-  var FullRound = require('../models/fullRound.js');
   var Player = require('../models/player.js');
   var Play = require('../models/play.js');
 
+  setQualification = function(req,res){
+    var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
+    Game.findOne({ 'gameId': req.params.id, status: statusRequired }, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+      
+      var round = game.getLastRound();
+      
+      round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
+      game.moveToWaitingForNextRoundIfPossible(round, function(){
+
+        game.save(function(err) {
+          if(!err) {
+            console.log('Qualification set ');
+            res.send('Qualification set', 200);   
+          } else {
+            console.log('ERROR: ' + err);
+            res.send('ERROR: ' + err,500);   
+          }
+        });
+      });
+    })
+  }
   getRound = function(req, res) {
-    Game.findOne({ 'gameId': req.params.id, status: { $ne: 'WAITINGFORPLAYERS' } }, function (err, game){
+    var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
+    Game.findOne({ 'gameId': req.params.id, status: { $ne: statusRequired } }, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
       
       var playingRound = game.getPlayingRound();
-    
       if (!playingRound) return res.send('No playing round', 404);
-      
-      var roundWithCategories = new FullRound();
-      roundWithCategories.fillData(game, playingRound);
+      var roundWithCategories = playingRound.asSummarized(game);
       res.send(roundWithCategories);      
     })
   }
   alterRound = function(req, res) {
     var statusRequired = req.body.status;
-    if (statusRequired == 'OPENED')
+    if (statusRequired == new Round().getStatus().OPENED)
       startRound(req,res);
-    else if (statusRequired == 'CLOSED')
+    else if (statusRequired == new Round().getStatus().CLOSED)
       finishRound(req,res);
     else
       res.send('Incomplete request',500);      
   }
   startRound = function(req, res) {
-        Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
-          if (err) return res.send(err, 500);
-          if (!game) return res.send('Game not found', 404);
-          
-          var playingRound = game.getPlayingRound();
-          var reqRound = req.body;
+    var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
+    Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+      
+      var playingRound = game.getPlayingRound();
+      var reqRound = req.body;
 
-          if (playingRound){
-              console.log('Return existing round with letter '+playingRound.letter);
+      if (playingRound){
+          console.log('Return existing round with letter '+playingRound.letter);
+      } else {
+        var assignedLetter = game.getNextLetter();
+        var round = new Round();
+        round.start(assignedLetter);
+        game.addRound(round);
+        game.status = game.getStatus().PLAYING;
+        game.save(function(err) {
+          if(!err) {
+            console.log('Created round with letter '+assignedLetter);
           } else {
-            var assignedLetter = game.getNextLetter();
-            var round = new Round();
-            round.start(assignedLetter);
-            game.addRound(round);
-            game.status = 'PLAYING';
-            game.save(function(err) {
-              if(!err) {
-                console.log('Created round with letter '+assignedLetter);
-              } else {
-                console.log('ERROR: ' + err);
-              }
-            });
-        }
+            console.log('ERROR: ' + err);
+          }
+        });
+      }
 
-        res.send('Round started', 200);
+      res.send('Round started', 200);
     });
   }
   finishRound = function(req, res) {
-        Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
-          var reqRound = req.body;
+    var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
+    Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
+      var reqRound = req.body;
 
-          if (err) return res.send(err, 500);
-          if (!game) return res.send('Game not found', 404);
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);
+      
+      var currentRound = game.getRound(reqRound.roundId);
+
+      if (!currentRound) return res.send('Round not found', 404);
+
+      if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
+        return res.send('Added line to round', 200);
+      }; 
+      console.log("The player who stopped is "+reqRound.line.player.fbId);
+      
+      Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
+            if (err) return res.send(err, 500);
+            if (!foundPlayer) return res.send('Player not found', 404);
           
-          var currentRound = game.getRound(reqRound.roundId);
-
-          if (!currentRound) return res.send('Round not found', 404);
-
-          if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
-            return res.send('Added line to round', 200);
-          }; 
-          console.log("The player who stopped is "+reqRound.line.player.fbId);
-          
-          Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
-                if (err) return res.send(err, 500);
-                if (!foundPlayer) return res.send('Player not found', 404);
-              
-              game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
-                currentRound.addLine(reqRound.line, foundPlayer);
-                
-                if (currentRound.checkAllPlayersFinished(game)){
-                  currentRound.finish(game);
-                  game.status = 'WAITINGFORNEXTROUND';
-                }
-                else
-                  game.status = 'SHOWINGRESULTS';
-
+          game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
+            currentRound.addLine(reqRound.line, foundPlayer);
+            currentRound.finishIfAllPlayersFinished(game);
+            console.log(currentRound.status+" is the round status");
+            if (game.getCategoriesType().FREE == game.categoriesType){
+              game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
+              game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
+                game.save(function(err) {
+                  if(!err) {
+                    console.log('Finished round');
+                  } else {
+                    console.log('ERROR: ' + err);
+                  }
+                });    
+              }); // solo sirve si son todas controladas aunque eligio free
+            } else {
+              if (currentRound.status == currentRound.getStatus().CLOSED){
+                game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
                 game.save(function(err) {
                   if(!err) {
                     console.log('Finished round');
@@ -94,11 +124,15 @@ module.exports = function(app) {
                     console.log('ERROR: ' + err);
                   }
                 });
-              });
-              res.send('Round finished', 200);
-          });
+              }
+            } 
+
             
-        });
+          });
+          res.send('Round finished', 200);
+      });
+        
+    });
   }
   createGame = function(req,res){
     Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
@@ -110,7 +144,7 @@ module.exports = function(app) {
       }
       var game = new Game();
       game.gameId = largerId;
-      game.status = 'WAITINGFORPLAYERS';
+      game.status = game.getStatus().WAITING_FOR_PLAYERS;
       game.setValues(req.body);
       game.save(function(err) {
         if(!err) {
@@ -127,7 +161,8 @@ module.exports = function(app) {
      });
   }
   respondInvitation = function(req, res){
-    Game.findOne({ 'gameId': req.params.id , status: 'WAITINGFORPLAYERS'}, function (err, game){
+    var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
+    Game.findOne({ 'gameId': req.params.id , status: statusRequired}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
             
@@ -154,8 +189,10 @@ module.exports = function(app) {
 
     });
   }
+
   getRoundScores = function(req, res){
-    Game.findOne({ 'gameId': req.params.id , status: { $ne: 'WAITINGFORPLAYERS' }}, function (err, game){
+    var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
+    Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
       
@@ -198,7 +235,7 @@ module.exports = function(app) {
 
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
       
-      var scoresArray=roundToShow.getScores(playersWhoHaveLines, showScores);
+      var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
       
       //roundNumber: para mostrar a que ronda pertenecen los resultados
       //isComplete: para saber si muestra con scores o sin (si es parcial)

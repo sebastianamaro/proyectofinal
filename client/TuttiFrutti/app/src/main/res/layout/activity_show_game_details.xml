@@ -10,14 +10,6 @@
     tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
     android:background="@drawable/background">
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-            <RelativeLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
 
             <Button
                 android:id="@+id/btnPlay"
@@ -167,6 +159,4 @@
             </ListView>
 
             </RelativeLayout>
-    </ScrollView>
 
-</RelativeLayout>

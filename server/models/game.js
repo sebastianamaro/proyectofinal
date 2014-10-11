@@ -20,7 +20,62 @@ var gameSchema = new Schema({
     randomPlayersCount: { type: Number }
 });
 
-gameSchema.methods.getRound = function getRound(roundId) {
+gameSchema.methods.getStatus = function () {
+      return {
+        SHOWING_RESULTS             : 'SHOWINGRESULTS',
+        WAITING_FOR_PLAYERS         : 'WAITINGFORPLAYERS',
+        WAITING_FOR_NEXT_ROUND      : 'WAITINGFORNEXTROUND',
+        ALL_PLAYERS_REJECTED        : 'ALLPLAYERSREJECTED',
+        PLAYING                     : 'PLAYING',
+        WAITING_FOR_QUALIFICATIONS  : 'WAITINGFORQUALIFICATIONS',
+        FINISHED                    : 'FINISHED'
+      };
+}
+gameSchema.methods.getCategoriesType = function () {
+      return {
+        FIXED      : 'FIXED',
+        FREE       : 'FREE'
+      };
+}
+gameSchema.methods.getOpponentsType = function () {
+      return {
+        RANDOM      : 'RANDOM',
+        FRIENDS     : 'FRIENDS'
+      };
+}
+gameSchema.methods.getModes = function () {
+      return {
+        ONLINE      : 'ONLINE',
+        OFFLINE     : 'OFFLINE'
+      };
+}
+gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
+  if (!round.isClosed()){
+    return;
+  }
+  if (round.isFullyValidated(this)){
+    this.changeToWaitingForNextRound();
+    round.calculateScores(this, function(){
+      callback();
+    });
+  } else {
+    callback();
+  }
+}
+
+gameSchema.methods.changeToStatusShowingResults = function () {
+  this.status = this.getStatus().SHOWING_RESULTS;
+}
+gameSchema.methods.changeToWaitingForNextRound = function () {
+  this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
+}
+gameSchema.methods.moveToShowingResults = function () {
+  this.getLastRound().moveToShowingResults(this);
+}
+gameSchema.methods.isFixedCategoriesType = function () {
+  return this.categoriesType == this.getCategoriesType().FIXED;
+}
+gameSchema.methods.getRound = function (roundId) {
 	var round = this.rounds.filter(function (round) {
               return round.roundId == roundId;
             }).pop();
@@ -36,7 +91,7 @@ gameSchema.methods.getLastRound = function getPlayingRound(){
 }
 
 gameSchema.methods.hasStarted = function hasStarted(){
-  return this.status != 'WAITINGFORPLAYERS';
+  return this.status != this.getStatus().WAITING_FOR_PLAYERS;
 }
 
 gameSchema.methods.getNextLetter = function getNextLetter(){
@@ -117,7 +172,7 @@ gameSchema.methods.addPlayer = function addPlayer(player){
 }
 
 gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPlayer, callback){
-  if (this.mode == 'ONLINE')
+  if (this.mode == this.getModes().ONLINE)
   {
     for (var i = this.players.length - 1; i >= 0; i--) {
       var player = this.players[i];
@@ -167,6 +222,16 @@ gameSchema.methods.getPlayerNames = function(){
 
   return playerNames;
 }
+gameSchema.methods.getOtherPlayersFirstNames = function(){
+  var playersNameArray = [];
+  for (var j = this.players.length - 1; j >= 0; j--) {
+      if(this.players[j] != this.creator[0]){
+        playersNameArray.push(this.players[j].getFirstName()); //Only first name
+      }
+  };
+
+  return playersNameArray;
+}
 gameSchema.methods.getRoundResults = function(){
   var roundResults = [];
   for (var i = this.rounds.length - 1; i >= 0; i--) {
@@ -214,8 +279,7 @@ gameSchema.methods.sendInvitations = function(callback){
   
   var selectedFriendsFbsId = [];
 
-
-  if (this.opponentsType !== 'RANDOM'){
+  if (this.opponentsType == this.getOpponentsType().FRIENDS){
     
     for (var i = this.selectedFriends.length - 1; i >= 0; i--) {
       selectedFriendsFbsId.push(this.selectedFriends[i].fbId);
@@ -268,15 +332,15 @@ gameSchema.methods.acceptInvitation = function(request, callback){
     }
 
     var invitedPlayersCount;
-    if (game.opponentsType == 'RANDOM')
+    if (game.opponentsType == game.getOpponentsType().RANDOM)
         invitedPlayersCount = game.randomPlayersCount + 1; //mas el creador
     else
         invitedPlayersCount = game.selectedFriends.length + 1; //mas el creador
       
     //+1 porque todavia no lo guarde (porque necesito guardarlo sin las invitaciones y con el game)
     if (invitedPlayersCount == game.players.length + 1){
-      game.status = "WAITINGFORNEXTROUND";  
-      if (game.opponentsType == 'RANDOM')
+      game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
+      if (game.opponentsType == game.getOpponentsType().RANDOM)
         game.removeAllInvitations(player.fbId);        
     }
 
@@ -324,7 +388,7 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
     });
 
-    if (game.opponentsType !== 'RANDOM'){
+    if (game.opponentsType == game.getOpponentsType().FRIENDS){
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
         var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
         if (index > -1) 
@@ -333,9 +397,9 @@ gameSchema.methods.rejectInvitation = function(request, callback){
         if (game.selectedFriends.length + 1 == game.players.length)
         {
           if (game.players.length == 1)
-            game.status = "ALLPLAYERSREJECTED";
+            game.status = game.getStatus().ALL_PLAYERS_REJECTED;
           else
-            game.status = "WAITINGFORNEXTROUND";  
+            game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
         }
 
     }
