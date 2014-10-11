@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.facebook.FacebookException;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
@@ -39,7 +40,13 @@ public class ChooseFriendsActivity extends FragmentActivity {
         setTitle("");
         setContentView(R.layout.activity_choose_friends);
 
-        //getFriends();
+
+        if (!FacebookHelper.isSessionOpened())
+        {
+            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
+            startActivity(i);
+        }
+
 
         Intent intent = getIntent();
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
