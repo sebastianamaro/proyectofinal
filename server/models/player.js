@@ -93,7 +93,7 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
       player.setNotificationSentForGame(gameId);
     }
   });*/
-  player.setNotificationSentForGame(gameId);
+  this.setNotificationSentForGame(gameId);
 }
 
 playerSchema.methods.setNotificationSentForGame = function(gameId){
