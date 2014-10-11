@@ -60,6 +60,7 @@ playerSchema.methods.getGames = function () {
     });
     games.push(gameToReturn);
   };
+  console.log(games);
   return games;
 }
 playerSchema.methods.getName = function () {
