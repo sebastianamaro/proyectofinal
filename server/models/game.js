@@ -126,7 +126,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.categories = [];
 
   for (var i = game.selectedCategories.length - 1; i >= 0; i--) {
-    var category= {'id': game.selectedCategories[i].id , 'name': game.selectedCategories[i].name, 'isFixed': game.selectedCategories[i].isFixed};
+    var category= {'id': game.selectedCategories[i].id , 'name': game.selectedCategories[i].name.toUpperCase(), 'isFixed': game.selectedCategories[i].isFixed};
     this.categories.push(category);
   };
 
@@ -164,7 +164,7 @@ gameSchema.methods.addPlayer = function addPlayer(player){
     foundPlayer.addGame(thisGame.gameId);
     foundPlayer.save(function(err) {
           if(!err) {
-            console.log('Inserted new game to player with name '+foundPlayer.getName());
+            console.log('Added game to player with name '+foundPlayer.getName());
           } else {
             console.log('ERROR: ' + err);
           }
@@ -178,14 +178,18 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
     for (var i = this.players.length - 1; i >= 0; i--) {
       var player = this.players[i];
       if (player.fbId == fbIdStopPlayer){
-        console.log("Wont send notification to stop player: "+player.fbId);
+        console.log("Wont send notification to stop player: "+player.name);
         continue;
       }
-      if (round.hasLineOfPlayer(player.fbId)) { // if it has a line of the player it means he has already sent me his line OR i have sent him notification
-        console.log("Wont send notification to a player that has already been notified or sent line "+player.fbId);
+      if (round.hasSentNotificationToPlayer(player.fbId)) {
+        console.log("Wont send notification to a player that has already been notified "+player.name);
         continue;
       }
-      console.log("Will send to notify this player: "+player.fbId);
+      if (round.hasPlayerSentHisLine(player.fbId)) {
+        console.log("Wont send notification to a player that has already sent line "+player.name);
+        continue;
+      }
+      console.log("Will send to notify this player: "+player.name);
 
       var gameId =this.gameId;
       var notification = new Notification();
@@ -205,13 +209,12 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
             console.log("Error when sendNotifications");
             return callback("Error when sendNotifications");
           } else {
-            round.setNotificationSentForPlayer(player);
+            round.setNotificationSentForPlayer(foundPlayer, callback);
           }
         });
     });
     }
   }
-
   return callback();
 }
 gameSchema.methods.getPlayerNames = function(){

@@ -71,7 +71,7 @@ module.exports = function(app) {
                 
                 //hay ronda abierta?
                 if (currentRound!=undefined) {              
-                  playerHasPlayed = currentRound.hasPlayerSentHisLine(player);
+                  playerHasPlayed = currentRound.hasPlayerSentHisLine(player.fbId);
 
                   //la que esta abierta, es la primera?
                   if (game.rounds.length == 1){

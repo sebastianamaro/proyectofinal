@@ -12,7 +12,7 @@ var playSchema = new Schema({
   validations: [{ fbId:{ type: String }, isValid:{ type: Boolean }}]
 }, { _id : false });
 
-playSchema.methods.hasLateResult = function hasLateResult(){
+playSchema.methods.hasLateResult = function (){
   return this.result == 'LATE';
 }
 
