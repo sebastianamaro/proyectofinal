@@ -50,27 +50,29 @@ gameSchema.methods.getModes = function () {
         OFFLINE     : 'OFFLINE'
       };
 }
-gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
+gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
   if (!round.isClosed()){
-    console.log('not closed!');
-     callback();
-  } else {
-    if (round.isFullyValidated(this)){
-      console.log('fully validated');
-      console.log('this.roundsCount '+ this.roundsCount);
-      console.log('round.roundId '+ round.roundId);
-       if(round.roundId == this.roundsCount)
-         this.changeToStatusFinished();
-       else 
-         this.changeToWaitingForNextRound();
-
+     return callback();
+  } 
+  if (round.isFullyValidated(this)){
+       
       round.calculateScores(this, function(){
+      if (this.mode ==  this.getModes().ONLINE){
+        this.status = this.getStatus().SHOWING_RESULTS;
+
         callback();
-      });
-    } else {
-      callback();
-    }
-  }
+        setTimeout(this.endShowingResults, 1000*40);//40 seconds
+      }
+      this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
+
+      if(round.roundId == this.roundsCount)
+         this.changeToStatusFinished();
+      
+      return callback();
+    });
+  } 
+  this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
+  callback();
 }
 
 gameSchema.methods.changeToStatusFinished = function () {
@@ -80,11 +82,21 @@ gameSchema.methods.changeToStatusFinished = function () {
 gameSchema.methods.changeToStatusShowingResults = function () {
   this.status = this.getStatus().SHOWING_RESULTS;
 }
-gameSchema.methods.changeToWaitingForNextRound = function () {
+gameSchema.methods.endShowingResults = function () {
+  var round = this.getLastRound();
   this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
+  this.sendNotificationsRoundStarted(function(){
+    this.save(function(err) {
+      if(err) {
+        console.log('ERROR: ' + err);
+      } else {
+        console.log('Sent invitations round started and saved game.');
+      }
+    });
+  });
 }
-gameSchema.methods.moveToShowingResults = function () {
-  this.getLastRound().moveToShowingResults(this);
+gameSchema.methods.sendNotificationsRoundStarted = function (callback) {
+  callback(); //dummy until implemented on client side 
 }
 gameSchema.methods.isFixedCategoriesType = function () {
   return this.categoriesType == this.getCategoriesType().FIXED;
@@ -96,20 +108,20 @@ gameSchema.methods.getRound = function (roundId) {
 	return round;
  }
 
-gameSchema.methods.getPlayingRound = function getPlayingRound(){
+gameSchema.methods.getPlayingRound = function (){
   return this.rounds.filter(function (round) {return round.isPlaying(); }).pop();
 }
 
-gameSchema.methods.getLastRound = function getPlayingRound(){
+gameSchema.methods.getLastRound = function (){
   return this.rounds[this.rounds.length-1];
 }
 
-gameSchema.methods.hasStarted = function hasStarted(){
+gameSchema.methods.hasStarted = function (){
   return this.status != this.getStatus().WAITING_FOR_PLAYERS;
 }
 
-gameSchema.methods.getNextLetter = function getNextLetter(){
-  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V','Y', 'Z'];
+gameSchema.methods.getNextLetter = function (){
+  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X','Y', 'Z'];
   var usedLetters = [];
 
   this.rounds.reduce(function(previousRound, currentRound, index, array){
@@ -126,12 +138,12 @@ gameSchema.methods.getNextLetter = function getNextLetter(){
   return assignedLetter;
 }
 
-gameSchema.methods.addRound = function addRound(round){
+gameSchema.methods.addRound = function (round){
   round.roundId = this.rounds.length + 1;
   this.rounds.push(round);
 }
 
-gameSchema.methods.setValues = function setValues(game){
+gameSchema.methods.setValues = function (game){
   this.mode = game.mode;
   this.categoriesType = game.categoriesType;
   this.opponentsType = game.opponentsType;
@@ -146,7 +158,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.selectedFriends = game.selectedFriends;
 }
 
-gameSchema.methods.addPlayer = function addPlayer(player){
+gameSchema.methods.addPlayer = function (player){
   var thisGame = this;
 
   Player.findOne({ 'fbId': player.fbId}, function (err, foundPlayer){

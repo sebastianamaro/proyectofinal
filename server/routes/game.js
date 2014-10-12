@@ -14,7 +14,7 @@ module.exports = function(app) {
       var round = game.getLastRound();
       
       round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
-      game.moveToWaitingForNextRoundIfPossible(round, function(){
+      game.moveToNextStatusIfPossible(round, function(){
 
         game.save(function(err) {
           if(!err) {
@@ -110,15 +110,7 @@ module.exports = function(app) {
             currentRound.addLine(reqRound.line, foundPlayer);
             currentRound.finishIfAllPlayersFinished(game);
             console.log(currentRound.status+" is the round status");
-            if (game.getCategoriesType().FREE == game.categoriesType){
-              game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
-            } else {
-              if (currentRound.status == currentRound.getStatus().CLOSED){  
-                   game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-              }
-            } 
-            
-            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){  //VER DE MOVER LO QUE ESTA ARRIBA, ADENTRO DE ESTE METODO
+            game.moveToNextStatusIfPossible(currentRound, function(){
               game.save(function(err) {
                 if(!err) {
                   console.log('game.status '+ game.status);
