@@ -91,7 +91,7 @@ module.exports = function(app) {
 
       if (!currentRound) return res.send('Round not found', 404);
 
-      if (currentRound.hasPlayerSentHisLine(reqRound.line.player)) {
+      if (currentRound.hasPlayerSentHisLine(reqRound.line.player.fbId)) {
         console.log('player: ' +reqRound.line.player+' has already sent his line.')
         return res.send('Added line to round', 200);
       }; 
@@ -206,7 +206,7 @@ module.exports = function(app) {
         canPlayerPlay = true; //la va a crear
         isComplete = true;
       }
-      else if (!roundToShow.hasLineOfPlayer(req.params.fbId))
+      else if (!roundToShow.hasPlayerSentHisLine(req.params.fbId))
       {
         console.log('hay ronda abierta y no jugue');
         //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada

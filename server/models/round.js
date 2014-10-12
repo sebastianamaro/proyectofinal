@@ -10,7 +10,8 @@ var roundSchema = new Schema({
   roundId : { type: Number },
   letter:   { type: String },
   status:   { type: String },  
-  lines: [Line.schema] 
+  lines: [Line.schema], 
+  notifications: [ { type: String } ]
 }, { _id : false });
 
 roundSchema.methods.getStatus = function () {
@@ -25,7 +26,7 @@ roundSchema.methods.start = function (letter) {
   this.status = this.getStatus().OPENED;
 }
 
-roundSchema.methods.addLine = function addLine(newLine, foundPlayer) {
+roundSchema.methods.addLine = function (newLine, foundPlayer) {
   var existingLine = this.lines.filter(function (line) {return line.player.fbId == newLine.player.fbId; }).pop();
   if (existingLine===undefined){
     var myLine = new Line();
@@ -45,7 +46,6 @@ roundSchema.methods.isFullyValidated = function(game){
 
 
 roundSchema.methods.setQualification = function (judge, category, isValid, lineOwner) {
-  console.log(lineOwner+" is the number of the lineOwner and "+judge+" is the judge");
   var lineToQualify = this.lines.filter(function (line) {return line.player.fbId == lineOwner; }).pop();
   lineToQualify.setQualification(judge, category, isValid);
 }
@@ -68,16 +68,9 @@ roundSchema.methods.checkAllPlayersFinished = function (game) {
   return playersCount == linesCount;
 }
 
-roundSchema.methods.hasLineOfPlayer = function (playerFbId){
+roundSchema.methods.hasPlayerSentHisLine = function (fbId){
   var existingLine = this.lines.filter(function (line) {
-    return line.player.fbId == playerFbId; 
-  }).pop();  
-  return existingLine !== undefined;
-}
-
-roundSchema.methods.hasPlayerSentHisLine = function (player){
-  var existingLine = this.lines.filter(function (line) {
-    return line.player.fbId == player.fbId && line.plays.length>0; 
+    return line.player.fbId == fbId && line.plays.length>0; 
   }).pop();  
   return existingLine !== undefined;
 }
@@ -88,7 +81,7 @@ roundSchema.methods.createScoresMap = function (categories){
     var line = this.lines[iLine];
     for (var iPlay = line.plays.length - 1; iPlay >= 0; iPlay--) {
       var play = line.plays[iPlay];
-      var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+      var category = categories.filter(function (cat) {return cat.name.toUpperCase() == play.category.toUpperCase(); }).pop();
       var result = play.validatePlay(category, this.letter);
       if (result){
         this.addToScoresMap(scoresMap, play, iLine, iPlay); 
@@ -100,7 +93,6 @@ roundSchema.methods.createScoresMap = function (categories){
 
 roundSchema.methods.finishIfAllPlayersFinished = function (game) {
   if (this.checkAllPlayersFinished(game)){
-
     this.finish(game);
   }
 }
@@ -109,7 +101,7 @@ roundSchema.methods.finish = function (game) {
   this.status = this.getStatus().CLOSED;
 }
 
-roundSchema.methods.setLateResults = function setLateResults(){
+roundSchema.methods.setLateResults = function (){
   var bestLine;
   var bestTime = Number.MAX_VALUE;
   var iLine = -1;
@@ -211,10 +203,16 @@ roundSchema.methods.addToScoresMap = function (scoresMap, play, iLine, iPlay){
   scoresMap[play.category][play.word].push({'iLine':iLine, 'iPlay':iPlay});
 }
 
-roundSchema.methods.setNotificationSentForPlayer = function (player){
-  var line = new Line();
-  line.player = { fbId: player.fbId, name: player.name };
-  this.addLine(line);
+roundSchema.methods.setNotificationSentForPlayer = function (player, callback){
+  console.log("Guardo notification al player "+player.name);
+  this.notifications.push(player.fbId);
+  callback();
+}
+
+roundSchema.methods.hasSentNotificationToPlayer = function (fbId){
+  var notification = this.notifications.filter(function (notif) 
+      {return notif == fbId; }).pop();
+  return notification !== undefined;
 }
 
 roundSchema.methods.getSummarizedScoresForPlayers = function (players){
@@ -247,11 +245,7 @@ roundSchema.methods.getScores = function (fbId, categories, players, showScores)
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var aPlayerFbId = aPlayer.fbId;
-    console.log('this.lines ' + this.lines);
-    var lineForPlayer = this.lines.filter(function (line) 
-      {
-        console.log('line.player.fbId ' + line.player.fbId);
-        console.log('aPlayerFbId ' + aPlayerFbId);
+    var lineForPlayer = this.lines.filter(function (line) {
         return line.player.fbId == aPlayerFbId; 
       }).pop();
 
@@ -295,7 +289,7 @@ roundSchema.methods.getScores = function (fbId, categories, players, showScores)
 
   return scores;
 }
-roundSchema.methods.asSummarized = function asSummarized(game) {
+roundSchema.methods.asSummarized = function (game) {
   var categories=[];
   for (var i = game.categories.length - 1; i >= 0; i--) {
     categories.push(game.categories[i].name);

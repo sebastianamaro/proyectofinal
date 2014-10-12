@@ -16,7 +16,6 @@ var lineSchema = new Schema({
 
 lineSchema.methods.setQualification = function (judge, category, isValid) {
   var playToQualify = this.plays.filter(function (play) { return play.category == category;}).pop();  
-  console.log("this is the playToQualify "+playToQualify);
   playToQualify.setQualification(judge,isValid);
 }
 lineSchema.methods.setValues = function (line, foundPlayer) {
@@ -27,7 +26,7 @@ lineSchema.methods.setValues = function (line, foundPlayer) {
   thisLine.addPlays(line.plays);
  }
 
-lineSchema.methods.setLateResults = function setLateResults(bestTime) {
+lineSchema.methods.setLateResults = function (bestTime) {
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];
     var startTimestamp = moment(this.startTimestamp);
@@ -49,7 +48,7 @@ lineSchema.methods.addPlays = function (playsArray) {
 lineSchema.methods.isFullyValidated = function (categories, playersAmount) {
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];
-    var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+    var category = categories.filter(function (cat) {return cat.name.toUpperCase() == play.category.toUpperCase(); }).pop();
     if (!category.isFixed){
       if (! play.isValidated(playersAmount)){
         console.log('Category '+category.name+' is not fixed and is not validated');
@@ -79,7 +78,7 @@ lineSchema.methods.getSummarizedPlays = function (fbId,categories){
   var summarizedPlays = [];
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];
-    var category = categories.filter(function (cat) {return cat.name == play.category; }).pop();
+    var category = categories.filter(function (cat) {return cat.name.toUpperCase() == play.category.toUpperCase(); }).pop();
     summarizedPlays.push( play.asSummarized(fbId,category) );
   };
   return summarizedPlays;
