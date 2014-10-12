@@ -204,7 +204,7 @@ module.exports = function(app) {
         showScores = true;
         playersWhoHaveLines = game.players;
         canPlayerPlay = true; //la va a crear
-        isComplete = true;
+        isComplete = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS;
       }
       else if (!roundToShow.hasPlayerSentHisLine(req.params.fbId))
       {
