@@ -16,7 +16,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,6 +72,37 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        switch(keyCode)
+        {
+            case KeyEvent.KEYCODE_BACK:
+                AlertDialog.Builder ab = new AlertDialog.Builder(PlayRoundActivity.this);
+                ab.setMessage("Si cierras la jugada, la misma se enviará vacía! Estas seguro?").setPositiveButton("Si", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+                break;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    EndRoundAndSendData(false, "Tus datos fueron enviados exitosamente", true);
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
     private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -79,7 +112,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                 int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
-            EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!");
+            EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!",false);
 
         }
     };
@@ -171,8 +204,10 @@ public class PlayRoundActivity extends FragmentActivity implements
             textView.setTag(categoryIndex);
 
             textView.addTextChangedListener(new GenericTextWatcher(textView));
-            textView.setOnFocusChangeListener(new GenericFocusChangeListener(fileName,categoryIndex, totalCategories, roundId));
-
+            textView.setOnFocusChangeListener(new GenericFocusChangeListener(fileName, categoryIndex, totalCategories, roundId));
+            textView.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+            textView.setAllCaps(true);
+            textView.cancelLongPress();
 
             return view;
         }
@@ -193,7 +228,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                 String text = charSequence.toString();
                 if (!text.isEmpty() && Character.toLowerCase(text.charAt(0)) != Character.toLowerCase(currentLetter.charAt(0))) {
                     EditText textView = (EditText) view;
-                    textView.setError("La palabra debe comenzar con la letra correspondiente a la ronda");
+                    textView.setError("La palabra debe comenzar con " + currentLetter.charAt(0));
                 }
             }
 
@@ -201,9 +236,6 @@ public class PlayRoundActivity extends FragmentActivity implements
 
             }
         }
-
-
-
     }
 
     @Override
@@ -227,24 +259,18 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         if (id == R.id.action_stop)
         {
-            EndRoundAndSendData(true, "Tus datos fueron enviados exitosamente");
+            EndRoundAndSendData(true, "Tus datos fueron enviados exitosamente", false);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void EndRoundAndSendData(Boolean validateAllCategoriesPresent, String messageToShow) {
+    public void EndRoundAndSendData(Boolean validateAllCategoriesPresent, String messageToShow, Boolean setEmptyPlays) {
         int position = getActionBar().getSelectedTab().getPosition();
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
-        if (textView == null)
-            showPopUp("el textview es null");
-        else if (textView.getText() == null)
-            showPopUp("el getText es null");
-
         String categoryValue = textView.getText().toString();
-        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow).execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
-
+        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow,setEmptyPlays).execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
     }
 
 
@@ -256,7 +282,6 @@ public class PlayRoundActivity extends FragmentActivity implements
         protected FullRound doInBackground(Integer... integers) {
             api.startRound(integers[0]);
             return api.getCurrentRoundInformation(integers[0]);
-
         }
 
         @Override
@@ -335,8 +360,6 @@ public class PlayRoundActivity extends FragmentActivity implements
             timer = new CountDownTimer(currentRound.getCategories().length * 1000 * 20, 1000) {
 
                 public void onTick(long millisUntilFinished) {
-                    //ver donde mostrarlo
-
                     getActionBar().setTitle(String.format("%d min, %d sec",
                             TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
                             TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
@@ -350,16 +373,12 @@ public class PlayRoundActivity extends FragmentActivity implements
                                     TimeUnit.MILLISECONDS.toSeconds(0))
                     );
 
-                    EndRoundAndSendData(false, "Se te terminó el tiempo!");
-
-                    //todo: hacer el basta para mi basta para todos con lo que tiene
+                    EndRoundAndSendData(false, "Se te terminó el tiempo!", false);
                 }
             }.start();
 
             }
         }
-
-
 
     public void showPopUp(String message)
     {
@@ -379,13 +398,15 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         Boolean validateAllCategoriesPresent;
         String messageToShow;
+        Boolean setEmptyPlays;
 
-        public SaveFilePlayFinishRoundTask(Boolean validateAllCategoriesPresent, String messageToShow){
+        public SaveFilePlayFinishRoundTask(Boolean validateAllCategoriesPresent, String messageToShow, Boolean setEmptyPlays){
             this.validateAllCategoriesPresent=validateAllCategoriesPresent;
             this.messageToShow=messageToShow;
+            this.setEmptyPlays=setEmptyPlays;
         }
        protected void onPostExecute(FilePlay currentFilePlay){
-           //TODO refact
+
            boolean complete = true;
            if (validateAllCategoriesPresent) {
                int i = 0;
@@ -406,9 +427,18 @@ public class PlayRoundActivity extends FragmentActivity implements
 
                for (int index = 0; index < currentRound.getCategories().length; index++) {
                    Play play = new Play();
+
+                   if (this.setEmptyPlays) {
+                       play.setWord("");
+                       play.setTimeStamp(null);
+                   }
+                   else
+                   {
+                       play.setWord(currentFilePlay.CategoriesValues[index]);
+                       play.setTimeStamp(currentFilePlay.CategoriesTimeStamp[index]);
+                   }
+
                    play.setCategory(currentRound.getCategories()[index]);
-                   play.setWord(currentFilePlay.CategoriesValues[index]);
-                   play.setTimeStamp(currentFilePlay.CategoriesTimeStamp[index]);
                    plays.add(play);
                }
 

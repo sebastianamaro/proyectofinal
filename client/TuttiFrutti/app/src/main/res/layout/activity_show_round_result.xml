@@ -5,12 +5,28 @@ android:orientation="vertical"
     android:background="@drawable/background">
 
     <Button
+        android:background="@drawable/largebutton"
         android:id="@+id/btnPlayNextRound"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Jugar!"
         android:onClick="playNextRound"
         android:layout_gravity="top"
+        />
+
+    <Button
+        android:background="@drawable/smallbutton"
+        android:id="@+id/btnSeeGameResults"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="100dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Resultados de la partida!"
+        android:onClick="seeGameResults"
+        android:layout_below="@+id/btnPlayNextRound"
         />
 
     <TextView
@@ -21,7 +37,7 @@ android:orientation="vertical"
         android:layout_marginTop="10dp"
         android:id="@+id/roundResultTitle"
         android:gravity="left"
-        android:layout_below="@+id/btnPlayNextRound"/>
+        android:layout_below="@+id/btnSeeGameResults"/>
 
 <ScrollView
     android:id="@+id/layout"

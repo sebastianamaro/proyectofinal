@@ -25,6 +25,7 @@ import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.PlayerRoundScoreSummary;
 import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.PlayScoreSummary;
+import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
@@ -101,7 +102,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             TableRow playersRow=new TableRow(getApplicationContext());
 
             AddHeaderTextView(playersRow, "Categorias");
-            AddTotalTextView(totalScoreRow, -1);
+            AddTotalTextView(totalScoreRow, null);
 
             for (int i=0;i<categories.length;i++)
             {
@@ -112,7 +113,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                     if (i==0) {
                         AddHeaderTextView(playersRow, result.getRoundScoreSummaries().get(j).getPlayer().getName());
                         if(result.getIsComplete())
-                            AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo().getScore());
+                            AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo());
                     }
 
                     //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
@@ -142,15 +143,18 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         }
     }
 
-    private void AddTotalTextView(TableRow row, int p) {
+    private void AddTotalTextView(TableRow row, ScoreInfo scoreInfo) {
         TextView text=new TextView(this.getApplicationContext());
-        if (p != -1)
-            text.setText(Integer.toString(p));
+        if (scoreInfo != null)
+            text.setText(Integer.toString(scoreInfo.getScore()));
         else
             text.setText("TOTAL");
         text.setBackgroundResource(R.drawable.cell_shape);
         text.setPadding(50, 50, 50, 50);
-        text.setTextColor(Color.parseColor("#10B51B"));
+        if (scoreInfo != null && scoreInfo.getBest())
+            text.setTextColor(Color.parseColor("#10B51B"));
+        else
+            text.setTextColor(Color.parseColor("#C96609"));
         text.setTextSize(20);
         text.setTypeface(null, Typeface.BOLD);
         text.setGravity(Gravity.CENTER);
@@ -191,9 +195,12 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         TextView score=new TextView(this.getApplicationContext());
         if (isComplete) {
-
-            if (!playScoreSummary.getWord().isEmpty())
-                score.setText(Integer.toString(playScoreSummary.getScoreInfo().getScore()));
+            if (!playScoreSummary.getWord().isEmpty()) {
+                if (playScoreSummary.getScoreInfo().getScore() == -1)
+                    score.setText("Tarde");
+                else
+                    score.setText(Integer.toString(playScoreSummary.getScoreInfo().getScore()));
+            }
 
             score.setPadding(10, 40, 33, 26);
             score.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
@@ -265,6 +272,14 @@ public class ShowRoundResultActivity extends ActionBarActivity {
     public void playNextRound(View v)
     {
         Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
+
+        startActivity(intent);
+    }
+
+    public void seeGameResults(View v)
+    {
+        Intent intent = new Intent(getApplicationContext(), ShowGameResultActivity.class);
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
 
         startActivity(intent);
