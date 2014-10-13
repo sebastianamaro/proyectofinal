@@ -4,7 +4,7 @@
     tools:context="com.example.tuttifrutti.app.PlayRoundActivity" >
 
     <item android:id="@+id/action_stop"
-        android:icon="@drawable/ic_action_cloud"
+        android:icon="@drawable/btnbasta"
         android:title="Basta"
         app:showAsAction="always"
 
