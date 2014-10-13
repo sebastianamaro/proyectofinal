@@ -85,8 +85,9 @@ gameSchema.methods.changeToStatusShowingResults = function () {
 gameSchema.methods.endShowingResults = function () {
   var round = this.getLastRound();
   this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
+  var game = this;
   this.sendNotificationsRoundStarted(function(){
-    this.save(function(err) {
+    game.save(function(err) {
       if(err) {
         console.log('ERROR: ' + err);
       } else {
