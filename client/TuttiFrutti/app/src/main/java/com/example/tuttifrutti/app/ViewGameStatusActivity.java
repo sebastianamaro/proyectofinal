@@ -158,8 +158,8 @@ public class ViewGameStatusActivity extends ListActivity {
 
         public class GamesAdapter extends BaseAdapter {
 
-            Context context;
             private ArrayList<Object> games;
+            Context context;
             private int activeGamesSeparatorIndex=0; //ex staredCategoriesSeparatorIndex
             private int invitationsSeparatorIndex; //ex fixedCategoriesSeparatorIndex
             private int finishedGamesSeparatorIndex; //ex allCategoriesSeparatorIndex
@@ -406,7 +406,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 UserGame rowItem = (UserGame) getItem(position);
 
-                holder.text1.setText(rowItem.getMode() + " - " + rowItem.getCategoriesType());
+                holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
                 for (String name : rowItem.getPlayers())
@@ -436,10 +436,12 @@ public class ViewGameStatusActivity extends ListActivity {
                 FullGame rowItem = (FullGame) getItem(position);
 
                 holder.text1.setText(rowItem.getOwner().getName());
-                holder.text2.setText(rowItem.getMode() + " - " + rowItem.getCategoriesType());
+                holder.text2.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 return convertView;
             }
+
+
 
             private View SetRowFinishedGamesViewHolder(final int position, View convertView) {
                 FinishedGamesViewHolder holder = null;
@@ -459,7 +461,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 UserGame rowItem = (UserGame) getItem(position);
 
-                holder.text1.setText(rowItem.getMode() + " - " + rowItem.getCategoriesType());
+                holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
                 for (String name : rowItem.getPlayers())
@@ -506,5 +508,10 @@ public class ViewGameStatusActivity extends ListActivity {
                 }
             }
         }
+    }
+
+    public static String toProperCase(String s) {
+        return s.substring(0, 1).toUpperCase() +
+                s.substring(1).toLowerCase();
     }
 }

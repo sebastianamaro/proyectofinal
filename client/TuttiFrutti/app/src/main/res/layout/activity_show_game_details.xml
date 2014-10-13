@@ -13,9 +13,13 @@
 
             <Button
                 android:id="@+id/btnPlay"
-                android:layout_width="wrap_content"
+                android:background="@drawable/largebutton"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="100dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Jugar!"
+                android:layout_centerHorizontal="true"
                 android:onClick="play"
                 />
 
@@ -122,41 +126,16 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:text="Jugadores"
-                android:textSize="35dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:id="@+id/playersTitle"
-                android:gravity="left"
-                android:layout_below="@+id/randomPlayersLayout"/>
+
 
             <ListView
-                android:id="@+id/playersList"
+                android:layout_marginTop="45dp"
+                android:id="@+id/detailsList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/playersTitle">
+                android:layout_below="@+id/randomPlayersLayout">
 
             </ListView>
 
-            <TextView
-                android:text="Categorías"
-                android:textSize="35dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:id="@+id/categoriesTitle"
-                android:gravity="left"
-                android:layout_below="@+id/playersList"/>
-
-            <ListView
-                android:id="@+id/categoriesList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/categoriesTitle">
-
-            </ListView>
-
-            </RelativeLayout>
+</RelativeLayout>
 

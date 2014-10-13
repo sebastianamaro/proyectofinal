@@ -3,16 +3,14 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/invitationsSeparator"
+        android:id="@+id/categoriesSeparator"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:background="@drawable/rounded_corner_invitations"
+        android:background="@drawable/rounded_corner_active_games"
         android:textSize="20sp"
-        android:text="Invitaciones"
-        android:textStyle="bold"
+        android:text="Categorias"
         android:gravity="center"
-
-
+        android:textStyle="bold"
         />
 </LinearLayout>
