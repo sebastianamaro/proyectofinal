@@ -129,6 +129,7 @@
 
 
             <ListView
+                android:layout_marginTop="45dp"
                 android:id="@+id/detailsList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

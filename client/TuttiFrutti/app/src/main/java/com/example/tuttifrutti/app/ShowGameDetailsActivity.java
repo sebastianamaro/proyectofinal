@@ -1,5 +1,6 @@
 package com.example.tuttifrutti.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,11 +9,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -64,6 +63,15 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         new GetGameAsyncTask().execute(game);
+    }
+
+    public void play(View view)
+    {
+        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
+        // aca en algun lado deberia saber el ID de la partida
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
+
+        startActivity(intent);
     }
 
     public class GetGameAsyncTask extends AsyncTask<UserGame,Void, Game>
@@ -122,72 +130,210 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 }
             }
 
-            if (players.size() > 0) {
-                PlayersAdapter playerAdapter = new PlayersAdapter(getApplicationContext(),
-                        R.layout.playerlistitem, players);
-                ListView list = (ListView) findViewById(R.id.playersList);
-                list.setAdapter(playerAdapter);
-            }else
-            {
-                TextView playersTitle = (TextView) findViewById(R.id.playersTitle);
-                playersTitle.setVisibility(View.GONE);
-            }
-
-
-            ListView listView = (ListView) findViewById(R.id.categoriesList);
-            listView.setTextFilterEnabled(true);
-
-            ArrayList<String> categoryNames= new ArrayList<String>();
-            for(Category cat : result.getSelectedCategories())
-                categoryNames.add(cat.getName());
-
-            ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<String>(getApplicationContext(),
-                    R.layout.simple_list_item_custom,categoryNames);
-
-            listView.setAdapter(categoriesAdapter);
+            ListView l=(ListView)findViewById(R.id.detailsList);
+            GameDetailsAdapter gda= new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
+            l.setAdapter(gda);
         }
     }
 
+    private class GameDetailsAdapter extends BaseAdapter{
 
-    private class PlayersAdapter extends ArrayAdapter<SummarizedPlayer> {
+        private ArrayList<Object> details;
+        Context context;
+        private int playersSeparatorIndex=0;
+        private int categoriesSeparatorIndex;
+        private static final int ITEM_VIEW_TYPE_PLAYERS_SEPARATOR = 0;
+        private static final int ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR = 1;
+        private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 2;
+        private static final int ITEM_VIEW_TYPE_PLAYER = 3;
+        private static final int ITEM_VIEW_TYPE_CATEGORY = 4;
+        private static final int ITEM_VIEW_TYPE_COUNT = 5;
+        private static final String playersText = "Jugadores";
+        private static final String categoriesText = "Categorias";
+        boolean showsPlayers;
 
-        private ArrayList<SummarizedPlayer> playersList;
 
-        public PlayersAdapter(Context context, int resourceId,
-                           ArrayList<SummarizedPlayer> playersList) {
+        public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, ArrayList<Category> categories)
+        {
+            this.context=context;
+            this.details = new ArrayList<Object>();
+            this.details.addAll(players);
+            this.details.addAll(categories);
 
-            super(context, resourceId, playersList);
 
-            this.playersList = new ArrayList<SummarizedPlayer>();
-            this.playersList.addAll(playersList);
+            showsPlayers = players.size() > 0;
+
+
+            if (showsPlayers)
+            {
+                this.details.add(playersSeparatorIndex, playersText);
+                this.categoriesSeparatorIndex = players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+
+                this.details.add(categoriesSeparatorIndex-1, null);
+            }
+            else {
+                this.categoriesSeparatorIndex = 0; // Solo el header de invitaciones
+            }
+
+            this.details.add(categoriesSeparatorIndex, categoriesText);
+
         }
 
-        private class ViewHolder {
+        @Override
+        public int getItemViewType(int position) {
+
+            if(getItem(position) == null)
+                return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+
+            if(getItem(position) instanceof SummarizedPlayer)
+                return ITEM_VIEW_TYPE_PLAYER;
+
+            if(getItem(position) instanceof Category)
+                return ITEM_VIEW_TYPE_CATEGORY;
+
+            if(showsPlayers && position==0)
+                return ITEM_VIEW_TYPE_PLAYERS_SEPARATOR;
+
+            if(position==categoriesSeparatorIndex)
+                return ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR;
+
+
+            return -1;
+        }
+
+
+        @Override
+        public int getViewTypeCount() {
+            return ITEM_VIEW_TYPE_COUNT;
+        }
+
+        @Override
+        public int getCount() {
+            return details.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return details.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return false;
+        }
+
+
+        private class PlayerViewHolder {
             ImageView friendPicture;
             TextView name;
             TextView status;
         }
 
+        private class CategoryViewHolder {
+            TextView text1;
+        }
+
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+        public View getView(final int i, View convertView, ViewGroup viewGroup) {
+            final int type = getItemViewType(i);
+
+            switch (type) {
+                case ITEM_VIEW_TYPE_EMPTY_SEPARATOR:
+                    convertView = SetRowEmptyViewHolder(convertView);
+                    break;
+                case ITEM_VIEW_TYPE_PLAYERS_SEPARATOR:
+                    convertView = SetRowPlayerSeparatorViewHolder(convertView);
+                    break;
+                case ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR:
+                    convertView = SetRowCategorySeparatorViewHolder(convertView);
+                    break;
+                case ITEM_VIEW_TYPE_PLAYER:
+                    convertView = SetRowPlayerViewHolder(i, convertView);
+                    break;
+                case ITEM_VIEW_TYPE_CATEGORY:
+                    convertView = SetRowCategoryViewHolder(i, convertView);
+                    break;
+            }
+
+            return convertView;
+        }
+
+        private View SetRowEmptyViewHolder(View convertView) {
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_separator_empty, null);
+            }
+            return convertView;
+        }
+
+        private View SetRowPlayerSeparatorViewHolder(View convertView) {
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_separator_player, null);
+            }
+            return convertView;
+        }
+
+        private View SetRowCategorySeparatorViewHolder(View convertView) {
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_separator_category, null);
+            }
+            return convertView;
+        }
+
+        private View SetRowCategoryViewHolder(int position, View convertView){
+            CategoryViewHolder holder=null;
 
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.playerlistitem, null);
+                convertView = vi.inflate(R.layout.simple_list_item_custom, null);
 
-                holder = new ViewHolder();
+                holder = new CategoryViewHolder();
+                holder.text1 = (TextView) convertView.findViewById(R.id.customText1);
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (CategoryViewHolder) convertView.getTag();
+            }
+
+            Category category = (Category)details.get(position);
+
+            holder.text1.setText(category.getName());
+            holder.text1.setPadding(10,15,0,15);
+            return convertView;
+
+        }
+
+        private View SetRowPlayerViewHolder(int position, View convertView)
+        {
+            PlayerViewHolder holder = null;
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.list_row_player, null);
+
+                holder = new PlayerViewHolder();
                 holder.friendPicture = (ImageView) convertView.findViewById(R.id.profilePicture);
                 holder.name = (TextView) convertView.findViewById(R.id.playerName);
                 holder.status = (TextView) convertView.findViewById(R.id.playerStatus);
                 convertView.setTag(holder);
             }
             else {
-                holder = (ViewHolder) convertView.getTag();
+                holder = (PlayerViewHolder) convertView.getTag();
             }
 
-            SummarizedPlayer player = playersList.get(position);
+            SummarizedPlayer player = (SummarizedPlayer)details.get(position);
 
             holder.name.setText(player.name);
             holder.friendPicture.setImageBitmap(player.image);
@@ -202,17 +348,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 holder.status.setText("Ya es tu contrincante!");
 
             return convertView;
+
         }
 
-    }
-
-    public void play(View view)
-    {
-        Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
-        // aca en algun lado deberia saber el ID de la partida
-        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
-
-        startActivity(intent);
     }
 
     private class SummarizedPlayer

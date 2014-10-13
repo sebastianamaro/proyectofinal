@@ -79,4 +79,11 @@ public class UserGame implements Serializable {
     public void setPlayers(ArrayList<String> players) {
         this.players = players;
     }
+
+    public String getSpanishCategoriesType() {
+        if (categoriesType.equals("FIXED"))
+            return "Controladas";
+        else
+            return "Libres";
+    }
 }
