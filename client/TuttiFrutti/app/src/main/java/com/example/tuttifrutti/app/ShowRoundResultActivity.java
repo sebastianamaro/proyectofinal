@@ -70,13 +70,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(PlayerRoundScoreSummary result) {
-
-            TextView txtTitle = (TextView) findViewById(R.id.roundResultTitle);
-            if (result.getIsComplete())
-                txtTitle.setText("Resultados de la ronda " + String.valueOf(result.getRoundNumber()));
-            else
-                txtTitle.setText("Resultados parciales de la ronda " + String.valueOf(result.getRoundNumber()));
-
             //caso1: jugue y NO se termino la ronda -> sin boton jugar
             //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
             //caso2: NO jugue la ronda actual ->  boton ESTA ronda

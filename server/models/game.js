@@ -389,6 +389,7 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       return callback("ERROR: player not found"); 
     }
 
+    console.log("aca 1");
     player.removeInvitation(game.gameId);
     player.save(function(err) {
       if(err) {
@@ -396,13 +397,15 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       } 
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
     });
-
+    console.log("aca 2");
     if (game.opponentsType == game.getOpponentsType().FRIENDS){
+        console.log("es friends");
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
         var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
+        console.log("selected friends antes: " + game.selectedFriends);
         if (index > -1) 
           game.selectedFriends.splice(index, 1);
-        
+        console.log("selected frieds despues: " + game.selectedFriends);
         if (game.selectedFriends.length + 1 == game.players.length)
         {
           if (game.players.length == 1)
