@@ -42,7 +42,7 @@ public class InternalFileHelper {
 
 
                 // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-                if (currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] != filePlay.getCategoryValue()) {
+                if (currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] == null || !(currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()].equals(filePlay.getCategoryValue()))) {
                     currentFilePlay.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
                     currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
                     writeFile=true;
@@ -57,8 +57,6 @@ public class InternalFileHelper {
 
             if(writeFile)
                 writeRoundResult(currentFilePlay,gson,file);
-
-
 
         } catch (Exception e) {
             e.printStackTrace();

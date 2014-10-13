@@ -1,6 +1,8 @@
 package com.example.tuttifrutti.app;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.GameScoreSummary;
 
 import com.example.TuttiFruttiCore.Player;
@@ -30,7 +33,11 @@ public class ShowGameResultActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_game_result);
         setTitle("");
-        new GetScoresAsyncTask().execute();
+
+        Intent intent = getIntent();
+        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+
+        new GetScoresAsyncTask(gameId).execute();
     }
 
 
@@ -38,11 +45,16 @@ public class ShowGameResultActivity extends ActionBarActivity {
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameScoreSummary> {
         private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
         TuttiFruttiAPI api;
+        int gameId;
+
+        public GetScoresAsyncTask(int gameId)
+        {
+            this.gameId = gameId;
+        }
 
         @Override
         protected GameScoreSummary doInBackground(Void... filePlays) {
-            //return api.getRoundScore(gameId, roundId);
-            return api.getGameScores(1);
+            return api.getGameScores(this.gameId);
         }
 
         @Override
@@ -69,7 +81,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
             {
                 contentRow=new TableRow(getApplicationContext());
                 roundRes = result.getRoundsResult().get(i);
-                AddHeaderTextView(contentRow, "Ronda " + Integer.toString(result.getRoundsResult().size()-i));
+                AddHeaderTextView(contentRow, "Ronda " + roundRes.getRoundLetter());
 
                 for (int j=0;j<roundRes.getScores().size();j++) {
                     ScoreInfo score = roundRes.getScores().get(j);

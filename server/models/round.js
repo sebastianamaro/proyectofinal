@@ -247,11 +247,8 @@ roundSchema.methods.getScores = function (fbId, categories, players, showScores)
   for (var i = players.length - 1; i >= 0; i--) {
     var aPlayer = players[i];
     var aPlayerFbId = aPlayer.fbId;
-    console.log('this.lines ' + this.lines);
     var lineForPlayer = this.lines.filter(function (line) 
       {
-        console.log('line.player.fbId ' + line.player.fbId);
-        console.log('aPlayerFbId ' + aPlayerFbId);
         return line.player.fbId == aPlayerFbId; 
       }).pop();
 

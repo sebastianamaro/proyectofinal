@@ -203,8 +203,9 @@ module.exports = function(app) {
         roundToShow = game.getLastRound();
         showScores = true;
         playersWhoHaveLines = game.players;
-        canPlayerPlay = true; //la va a crear
-        isComplete = true;
+        console.log("game status: " + game.status);
+        canPlayerPlay = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
+        isComplete = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
       }
       else if (!roundToShow.hasLineOfPlayer(req.params.fbId))
       {
@@ -228,6 +229,8 @@ module.exports = function(app) {
       }
 
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
+
+      console.log("can player play: " + canPlayerPlay);
       
       var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
       

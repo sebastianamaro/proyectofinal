@@ -96,7 +96,7 @@ gameSchema.methods.hasStarted = function hasStarted(){
 }
 
 gameSchema.methods.getNextLetter = function getNextLetter(){
-  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X','Y', 'Z'];
+  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V','Y', 'Z'];
   var usedLetters = [];
 
   this.rounds.reduce(function(previousRound, currentRound, index, array){
@@ -237,10 +237,15 @@ gameSchema.methods.getRoundResults = function(){
   var roundResults = [];
   for (var i = this.rounds.length - 1; i >= 0; i--) {
     var aRound = this.rounds[i];
-    roundResults.push( {
-                      'roundId' : aRound.roundId, 
-                      'scores' : aRound.getSummarizedScoresForPlayers(this.players)
-                    });
+    if (aRound.status == aRound.getStatus().CLOSED)
+    {
+      if (!(this.status == this.getStatus().WAITING_FOR_QUALIFICATIONS && i == this.rounds.length - 1))
+        roundResults.push( {
+                          'roundLetter': aRound.letter,
+                          'roundId' : aRound.roundId, 
+                          'scores' : aRound.getSummarizedScoresForPlayers(this.players)
+                        });
+    }
   };
   
   return roundResults;

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class GameRoundScoreSummary{
     private ArrayList<ScoreInfo> scores;
     private int roundId;
+    private String roundLetter;
 
 
     public int getRoundId() {
@@ -25,4 +26,10 @@ public class GameRoundScoreSummary{
     public void setScores(ArrayList<ScoreInfo> scores) {
         this.scores = scores;
     }
+
+    public String getRoundLetter() {
+        return roundLetter;
+    }
+
+    public void setRoundLetter(String roundLetter){ this.roundLetter = roundLetter; }
 }
