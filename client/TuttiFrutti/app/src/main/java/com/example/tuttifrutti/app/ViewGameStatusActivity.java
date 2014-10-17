@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
+import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -139,29 +140,24 @@ public class ViewGameStatusActivity extends ListActivity {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
 
-                        Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
+                        FullGame itemValue = (FullGame) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
 
-                        if (itemValue instanceof FullGame) {
-                            Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
-                            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
-                            startActivity(intent);
-                        } else if (itemValue instanceof UserGame) {
+                        Intent i;
+                        if (itemValue instanceof UserGame) {
 
                             UserGame ug = (UserGame) itemValue;
-                            Intent i;
 
-                            //si no empezo el game
-                            // O (es la primera y no jugue)
-                            if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||
-                                    (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
+                            if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||   (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
                                 i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
                             } else {
                                 i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
-
                             }
-                            i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
-                            startActivity(i);
+                        } else {
+                            i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
                         }
+
+                        i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, itemValue);
+                        startActivity(i);
                     }
 
                 });
@@ -276,10 +272,6 @@ public class ViewGameStatusActivity extends ListActivity {
                 }
 
 
-                if (games.get(position) instanceof FullGame)
-                    return ITEM_VIEW_TYPE_FULL_GAME;
-
-
                 if (games.get(position) instanceof UserGame) {
                     UserGame ug = (UserGame) games.get(position);
                     if (ug.getStatus().equals("CLOSED"))
@@ -287,6 +279,12 @@ public class ViewGameStatusActivity extends ListActivity {
                     else
                         return ITEM_VIEW_TYPE_USER_GAME;
                 }
+
+                if (games.get(position) instanceof FullGame)
+                    return ITEM_VIEW_TYPE_FULL_GAME;
+
+
+
 
                 return -1;
             }
@@ -424,8 +422,8 @@ public class ViewGameStatusActivity extends ListActivity {
                 holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayers())
-                    namesToShow += name + " - ";
+                for (Player player : rowItem.getPlayers())
+                    namesToShow += player.getName() + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
                 holder.text2.setText(namesToShow);
@@ -479,8 +477,8 @@ public class ViewGameStatusActivity extends ListActivity {
                 holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayers())
-                    namesToShow += name + " - ";
+                for (Player player : rowItem.getPlayers())
+                    namesToShow += player.getName() + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
                 holder.text2.setText(namesToShow);

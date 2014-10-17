@@ -230,7 +230,7 @@ gameSchema.methods.getOtherPlayersFirstNames = function(){
   var playersNameArray = [];
   for (var j = this.players.length - 1; j >= 0; j--) {
       if(this.players[j] != this.creator[0]){
-        playersNameArray.push(this.players[j].getFirstName()); //Only first name
+        playersNameArray.push({ 'name' : this.players[j].getFirstName()}); //Only first name
       }
   };
 

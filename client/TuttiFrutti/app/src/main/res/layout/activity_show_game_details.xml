@@ -23,11 +23,36 @@
                 android:onClick="play"
                 />
 
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnPlay"
+        android:paddingTop="20dp"
+        tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
+        android:id="@+id/creatorLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Creada por: "
+            android:id="@+id/lblCreador"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/creadorTextView"
+            android:layout_toRightOf="@id/lblCreador"
+            android:paddingLeft="50dp"
+            android:layout_alignParentTop="true"
+            android:text=""/>
+
+    </RelativeLayout>
+
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/btnPlay"
+                android:layout_below="@id/creatorLayout"
                 android:paddingTop="20dp"
                 tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
                 android:id="@+id/modeLayout">
@@ -136,6 +161,32 @@
                 android:layout_below="@+id/randomPlayersLayout">
 
             </ListView>
+
+            <Button
+                android:background="@drawable/largebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rechazar"
+                android:id="@+id/reject"
+                android:onClick="rejectInvitation"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="50dp"
+                android:visibility="gone"
+                android:layout_marginBottom="63dp" />
+
+            <Button
+                android:background="@drawable/largebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aceptar"
+                android:layout_alignParentRight="true"
+                android:id="@+id/accept"
+                android:onClick="acceptInvitation"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="50dp"
+                android:visibility="gone"
+                android:layout_marginBottom="63dp" />
+
 
 </RelativeLayout>
 

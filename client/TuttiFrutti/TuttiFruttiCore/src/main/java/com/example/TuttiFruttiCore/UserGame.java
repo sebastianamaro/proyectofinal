@@ -6,19 +6,13 @@ import java.io.Serializable;
 /**
  * Created by Sebastian on 23/07/2014.
  */
-public class UserGame implements Serializable {
+public class UserGame extends FullGame implements Serializable {
+
     private String status;
-    private int gameId;
-    private String mode;
-    private String categoriesType;
-    private ArrayList<String> players;
     private boolean playerHasPlayedCurrentRound;
     private int statusCode;
     private boolean isFirstRound;
 
-    public void setGameId(int gameId) {
-        this.gameId = gameId;
-    }
 
     public void setStatus(String status) {
         this.status = status;
@@ -26,26 +20,6 @@ public class UserGame implements Serializable {
 
     public String getStatus() {
         return status;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    public String getCategoriesType() {
-        return categoriesType;
-    }
-
-    public void setCategoriesType(String categoryType) {
-        this.categoriesType = categoryType;
     }
 
     public boolean getPlayerHasPlayedCurrentRound() {
@@ -72,18 +46,4 @@ public class UserGame implements Serializable {
         this.isFirstRound = isFirstRound;
     }
 
-    public ArrayList<String> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(ArrayList<String> players) {
-        this.players = players;
-    }
-
-    public String getSpanishCategoriesType() {
-        if (categoriesType.equals("FIXED"))
-            return "Controladas";
-        else
-            return "Libres";
-    }
 }
