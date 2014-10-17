@@ -408,11 +408,14 @@ public class PlayRoundActivity extends FragmentActivity implements
        protected void onPostExecute(FilePlay currentFilePlay){
 
            boolean complete = true;
+           boolean allStartWithRoundLetter = true;
            if (validateAllCategoriesPresent) {
                int i = 0;
                while (complete && i < currentRound.getCategories().length) {
                    if (currentFilePlay.CategoriesValues[i] == null || currentFilePlay.CategoriesValues[i] == "")
                        complete = false;
+                   else if (Character.toLowerCase(currentFilePlay.CategoriesValues[i].charAt(0)) != Character.toLowerCase(currentRound.getLetter().charAt(0)))
+                       allStartWithRoundLetter = false;
 
                    i++;
                }
@@ -420,6 +423,8 @@ public class PlayRoundActivity extends FragmentActivity implements
 
            if (!complete) {
                showPopUp("Debe completar todas las categorias para finalizar la ronda");
+           }else if (!allStartWithRoundLetter){
+               showPopUp("Todas las palabras deben comenzar con " + currentRound.getLetter());
            }
            else
            {
