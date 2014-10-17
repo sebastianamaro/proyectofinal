@@ -15,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Constants;
@@ -25,6 +26,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.example.tuttifrutti.app.Classes.NoLoggedUserException;
 import com.example.tuttifrutti.app.Classes.UncaughtExceptionHandler;
+
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 
@@ -88,6 +91,7 @@ public class ViewGameStatusActivity extends ListActivity {
         TuttiFruttiAPI api;
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
+        boolean connError;
 
         protected void onPreExecute() {
 
@@ -97,62 +101,73 @@ public class ViewGameStatusActivity extends ListActivity {
         @Override
         protected Void doInBackground(Void... filePlays) {
             fbId = FacebookHelper.getUserId();
-            games = api.getGames(fbId);
-            invitations = api.getPendingInvitations(fbId);
+            try {
+                games = api.getGames(fbId);
+                invitations = api.getPendingInvitations(fbId);
+            }catch (ResourceAccessException ex)
+            {
+                connError = true;
+            }
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-
-            ArrayList<UserGame> activeGames = new ArrayList<UserGame>();
-            ArrayList<UserGame> finishedGames = new ArrayList<UserGame>();
-
-            for (UserGame ug : games) {
-                if (ug.getStatus().equals("CLOSED"))
-                    finishedGames.add(ug);
-                else
-                    activeGames.add(ug);
+            if (this.connError) {
+                // Call onRefreshComplete when the list has been refreshed.
+                mPullToRefreshLayout.onRefreshComplete();
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }
+            else {
 
-            GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
-            mPullToRefreshLayout.getRefreshableView().setAdapter(ga);
-            mPullToRefreshLayout.getRefreshableView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ArrayList<UserGame> activeGames = new ArrayList<UserGame>();
+                ArrayList<UserGame> finishedGames = new ArrayList<UserGame>();
 
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-
-                    Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
-
-                    if (itemValue instanceof FullGame) {
-                        Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
-                        intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
-                        startActivity(intent);
-                    } else if (itemValue instanceof UserGame) {
-
-                        UserGame ug = (UserGame) itemValue;
-                        Intent i;
-
-                        //si no empezo el game
-                        // O (es la primera y no jugue)
-                        if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||
-                                (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound()))
-                        {
-                            i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
-                        }else
-                        {
-                            i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
-
-                        }
-                        i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
-                        startActivity(i);
-                        }
+                for (UserGame ug : games) {
+                    if (ug.getStatus().equals("CLOSED"))
+                        finishedGames.add(ug);
+                    else
+                        activeGames.add(ug);
                 }
 
-            });
-            // Call onRefreshComplete when the list has been refreshed.
-            mPullToRefreshLayout.onRefreshComplete();
+                GamesAdapter ga = new GamesAdapter(getApplicationContext(), activeGames, invitations, finishedGames);
+                mPullToRefreshLayout.getRefreshableView().setAdapter(ga);
+                mPullToRefreshLayout.getRefreshableView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+
+                        Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
+
+                        if (itemValue instanceof FullGame) {
+                            Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
+                            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
+                            startActivity(intent);
+                        } else if (itemValue instanceof UserGame) {
+
+                            UserGame ug = (UserGame) itemValue;
+                            Intent i;
+
+                            //si no empezo el game
+                            // O (es la primera y no jugue)
+                            if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||
+                                    (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
+                                i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
+                            } else {
+                                i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
+
+                            }
+                            i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
+                            startActivity(i);
+                        }
+                    }
+
+                });
+                // Call onRefreshComplete when the list has been refreshed.
+                mPullToRefreshLayout.onRefreshComplete();
+            }
 
         }
 
@@ -488,6 +503,7 @@ public class ViewGameStatusActivity extends ListActivity {
             private class DeleteFinishedGameAsyncTask extends AsyncTask<UserGame, Void, Void> {
                 TuttiFruttiAPI api;
                 UserGame ug;
+                boolean connError;
 
                 protected void onPreExecute() {
                     api = new TuttiFruttiAPI(getString(R.string.server_url));
@@ -497,14 +513,24 @@ public class ViewGameStatusActivity extends ListActivity {
                 protected Void doInBackground(UserGame... userGames) {
                     ug = userGames[0];
                     fbId = FacebookHelper.getUserId();
-                    api.deleteFinishedGame(fbId, ug.getGameId());
+                    try{
+                        api.deleteFinishedGame(fbId, ug.getGameId());
+                    }catch (ResourceAccessException ex)
+                    {
+                        this.connError = true;
+                    }
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    GamesAdapter.this.games.remove(ug);
-                    GamesAdapter.this.notifyDataSetChanged();
+                    if (this.connError)
+                    {
+                        Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+                    }else {
+                        GamesAdapter.this.games.remove(ug);
+                        GamesAdapter.this.notifyDataSetChanged();
+                    }
                 }
             }
         }

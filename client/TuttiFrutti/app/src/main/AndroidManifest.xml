@@ -25,10 +25,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name=".PlayRoundActivity"
             android:label="@string/title_activity_play_round"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"

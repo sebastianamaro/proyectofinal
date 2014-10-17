@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
@@ -31,6 +32,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -78,11 +80,19 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     {
         TuttiFruttiAPI api;
         UserGame gameInfo;
+        boolean connError;
 
         @Override
         protected Game doInBackground(UserGame... userGame) {
             gameInfo = userGame[0];
-            return api.getGame(gameInfo.getGameId());
+
+            try {
+                return api.getGame(gameInfo.getGameId());
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
 
         protected void onPreExecute(){
@@ -91,48 +101,50 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Game result) {
-            //todo: ver los aleatorios, los muestro? o solo que aceptaron X/Total
+            if (this.connError) {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            } else {
 
-            TextView txtGameMode=(TextView) findViewById(R.id.gameModeTextView);
-            TextView txtOpponentsMode=(TextView) findViewById(R.id.opponentsModeTextView);
-            TextView txtCategoriesMode=(TextView) findViewById(R.id.categoryModeTextView);
+                TextView txtGameMode = (TextView) findViewById(R.id.gameModeTextView);
+                TextView txtOpponentsMode = (TextView) findViewById(R.id.opponentsModeTextView);
+                TextView txtCategoriesMode = (TextView) findViewById(R.id.categoryModeTextView);
 
-            txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
-            txtOpponentsMode.setText(result.getSpanishOpponentsType());
-            txtCategoriesMode.setText(result.getSpanishCategoriesType());
+                txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
+                txtOpponentsMode.setText(result.getSpanishOpponentsType());
+                txtCategoriesMode.setText(result.getSpanishCategoriesType());
 
-            TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
-            TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);
-            lbl.setVisibility(View.GONE);
-            txt.setVisibility(View.GONE);
+                TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
+                TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);
+                lbl.setVisibility(View.GONE);
+                txt.setVisibility(View.GONE);
 
-            ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
-            String myId = FacebookHelper.getUserId();
-            for (Player p : result.getPlayers()) {
-                String playerFbId = p.getFbId();
-                if (!playerFbId.equals(myId))
-                    players.add(new SummarizedPlayer(p, true));
-            }
-            if (result.getOpponentsType().equals("FRIENDS"))
-                for (Player p : result.getSelectedFriends()) {
-                    if(!result.getPlayers().contains(p))
-                        players.add(new SummarizedPlayer(p, false));
+                ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
+                String myId = FacebookHelper.getUserId();
+                for (Player p : result.getPlayers()) {
+                    String playerFbId = p.getFbId();
+                    if (!playerFbId.equals(myId))
+                        players.add(new SummarizedPlayer(p, true));
                 }
-            else
-            {
-                //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
-                int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size()-1);
+                if (result.getOpponentsType().equals("FRIENDS"))
+                    for (Player p : result.getSelectedFriends()) {
+                        if (!result.getPlayers().contains(p))
+                            players.add(new SummarizedPlayer(p, false));
+                    }
+                else {
+                    //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
+                    int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size() - 1);
 
-                if (randomPlayersLeftToAccept > 0) {
-                    lbl.setVisibility(View.VISIBLE);
-                    txt.setVisibility(View.VISIBLE);
-                    txt.setText(Integer.toString(randomPlayersLeftToAccept));
+                    if (randomPlayersLeftToAccept > 0) {
+                        lbl.setVisibility(View.VISIBLE);
+                        txt.setVisibility(View.VISIBLE);
+                        txt.setText(Integer.toString(randomPlayersLeftToAccept));
+                    }
                 }
-            }
 
-            ListView l=(ListView)findViewById(R.id.detailsList);
-            GameDetailsAdapter gda= new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
-            l.setAdapter(gda);
+                ListView l = (ListView) findViewById(R.id.detailsList);
+                GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
+                l.setAdapter(gda);
+            }
         }
     }
 

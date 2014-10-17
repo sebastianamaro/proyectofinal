@@ -51,8 +51,11 @@ public class TuttiFruttiAPI {
 
         String url= serverURL+"player/"+fbId+"/game";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
         UserGame[] gamesArray= restTemplate.getForObject(url,UserGame[].class);
 
         games=new ArrayList<UserGame>(Arrays.asList(gamesArray));
@@ -64,7 +67,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"game/"+gameId;
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         Game game= restTemplate.getForObject(url,Game.class);
         return game;
@@ -75,7 +80,9 @@ public class TuttiFruttiAPI {
 
         String url= serverURL+"player/"+registrationId+"/invitations";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         FullGame[] invitationsArray= restTemplate.getForObject(url,FullGame[].class);
 
@@ -88,7 +95,9 @@ public class TuttiFruttiAPI {
 
         String url= serverURL+"game/"+gameId+"/invitation";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.put(url,response);
 
@@ -98,7 +107,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"/player/"+playerId+"/game/"+gameId;
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         restTemplate.delete(url);
     }
@@ -108,16 +119,12 @@ public class TuttiFruttiAPI {
     {
         String url=serverURL+"game";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new CustomErrorHandler());
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
 
-        ResponseEntity<String> resp=null;
-        try {
-           resp=restTemplate.postForEntity(url, game, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        restTemplate.postForEntity(url, game, null);
     }
 
     public void startRound(int gameId)
@@ -125,7 +132,9 @@ public class TuttiFruttiAPI {
         String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         FullRound fr= new FullRound();
         fr.setStatus("OPENED");
         restTemplate.put(url, fr);
@@ -135,7 +144,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"game/"+gameId+"/scores";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         return restTemplate.getForObject(url,GameScoreSummary.class);
@@ -146,7 +157,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"game/"+gameId+"/round"; /*Aca se tiene que mandar status=Closed y SI O SI RoundId*/
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(4500);
+        restTemplate.setRequestFactory(requestFactory);
         PlayedRound pr= new PlayedRound();
         pr.setStatus("CLOSED");
         pr.setRoundId(roundId);
@@ -169,7 +182,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"game/"+gameId+"/round";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         return restTemplate.getForObject(url,FullRound.class);
@@ -179,7 +194,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"game/"+gameId+"/round/scores/for/"+fbId;
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         return restTemplate.getForObject(url,PlayerRoundScoreSummary.class);
@@ -190,7 +207,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"player";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
 
         restTemplate.postForEntity(url, newPlayer, null);
     }
@@ -200,7 +219,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"category/"+ categoryId+"?report";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.put(url, null);
     }
 
@@ -209,7 +230,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"player/"+ playerId+"/category/"+categoryId;
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.put(url, null);
     }
 
@@ -218,7 +241,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"category";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new CustomErrorHandler());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         Category[] lineArray= restTemplate.getForObject(url,Category[].class);
@@ -229,7 +254,9 @@ public class TuttiFruttiAPI {
     {
         String url= serverURL+"player/"+ playerId+"/category";
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
         Category[] lineArray= restTemplate.getForObject(url,Category[].class);
@@ -239,16 +266,15 @@ public class TuttiFruttiAPI {
 
     public ArrayList<Category> getFixedCategories()
     {
-            String url = serverURL + "category?isFixed=1";
+        String url = serverURL + "category?isFixed=1";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-            restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-            Category[] lineArray = restTemplate.getForObject(url, Category[].class);
-            return new ArrayList<Category>(Arrays.asList(lineArray));
-
+        Category[] lineArray = restTemplate.getForObject(url, Category[].class);
+        return new ArrayList<Category>(Arrays.asList(lineArray));
     }
 
     public Category createCategory(Category category)
@@ -256,7 +282,9 @@ public class TuttiFruttiAPI {
         String url= serverURL+"category";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
 
         ResponseEntity<Category> e=restTemplate.postForEntity(url, category, Category.class);
         Category cat=e.getBody();//the server returns an object with id, then we set that id to the created category
@@ -269,7 +297,9 @@ public class TuttiFruttiAPI {
         //req.body.category, req.body.isValid, req.body.player
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
 
         Qualification q = new Qualification();
         q.setCategory(category);

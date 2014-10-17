@@ -14,9 +14,9 @@ import android.util.Log;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
 import com.example.tuttifrutti.app.Classes.StopNotificationData;
-import com.example.tuttifrutti.app.MainActivity;
 import com.example.tuttifrutti.app.PlayRoundActivity;
 import com.example.tuttifrutti.app.R;
+import com.example.tuttifrutti.app.ViewGameStatusActivity;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -78,7 +78,7 @@ public class GcmIntentService extends IntentService {
                         .setContentTitle("Notificación GCM")
                         .setContentText(msg);
 
-        Intent notIntent =  new Intent(this, MainActivity.class);
+        Intent notIntent =  new Intent(this, ViewGameStatusActivity.class);
         PendingIntent contIntent = PendingIntent.getActivity(
                 this, 0, notIntent, 0);
 

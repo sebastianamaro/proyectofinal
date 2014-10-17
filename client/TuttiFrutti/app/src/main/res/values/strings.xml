@@ -19,4 +19,5 @@
     <string name="error_dialog_button_text">OK</string>
     <string name="title_activity_view_categories">ViewCategoriesActivity</string>
     <string name="title_activity_show_game_details">ShowGameDetails</string>
+    <string name="connection_error_message">En este momento no tenes conexión a Internet. Intentalo mas tarde!</string>
 </resources>
