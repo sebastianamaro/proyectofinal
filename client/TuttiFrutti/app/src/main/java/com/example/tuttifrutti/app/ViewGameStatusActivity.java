@@ -140,29 +140,24 @@ public class ViewGameStatusActivity extends ListActivity {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
 
-                        Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
+                        FullGame itemValue = (FullGame) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
 
+                        Intent i;
                         if (itemValue instanceof UserGame) {
 
                             UserGame ug = (UserGame) itemValue;
-                            Intent i;
 
-                            //si no empezo el game
-                            // O (es la primera y no jugue)
-                            if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||
-                                    (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
+                            if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||   (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
                                 i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
                             } else {
                                 i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
-
                             }
-                            i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
-                            startActivity(i);
-                        } else  if (itemValue instanceof FullGame) {
-                            Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
-                            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
-                            startActivity(intent);
+                        } else {
+                            i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
                         }
+
+                        i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, itemValue);
+                        startActivity(i);
                     }
 
                 });

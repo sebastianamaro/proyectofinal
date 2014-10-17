@@ -74,7 +74,10 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
         else
         {
+            Button b = (Button)findViewById(R.id.btnPlay);
+            b.setVisibility(View.INVISIBLE);
             detailsList.setVisibility(View.INVISIBLE);
+
             acceptButton = (Button) findViewById(R.id.accept);
             rejectButton = (Button) findViewById(R.id.reject);
             acceptButton.setVisibility(View.VISIBLE);
@@ -86,7 +89,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     }
 
     public static boolean isPlayableGame(FullGame game){
- g       return game instanceof UserGame;
+       return game instanceof UserGame;
     }
 
     public void play(View view)
@@ -130,10 +133,12 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 TextView txtGameMode = (TextView) findViewById(R.id.gameModeTextView);
                 TextView txtOpponentsMode = (TextView) findViewById(R.id.opponentsModeTextView);
                 TextView txtCategoriesMode = (TextView) findViewById(R.id.categoryModeTextView);
+                TextView txtCreador = (TextView) findViewById(R.id.creadorTextView);
 
                 txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
                 txtOpponentsMode.setText(result.getSpanishOpponentsType());
                 txtCategoriesMode.setText(result.getSpanishCategoriesType());
+                txtCreador.setText(result.getOwner().getName());
 
                 TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
                 TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);

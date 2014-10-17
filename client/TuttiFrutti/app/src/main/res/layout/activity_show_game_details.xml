@@ -23,11 +23,36 @@
                 android:onClick="play"
                 />
 
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnPlay"
+        android:paddingTop="20dp"
+        tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
+        android:id="@+id/creatorLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Creada por: "
+            android:id="@+id/lblCreador"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/creadorTextView"
+            android:layout_toRightOf="@id/lblCreador"
+            android:paddingLeft="50dp"
+            android:layout_alignParentTop="true"
+            android:text=""/>
+
+    </RelativeLayout>
+
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/btnPlay"
+                android:layout_below="@id/creatorLayout"
                 android:paddingTop="20dp"
                 tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
                 android:id="@+id/modeLayout">
