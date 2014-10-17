@@ -77,7 +77,7 @@ public class Category implements Serializable{
 
     @Override
     public boolean equals(Object o) {
-        if(o ==null)
+        if(o ==null || !(o instanceof Category))
             return false;
 
         if(getId() != 0 && ((Category)o).getId() != 0)
