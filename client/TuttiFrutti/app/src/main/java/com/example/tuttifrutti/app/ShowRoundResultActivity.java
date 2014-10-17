@@ -184,10 +184,11 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         text.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
         text.setTextSize(25);
         text.setTypeface(null, Typeface.NORMAL);
-        layout.addView(text);
+        //layout.addView(text);
 
-        TextView score=new TextView(this.getApplicationContext());
+        TextView score= null;
         if (isComplete) {
+            score = new TextView(this.getApplicationContext());
             if (!playScoreSummary.getWord().isEmpty()) {
                 if (playScoreSummary.getScoreInfo().getScore() == -1)
                     score.setText("Tarde");
@@ -199,7 +200,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             score.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
             score.setTextSize(15);
             score.setTypeface(null, Typeface.NORMAL);
-            layout.addView(score);
+            //layout.addView(score);
         }
 
         String myFbId = FacebookHelper.getUserId();
@@ -207,10 +208,11 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         if (!playScoreSummary.isFixed() && !playScoreSummary.isValidated() && !myFbId.equals(fbId) && !playScoreSummary.getWord().isEmpty()) {
             final ImageView imgOk = new ImageView(this.getApplicationContext());
             imgOk.setImageResource(R.drawable.qualification_ok);
+            imgOk.setPadding(10, 40, 25, 26);
 
             final ImageView imgNo = new ImageView(this.getApplicationContext());
             imgNo.setImageResource(R.drawable.qualification_no);
-            imgNo.setPadding(10, 40, 33, 26);
+            imgNo.setPadding(25, 40, 2, 26);
 
             imgOk.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -238,8 +240,17 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 }
             });
 
-            layout.addView(imgOk);
             layout.addView(imgNo);
+            layout.addView(text);
+            if (score != null)
+                layout.addView(score);
+            layout.addView(imgOk);
+
+        }else
+        {
+            layout.addView(text);
+            if (score != null)
+                layout.addView(score);
         }
 
 
