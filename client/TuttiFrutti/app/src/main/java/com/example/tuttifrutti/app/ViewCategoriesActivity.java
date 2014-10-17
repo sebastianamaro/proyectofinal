@@ -67,6 +67,10 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
         addCategoryButton = (Button) findViewById(R.id.addCategory);
+        if(!gameSettings.getCategoriesType().equals("FIXED"))
+            addCategoryButton.setVisibility(View.VISIBLE);
+        else
+            addCategoryButton.setVisibility(View.INVISIBLE);
         textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
         textView.allowDuplicates(false);
 
@@ -81,7 +85,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     StringBuilder filteredStringBuilder = new StringBuilder();
                     for (int i = start; i < end; i++) {
                         char currentChar = source.charAt(i);
-                        if (Character.isLetter(currentChar)) {
+                        if (Character.isLetter(currentChar) || (Character.isSpaceChar(currentChar) && dest.length()>0 && !Character.isSpaceChar(dest.charAt(dest.length()-1)))) {
                             filteredStringBuilder.append(currentChar);
                         }
                     }
@@ -98,7 +102,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if(s != null && adapter != null){
                     String currentWord=s.toString();
 
-                    currentWord=currentWord.replace(",, ","").trim();
+                    currentWord=currentWord.replace(",, ","");
 
                     if(currentWord.length()>0 && !currentWord.equals(","))
                         adapter.getFilter().filter(currentWord);
@@ -156,9 +160,17 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     }
 
     public void addCategory(View view) {
-        Category cat= new Category();
-        cat.setName(textView.getText().toString().toUpperCase().replace(",", "").trim());
-        new CreateCategoryAsyncTask().execute(cat);
+        String name=textView.getText().toString().toUpperCase().replace(",", "").trim();
+        if(!name.equals("")){
+            Category cat= new Category();
+            cat.setName(name);
+            if(!adapter.originalCategories.contains(cat))
+                new CreateCategoryAsyncTask().execute(cat);
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Esa categoría ya existe!", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public class CreateCategoryAsyncTask extends AsyncTask<Category, Void,Category>
@@ -378,10 +390,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             }
 
             this.filteredCategories=originalCategories;
-            if(filteredCategories.size()==0 && !gameSettings.getCategoriesType().equals("FIXED"))
-                addCategoryButton.setVisibility(View.VISIBLE);
-            else
-                addCategoryButton.setVisibility(View.INVISIBLE);
+
         }
 
 
@@ -800,11 +809,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
                if(filteredCategories == null)
                     filteredCategories= new ArrayList<Object>();
-
-                if(filteredCategories.size()==0 && !gameSettings.getCategoriesType().equals("FIXED"))
-                    addCategoryButton.setVisibility(View.VISIBLE);
-                else
-                    addCategoryButton.setVisibility(View.INVISIBLE);
 
                 notifyDataSetChanged();
             }
