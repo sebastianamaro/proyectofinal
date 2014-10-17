@@ -137,5 +137,31 @@
 
             </ListView>
 
+            <Button
+                android:background="@drawable/largebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rechazar"
+                android:id="@+id/reject"
+                android:onClick="rejectInvitation"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="50dp"
+                android:visibility="gone"
+                android:layout_marginBottom="63dp" />
+
+            <Button
+                android:background="@drawable/largebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aceptar"
+                android:layout_alignParentRight="true"
+                android:id="@+id/accept"
+                android:onClick="acceptInvitation"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="50dp"
+                android:visibility="gone"
+                android:layout_marginBottom="63dp" />
+
+
 </RelativeLayout>
 

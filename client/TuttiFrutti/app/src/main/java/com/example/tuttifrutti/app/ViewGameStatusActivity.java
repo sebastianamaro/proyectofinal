@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
+import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -141,11 +142,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
                         Object itemValue = (Object) mPullToRefreshLayout.getRefreshableView().getItemAtPosition(position);
 
-                        if (itemValue instanceof FullGame) {
-                            Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
-                            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
-                            startActivity(intent);
-                        } else if (itemValue instanceof UserGame) {
+                        if (itemValue instanceof UserGame) {
 
                             UserGame ug = (UserGame) itemValue;
                             Intent i;
@@ -161,6 +158,10 @@ public class ViewGameStatusActivity extends ListActivity {
                             }
                             i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, ug);
                             startActivity(i);
+                        } else  if (itemValue instanceof FullGame) {
+                            Intent intent = new Intent(getApplicationContext(), ManageInvitationActivity.class);
+                            intent.putExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE, (FullGame) itemValue);
+                            startActivity(intent);
                         }
                     }
 
@@ -276,10 +277,6 @@ public class ViewGameStatusActivity extends ListActivity {
                 }
 
 
-                if (games.get(position) instanceof FullGame)
-                    return ITEM_VIEW_TYPE_FULL_GAME;
-
-
                 if (games.get(position) instanceof UserGame) {
                     UserGame ug = (UserGame) games.get(position);
                     if (ug.getStatus().equals("CLOSED"))
@@ -287,6 +284,12 @@ public class ViewGameStatusActivity extends ListActivity {
                     else
                         return ITEM_VIEW_TYPE_USER_GAME;
                 }
+
+                if (games.get(position) instanceof FullGame)
+                    return ITEM_VIEW_TYPE_FULL_GAME;
+
+
+
 
                 return -1;
             }
@@ -424,8 +427,8 @@ public class ViewGameStatusActivity extends ListActivity {
                 holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayers())
-                    namesToShow += name + " - ";
+                for (Player player : rowItem.getPlayers())
+                    namesToShow += player.getName() + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
                 holder.text2.setText(namesToShow);
@@ -479,8 +482,8 @@ public class ViewGameStatusActivity extends ListActivity {
                 holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
                 String namesToShow = "";
-                for (String name : rowItem.getPlayers())
-                    namesToShow += name + " - ";
+                for (Player player : rowItem.getPlayers())
+                    namesToShow += player.getName() + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
                 holder.text2.setText(namesToShow);

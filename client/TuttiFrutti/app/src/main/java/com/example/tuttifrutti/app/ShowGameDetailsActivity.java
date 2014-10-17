@@ -21,7 +21,9 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
+import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Game;
+import com.example.TuttiFruttiCore.InvitationResponse;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
@@ -40,7 +42,10 @@ import java.util.ArrayList;
 
 public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
-    UserGame game;
+    FullGame game;
+    Button acceptButton;
+    Button rejectButton;
+    ListView detailsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +61,32 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_game_details);
 
         Intent i = getIntent();
-        game = (UserGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
+        game = (FullGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
-        //no pregunto si ya jugo, porque si ya jugo no va a estar en esta pantalla
-        if (game.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED) {
-            Button b = (Button)findViewById(R.id.btnPlay);
-            b.setEnabled(false);
+        detailsList = (ListView) findViewById(R.id.detailsList);
+        if(isPlayableGame(game))
+        {
+            //no pregunto si ya jugo, porque si ya jugo no va a estar en esta pantalla
+            if (((UserGame)game).getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED) {
+                Button b = (Button)findViewById(R.id.btnPlay);
+                b.setEnabled(false);
+            }
+        }
+        else
+        {
+            detailsList.setVisibility(View.INVISIBLE);
+            acceptButton = (Button) findViewById(R.id.accept);
+            rejectButton = (Button) findViewById(R.id.reject);
+            acceptButton.setVisibility(View.VISIBLE);
+            rejectButton.setVisibility(View.VISIBLE);
         }
 
+
         new GetGameAsyncTask().execute(game);
+    }
+
+    public static boolean isPlayableGame(FullGame game){
+ g       return game instanceof UserGame;
     }
 
     public void play(View view)
@@ -76,14 +98,14 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-    public class GetGameAsyncTask extends AsyncTask<UserGame,Void, Game>
+    public class GetGameAsyncTask extends AsyncTask<FullGame,Void, Game>
     {
         TuttiFruttiAPI api;
-        UserGame gameInfo;
+        FullGame gameInfo;
         boolean connError;
 
         @Override
-        protected Game doInBackground(UserGame... userGame) {
+        protected Game doInBackground(FullGame... userGame) {
             gameInfo = userGame[0];
 
             try {
@@ -118,19 +140,33 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 lbl.setVisibility(View.GONE);
                 txt.setVisibility(View.GONE);
 
-                ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
-                String myId = FacebookHelper.getUserId();
-                for (Player p : result.getPlayers()) {
-                    String playerFbId = p.getFbId();
-                    if (!playerFbId.equals(myId))
-                        players.add(new SummarizedPlayer(p, true));
-                }
-                if (result.getOpponentsType().equals("FRIENDS"))
-                    for (Player p : result.getSelectedFriends()) {
-                        if (!result.getPlayers().contains(p))
-                            players.add(new SummarizedPlayer(p, false));
+
+
+                if(isPlayableGame(game))
+                {
+                    ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
+                    String myId = FacebookHelper.getUserId();
+                    for (Player p : result.getPlayers()) {
+                        String playerFbId = p.getFbId();
+                        if (!playerFbId.equals(myId))
+                            players.add(new SummarizedPlayer(p, true));
                     }
-                else {
+
+                    if (result.getOpponentsType().equals("FRIENDS"))
+                        for (Player p : result.getSelectedFriends()) {
+                            if (!result.getPlayers().contains(p))
+                                players.add(new SummarizedPlayer(p, false));
+                        }
+
+
+
+                    GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
+                    detailsList.setAdapter(gda);
+                }
+
+
+                if (!result.getOpponentsType().equals("FRIENDS"))
+                {
                     //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
                     int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size() - 1);
 
@@ -141,12 +177,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                     }
                 }
 
-                ListView l = (ListView) findViewById(R.id.detailsList);
-                GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
-                l.setAdapter(gda);
             }
         }
     }
+
+
 
     private class GameDetailsAdapter extends BaseAdapter{
 
@@ -380,7 +415,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             try {
                 InputStream inputStream;
-                HttpGet httpRequest = new HttpGet(URI.create("http://graph.facebook.com/" + this.fbId.toString() + "/picture?type=normal") );
+                HttpGet httpRequest = new HttpGet(URI.create("http://graph.facebook.com/" + this.fbId.toString() + "/picture?type=square&width=120&height=120") );
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
                 HttpEntity entity = response.getEntity();
@@ -411,6 +446,57 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         @Override
         public int hashCode() {
             return Integer.valueOf(this.fbId);
+        }
+    }
+
+    public void acceptInvitation(View view) {
+        SendInvitationResponse("ACCEPTED");
+    }
+
+    public void rejectInvitation(View view) {
+        SendInvitationResponse("REJECTED");
+    }
+
+    public void SendInvitationResponse(String response) {
+
+        new RespondInvitationAsyncTask().execute(response);
+    }
+
+    public class RespondInvitationAsyncTask extends AsyncTask<String, Void, Void>
+    {
+        TuttiFruttiAPI api;
+        boolean connError;
+        @Override
+        protected Void doInBackground(String... response) {
+            String fbId= FacebookHelper.getUserId();
+
+            Player me = new Player();
+            me.setFbId(fbId);
+
+            InvitationResponse ir= new InvitationResponse(response[0],me);
+
+            try {
+                api.respondInvitation(game.getGameId(), ir);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+            }
+            return null;
+        }
+
+        protected void onPreExecute(){
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (this.connError)
+            {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }else {
+                Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
+                startActivity(intent);
+            }
         }
     }
 }
