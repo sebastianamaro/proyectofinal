@@ -148,7 +148,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             text.setTextColor(Color.parseColor("#10B51B"));
         else
             text.setTextColor(Color.parseColor("#C96609"));
-        text.setTextSize(20);
+        text.setTextSize(15);
         text.setTypeface(null, Typeface.BOLD);
         text.setGravity(Gravity.CENTER);
 
@@ -162,7 +162,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         text.setBackgroundResource(R.drawable.cell_shape);
         text.setPadding(40, 40, 40, 40);
         text.setTextColor(Color.parseColor("#C96609"));
-        text.setTextSize(20);
+        text.setTextSize(15);
         text.setTypeface(null, Typeface.BOLD);
 
         row.addView(text);
@@ -182,7 +182,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             text.setText(playScoreSummary.getWord());
         text.setPadding(33, 33, 10, 33);
         text.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
-        text.setTextSize(25);
+        text.setTextSize(20);
         text.setTypeface(null, Typeface.NORMAL);
         //layout.addView(text);
 
@@ -198,7 +198,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
             score.setPadding(10, 40, 33, 26);
             score.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
-            score.setTextSize(15);
+            score.setTextSize(10);
             score.setTypeface(null, Typeface.NORMAL);
             //layout.addView(score);
         }
