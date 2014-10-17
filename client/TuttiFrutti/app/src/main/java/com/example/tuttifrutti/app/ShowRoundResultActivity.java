@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Category;
@@ -28,6 +29,8 @@ import com.example.TuttiFruttiCore.PlayScoreSummary;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 
@@ -54,78 +57,89 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
         startActivity(intent);
     }
 
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, PlayerRoundScoreSummary> {
         private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
         TuttiFruttiAPI api;
+        boolean connError;
 
         @Override
         protected PlayerRoundScoreSummary doInBackground(Void... filePlays) {
             String fbId = FacebookHelper.getUserId();
-            return api.getRoundScore(gameInfo.getGameId(), fbId);
+            try{
+                return api.getRoundScore(gameInfo.getGameId(), fbId);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(PlayerRoundScoreSummary result) {
-            //caso1: jugue y NO se termino la ronda -> sin boton jugar
-            //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
-            //caso2: NO jugue la ronda actual ->  boton ESTA ronda
-            Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
-            if (!result.getCanPlayerPlay())
-                btnJugar.setEnabled(false);
+            if (this.connError) {
+                Dialog.dismiss();
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            } else {
 
-            String[] categories = new String[result.getRoundScoreSummaries().get(0).getPlays().size()];
+                //caso1: jugue y NO se termino la ronda -> sin boton jugar
+                //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
+                //caso2: NO jugue la ronda actual ->  boton ESTA ronda
+                Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
+                if (!result.getCanPlayerPlay())
+                    btnJugar.setEnabled(false);
 
-            int k = 0;
+                String[] categories = new String[result.getRoundScoreSummaries().get(0).getPlays().size()];
 
-            for (PlayScoreSummary onePlay:result.getRoundScoreSummaries().get(0).getPlays())
-            {
-                categories[k] = onePlay.getCategory();
-                k++;
-            }
+                int k = 0;
 
-            TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
-            table.setGravity(Gravity.TOP);
-
-            TableRow contentRow;
-            TableRow totalScoreRow=new TableRow(getApplicationContext());
-            TableRow playersRow=new TableRow(getApplicationContext());
-
-            AddHeaderTextView(playersRow, "Categorias");
-            AddTotalTextView(totalScoreRow, null);
-
-            for (int i=0;i<categories.length;i++)
-            {
-                contentRow=new TableRow(getApplicationContext());
-                AddHeaderTextView(contentRow, categories[i]);
-                for (int j=0;j<result.getRoundScoreSummaries().size();j++) {
-                    //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
-                    if (i==0) {
-                        AddHeaderTextView(playersRow, result.getRoundScoreSummaries().get(j).getPlayer().getName());
-                        if(result.getIsComplete())
-                            AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo());
-                    }
-
-                    //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
-                    PlayScoreSummary linePlayForCategory = result.getRoundScoreSummaries().get(j).getPlays().get(i);
-                    AddContentTextView(contentRow, linePlayForCategory, result.getIsComplete(), result.getRoundScoreSummaries().get(j).getPlayer().getFbId());
+                for (PlayScoreSummary onePlay : result.getRoundScoreSummaries().get(0).getPlays()) {
+                    categories[k] = onePlay.getCategory();
+                    k++;
                 }
 
-                //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
-                if (i==0)
-                    table.addView(playersRow);
+                TableLayout table = (TableLayout) findViewById(R.id.resultsTable);
+                table.setGravity(Gravity.TOP);
 
-                table.addView(contentRow);
+                TableRow contentRow;
+                TableRow totalScoreRow = new TableRow(getApplicationContext());
+                TableRow playersRow = new TableRow(getApplicationContext());
+
+                AddHeaderTextView(playersRow, "Categorias");
+                AddTotalTextView(totalScoreRow, null);
+
+                for (int i = 0; i < categories.length; i++) {
+                    contentRow = new TableRow(getApplicationContext());
+                    AddHeaderTextView(contentRow, categories[i]);
+                    for (int j = 0; j < result.getRoundScoreSummaries().size(); j++) {
+                        //si estoy en la primera categoria, aprovecho la recorrida de las lines y lleno los players y el score de la ronda x cada player
+                        if (i == 0) {
+                            AddHeaderTextView(playersRow, result.getRoundScoreSummaries().get(j).getPlayer().getName());
+                            if (result.getIsComplete())
+                                AddTotalTextView(totalScoreRow, result.getRoundScoreSummaries().get(j).getScoreInfo());
+                        }
+
+                        //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
+                        PlayScoreSummary linePlayForCategory = result.getRoundScoreSummaries().get(j).getPlays().get(i);
+                        AddContentTextView(contentRow, linePlayForCategory, result.getIsComplete(), result.getRoundScoreSummaries().get(j).getPlayer().getFbId());
+                    }
+
+                    //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
+                    if (i == 0)
+                        table.addView(playersRow);
+
+                    table.addView(contentRow);
+                }
+
+                // la ultima fila que agrego es la de los puntajes
+                if (result.getIsComplete())
+                    table.addView(totalScoreRow);
+
+                Dialog.dismiss();
             }
-
-            // la ultima fila que agrego es la de los puntajes
-            if(result.getIsComplete())
-                table.addView(totalScoreRow);
-
-            Dialog.dismiss();
         }
 
         @Override
@@ -219,8 +233,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 public void onClick(View view) {
                     try {
                         new SetQualificationAsyncTask(true, playScoreSummary.getCategory(), fbId, view, imgNo).execute();
-                    }catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         Log.e("LALA", ex.getMessage());
                     }
 
@@ -297,6 +310,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         String judgedPlayer;
         View imgYes;
         View imgNo;
+        boolean connError;
 
         private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
 
@@ -317,15 +331,27 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... smth) {
-            api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameInfo.getGameId());
+            try
+            {
+                api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameInfo.getGameId());
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            this.imgYes.setVisibility(View.GONE);
-            this.imgNo.setVisibility(View.GONE);
-            Dialog.dismiss();
+            if (this.connError)
+            {
+                Dialog.dismiss();
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }else {
+                this.imgYes.setVisibility(View.GONE);
+                this.imgNo.setVisibility(View.GONE);
+                Dialog.dismiss();
+            }
         }
     }
 

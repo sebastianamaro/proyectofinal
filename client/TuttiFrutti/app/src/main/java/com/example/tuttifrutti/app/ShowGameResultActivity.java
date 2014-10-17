@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.GameScoreSummary;
@@ -23,6 +24,8 @@ import com.example.TuttiFruttiCore.GameRoundScoreSummary;
 import com.example.TuttiFruttiCore.PlayerResult;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiAPI;
+
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 
@@ -46,6 +49,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
         private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
         TuttiFruttiAPI api;
         int gameId;
+        boolean connError;
 
         public GetScoresAsyncTask(int gameId)
         {
@@ -54,53 +58,61 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
         @Override
         protected GameScoreSummary doInBackground(Void... filePlays) {
-            return api.getGameScores(this.gameId);
+            try {
+                return api.getGameScores(this.gameId);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(GameScoreSummary result) {
-            TableLayout table = (TableLayout)findViewById(R.id.resultsTable);
-            table.setGravity(Gravity.TOP);
+            if (this.connError) {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            } else {
+                TableLayout table = (TableLayout) findViewById(R.id.resultsTable);
+                table.setGravity(Gravity.TOP);
 
-            GameRoundScoreSummary roundRes;
+                GameRoundScoreSummary roundRes;
 
-            TableRow contentRow;
-            TableRow totalScoreRow=new TableRow(getApplicationContext());
-            TableRow playersRow=new TableRow(getApplicationContext());
+                TableRow contentRow;
+                TableRow totalScoreRow = new TableRow(getApplicationContext());
+                TableRow playersRow = new TableRow(getApplicationContext());
 
-            AddHeaderTextView(playersRow, "Rondas");
+                AddHeaderTextView(playersRow, "Rondas");
 
-            for (String p : result.getPlayers())
-            {
-                AddHeaderTextView(playersRow, p);
-            }
-
-            table.addView(playersRow);
-            //las rondas vienen al reves, primero la ultima y ultima la primera
-            for (int i=result.getRoundsResult().size()-1;i>=0;i--)
-            {
-                contentRow=new TableRow(getApplicationContext());
-                roundRes = result.getRoundsResult().get(i);
-                AddHeaderTextView(contentRow, "Ronda " + roundRes.getRoundLetter());
-
-                for (int j=0;j<roundRes.getScores().size();j++) {
-                    ScoreInfo score = roundRes.getScores().get(j);
-                    AddContentTextView(contentRow, score);
+                for (String p : result.getPlayers()) {
+                    AddHeaderTextView(playersRow, p);
                 }
 
-                table.addView(contentRow);
+                table.addView(playersRow);
+                //las rondas vienen al reves, primero la ultima y ultima la primera
+                for (int i = result.getRoundsResult().size() - 1; i >= 0; i--) {
+                    contentRow = new TableRow(getApplicationContext());
+                    roundRes = result.getRoundsResult().get(i);
+                    AddHeaderTextView(contentRow, "Ronda " + roundRes.getRoundLetter());
+
+                    for (int j = 0; j < roundRes.getScores().size(); j++) {
+                        ScoreInfo score = roundRes.getScores().get(j);
+                        AddContentTextView(contentRow, score);
+                    }
+
+                    table.addView(contentRow);
+                }
+
+                AddTotalTextView(totalScoreRow, null); //la primera es la columna de las rondas
+                ArrayList<ScoreInfo> playersRes = result.getPlayerResult();
+                for (int k = 0; k < playersRes.size(); k++) {
+                    AddTotalTextView(totalScoreRow, playersRes.get(k));
+                }
+
+                // la ultima fila que agrego es la de los puntajes
+                table.addView(totalScoreRow);
+
+                Dialog.dismiss();
             }
-
-            AddTotalTextView(totalScoreRow, null); //la primera es la columna de las rondas
-            ArrayList<ScoreInfo> playersRes = result.getPlayerResult();
-            for (int k=0;k<playersRes.size();k++) {
-                AddTotalTextView(totalScoreRow, playersRes.get(k));
-            }
-
-            // la ultima fila que agrego es la de los puntajes
-            table.addView(totalScoreRow);
-
-            Dialog.dismiss();
         }
 
         @Override

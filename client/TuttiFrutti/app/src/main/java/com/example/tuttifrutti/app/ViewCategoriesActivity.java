@@ -36,6 +36,8 @@ import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView;
 
+import org.springframework.web.client.ResourceAccessException;
+
 import java.util.ArrayList;
 
 
@@ -162,6 +164,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     public class CreateCategoryAsyncTask extends AsyncTask<Category, Void,Category>
     {
         TuttiFruttiAPI api;
+        boolean connError;
 
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));
@@ -169,13 +172,23 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
         @Override
         protected Category doInBackground(Category... categories) {
-
-            return api.createCategory(categories[0]);
+            try{
+                return api.createCategory(categories[0]);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(Category result) {
-            new GetCategoriesAsyncTask(result).execute();
+            if (this.connError)
+            {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }else {
+                new GetCategoriesAsyncTask(result).execute();
+            }
         }
     }
 
@@ -195,7 +208,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             ad.setButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
                     startActivity(intent);
                 }
             });
@@ -204,14 +217,13 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
     }
 
-
-
-
         public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
 
         Category recentlyCreatedCategory;
-        public GetCategoriesAsyncTask(){
+        TuttiFruttiAPI api;
+        boolean connError;
 
+        public GetCategoriesAsyncTask(){
         }
 
         public GetCategoriesAsyncTask(Category recentlyCreatedCategory){
@@ -221,14 +233,18 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         protected ArrayList<Category> doInBackground(Void... voids) {
 
             ArrayList<Category> categories;
-            if(gameSettings.getCategoriesType().equals("FIXED"))
-                categories=api.getFixedCategories();
-            else
-                categories  = api.getCategoriesForPlayer(FacebookHelper.getUserId());
-            return categories;
+            try {
+                if (gameSettings.getCategoriesType().equals("FIXED"))
+                    categories = api.getFixedCategories();
+                else
+                    categories = api.getCategoriesForPlayer(FacebookHelper.getUserId());
+                return categories;
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
-
-        TuttiFruttiAPI api;
 
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));
@@ -236,55 +252,57 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
         @Override
         protected void onPostExecute(ArrayList<Category> result) {
+            if (this.connError) {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            } else {
+                ArrayList<String> categoriesNames = new ArrayList<String>();
+                ArrayList<Category> categories = new ArrayList<Category>();
+                ArrayList<Category> staredCategories = new ArrayList<Category>();
+                ArrayList<Category> fixedCategories = new ArrayList<Category>();
 
-            ArrayList<String> categoriesNames= new ArrayList<String>();
-            ArrayList<Category> categories=new ArrayList<Category>();
-            ArrayList<Category> staredCategories=new ArrayList<Category>();
-            ArrayList<Category> fixedCategories=new ArrayList<Category>();
+                for (Category category : result) {
 
-            for(Category category : result){
+                    if (category.isStared())
+                        staredCategories.add(category);
+                    else if (category.isFixed())
+                        fixedCategories.add(category);
+                    else
+                        categories.add(category);
 
-                if(category.isStared())
-                    staredCategories.add(category);
-                else if(category.isFixed())
-                    fixedCategories.add(category);
-                else
-                    categories.add(category);
-
-                 categoriesNames.add(category.getName());
-            }
-
-
-
-            final TuttiFruttiAutoCompleteTextView textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
-            textView.setTokenListener(ViewCategoriesActivity.this);
-
-            ViewCategoriesActivity.this.adapter= new CategoryAdapter(getApplicationContext(), categories, staredCategories, fixedCategories);
-
-            categoriesList.setAdapter(ViewCategoriesActivity.this.adapter);
-
-            categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Category itemValue = (Category) categoriesList.getItemAtPosition(position);
-
-                    if (selectedCategories.contains(itemValue)) {
-                        selectedCategories.remove(itemValue);
-                        textView.removeObject(itemValue);
-                    } else {
-                        selectedCategories.add(itemValue);
-                        textView.addObject(itemValue);
-                    }
-
-                    ViewCategoriesActivity.this.adapter.notifyDataSetChanged();
+                    categoriesNames.add(category.getName());
                 }
 
-            });
 
-            if(recentlyCreatedCategory != null)
-                textView.addObject(recentlyCreatedCategory);
+                final TuttiFruttiAutoCompleteTextView textView = (TuttiFruttiAutoCompleteTextView) findViewById(R.id.searchView);
+                textView.setTokenListener(ViewCategoriesActivity.this);
+
+                ViewCategoriesActivity.this.adapter = new CategoryAdapter(getApplicationContext(), categories, staredCategories, fixedCategories);
+
+                categoriesList.setAdapter(ViewCategoriesActivity.this.adapter);
+
+                categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        Category itemValue = (Category) categoriesList.getItemAtPosition(position);
+
+                        if (selectedCategories.contains(itemValue)) {
+                            selectedCategories.remove(itemValue);
+                            textView.removeObject(itemValue);
+                        } else {
+                            selectedCategories.add(itemValue);
+                            textView.addObject(itemValue);
+                        }
+
+                        ViewCategoriesActivity.this.adapter.notifyDataSetChanged();
+                    }
+
+                });
+
+                if (recentlyCreatedCategory != null)
+                    textView.addObject(recentlyCreatedCategory);
+            }
         }
     }
 
@@ -581,6 +599,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         public class ReportCategoryAsyncTask extends AsyncTask<Category, Void, Category>
         {
             TuttiFruttiAPI api;
+            boolean connError;
 
             protected void onPreExecute(){
                 api=new TuttiFruttiAPI(getString(R.string.server_url));
@@ -588,22 +607,31 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             @Override
             protected Category doInBackground(Category... categoryId) {
-                api.reportCategory(categoryId[0].getId());
+                try{
+                    api.reportCategory(categoryId[0].getId());
+                }catch (ResourceAccessException ex)
+                {
+                    this.connError = true;
+                }
                 return null;
             }
 
             @Override
             protected void onPostExecute(Category result) {
-
-                ((Category) result).setReported(true);
-                CategoryAdapter.this.notifyDataSetChanged();
+                if (this.connError)
+                {
+                    Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+                }else {
+                    ((Category) result).setReported(true);
+                    CategoryAdapter.this.notifyDataSetChanged();
+                }
             }
         }
 
         public class StarCategoryAsyncTask extends AsyncTask<Category, Void, Category>
         {
             TuttiFruttiAPI api;
-
+            boolean connError;
 
             protected void onPreExecute(){
                 api=new TuttiFruttiAPI(getString(R.string.server_url));
@@ -611,15 +639,25 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             @Override
             protected Category doInBackground(Category... categoryId) {
+                try {
                 api.starCategory(FacebookHelper.getUserId(),categoryId[0].getId());
                 return categoryId[0];
+                }catch (ResourceAccessException ex)
+                {
+                    this.connError = true;
+                    return null;
+                }
             }
 
             @Override
             protected void onPostExecute(Category result) {
-
-                ((Category) result).setStared(!((Category) result).isStared());
-                CategoryAdapter.this.notifyDataSetChanged();
+                if (this.connError)
+                {
+                    Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+                }else {
+                    ((Category) result).setStared(!((Category) result).isStared());
+                    CategoryAdapter.this.notifyDataSetChanged();
+                }
             }
         }
 

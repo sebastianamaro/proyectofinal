@@ -57,7 +57,7 @@ public class AndroidFacebookConnectActivity extends Activity {
                                         TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                                         api.AddPlayer(newPlayer);
 
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
                                         startActivity(intent);
                                     }else
                                         Toast.makeText(getApplicationContext(),
@@ -92,7 +92,7 @@ public class AndroidFacebookConnectActivity extends Activity {
 
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
             startActivity(intent);
         }
         else {

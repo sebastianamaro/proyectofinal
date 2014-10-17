@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.IOException;
 import com.example.TuttiFruttiAPI;
@@ -37,6 +39,8 @@ import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.example.tuttifrutti.app.Classes.StopNotificationData;
+
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -110,6 +114,7 @@ public class PlayRoundActivity extends FragmentActivity implements
             if (currentRound == null) {
                 TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                 int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
             EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!",false);
@@ -278,56 +283,68 @@ public class PlayRoundActivity extends FragmentActivity implements
     private class APIStartRoundTask extends AsyncTask<Integer, Void, FullRound>{
 
         TuttiFruttiAPI api;
+        boolean connError;
+
         @Override
         protected FullRound doInBackground(Integer... integers) {
-            api.startRound(integers[0]);
-            return api.getCurrentRoundInformation(integers[0]);
+            try {
+                api.startRound(integers[0]);
+                return api.getCurrentRoundInformation(integers[0]);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(FullRound result) {
+            if (this.connError) {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            } else {
+                currentRound = result;
+                setTitle("Ronda " + currentRound.getRoundId());
+                fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(result.getGameId()) + "_" + Integer.toString(result.getRoundId()) + ".txt";
 
-            currentRound=result;
-            setTitle("Ronda "+ currentRound.getRoundId());
-            fileName = getCacheDir().getAbsolutePath() + "/" + Integer.toString(result.getGameId()) + "_" +  Integer.toString(result.getRoundId())  + ".txt";
+                final ActionBar actionBar = getActionBar();
 
-            final ActionBar actionBar = getActionBar();
+                // Specify that tabs should be displayed in the action bar.
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-            // Specify that tabs should be displayed in the action bar.
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+                for (String category : result.getCategories()) {
+                    actionBar.addTab(actionBar.newTab().setText(category).setTabListener(PlayRoundActivity.this));
+                }
 
-            for (String category : result.getCategories()) {
-                actionBar.addTab(actionBar.newTab().setText(category).setTabListener(PlayRoundActivity.this));
-            }
+                View homeIcon = findViewById(android.R.id.home);
+                ((View) homeIcon.getParent()).setVisibility(View.GONE);
 
-            View homeIcon = findViewById(android.R.id.home);
-            ((View) homeIcon.getParent()).setVisibility(View.GONE);
+                //actionBar.setDisplayShowHomeEnabled(false);
+                //actionBar.setDisplayShowTitleEnabled(false);
 
-            //actionBar.setDisplayShowHomeEnabled(false);
-            //actionBar.setDisplayShowTitleEnabled(false);
+                ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+                viewPager.setAdapter(new SampleFragmentPagerAdapter());
 
-            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            viewPager.setAdapter(new SampleFragmentPagerAdapter());
+                viewPager.setOnPageChangeListener(
+                        new ViewPager.SimpleOnPageChangeListener() {
+                            int prevSelectedTab = 0;
 
-            viewPager.setOnPageChangeListener(
-                    new ViewPager.SimpleOnPageChangeListener() {
-                        int prevSelectedTab = 0;
-                        @Override
-                        public void onPageSelected(int position) {
-                            // When swiping between pages, select the
-                            // corresponding tab.
+                            @Override
+                            public void onPageSelected(int position) {
+                                // When swiping between pages, select the
+                                // corresponding tab.
 
-                            if (prevSelectedTab != position)
-                                prevSelectedTab = position;
+                                if (prevSelectedTab != position)
+                                    prevSelectedTab = position;
 
-                            getActionBar().setSelectedNavigationItem(position);
+                                getActionBar().setSelectedNavigationItem(position);
+                            }
+
                         }
+                );
 
-                    }
-            );
+                new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, result.getRoundId()));
 
-            new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, result.getRoundId()));
-
+            }
         }
 
         protected void onPreExecute(){
@@ -337,17 +354,34 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     private class APIFinishRoundTask extends AsyncTask<FinishedRound, Void, Void>{
         TuttiFruttiAPI api;
+        boolean connError;
 
         @Override
         protected Void doInBackground(FinishedRound... finishedRounds) {
-            String regid = new PlayServicesHelper(MainActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
+            String regid = new PlayServicesHelper(ViewGameStatusActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
             String fbId=FacebookHelper.getUserId();
-            api.finishRound(finishedRounds[0].getGameId(),finishedRounds[0].getRoundId(),fbId,regid,finishedRounds[0].getStartTime(),finishedRounds[0].getFinishTime(), finishedRounds[0].getPlays());
-            return null;
+            try {
+                api.finishRound(finishedRounds[0].getGameId(), finishedRounds[0].getRoundId(), fbId, regid, finishedRounds[0].getStartTime(), finishedRounds[0].getFinishTime(), finishedRounds[0].getPlays());
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
             }
 
+            return null;
+         }
+
+        @Override
         protected void onPreExecute(){
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            if (this.connError)
+            {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -469,7 +503,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                            intent.getIntExtra(Constants.ROUND_ID_EXTRA_MESSAGE, currentRound.getRoundId());
                        }
                        else
-                           intent = new Intent(getApplicationContext(), MainActivity.class);
+                           intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
 
                        startActivity(intent);
                    }

@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Constants;
@@ -17,6 +18,8 @@ import com.example.TuttiFruttiCore.InvitationResponse;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.TuttiFruttiCore.Player;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
+
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 
@@ -66,6 +69,7 @@ public class ManageInvitationActivity extends ActionBarActivity {
     public class RespondInvitationAsyncTask extends AsyncTask<String, Void, Void>
     {
         TuttiFruttiAPI api;
+        boolean connError;
         @Override
         protected Void doInBackground(String... response) {
             String fbId= FacebookHelper.getUserId();
@@ -75,7 +79,12 @@ public class ManageInvitationActivity extends ActionBarActivity {
 
             InvitationResponse ir= new InvitationResponse(response[0],me);
 
-            api.respondInvitation(gameSettings.getGameId(), ir);
+            try {
+                api.respondInvitation(gameSettings.getGameId(), ir);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+            }
             return null;
         }
 
@@ -85,8 +94,13 @@ public class ManageInvitationActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-            startActivity(intent);
+            if (this.connError)
+            {
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }else {
+                Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
+                startActivity(intent);
+            }
         }
     }
 }
