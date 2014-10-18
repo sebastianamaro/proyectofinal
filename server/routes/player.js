@@ -155,6 +155,8 @@ deleteFinishedGame = function(req,res){
             
             for (var i = categories.length - 1; i >= 0; i--) {
                
+               if(!categories[i].isReported){
+                
                   var summarizedCategory = categories[i].asSummarized();
 
                   
@@ -164,7 +166,7 @@ deleteFinishedGame = function(req,res){
                       summarizedCategory['isStared'] = false;
 
                  summarizedCategories.push(summarizedCategory);
-             
+               }
             }
 
              res.send(summarizedCategories, 200); //add error manipulation

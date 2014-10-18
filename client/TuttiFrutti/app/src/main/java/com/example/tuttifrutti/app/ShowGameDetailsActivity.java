@@ -76,7 +76,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         {
             Button b = (Button)findViewById(R.id.btnPlay);
             b.setVisibility(View.INVISIBLE);
-            detailsList.setVisibility(View.INVISIBLE);
+            detailsList.setVisibility(View.GONE);
 
             acceptButton = (Button) findViewById(R.id.accept);
             rejectButton = (Button) findViewById(R.id.reject);
