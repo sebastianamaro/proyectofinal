@@ -55,6 +55,33 @@ module.exports = function(app) {
       });
     });
   }
+  reportWordAsValid = function(req, res)
+  {
+    Category.findOne({name:req.params.name}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      
+      if (!arrayContains(category.reportedWords,valueWord)){
+        category.reportedWords.push(valueWord);
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Added word to reported words in category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+
+  }
   addReportedWordToCategory = function(req, res){
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);

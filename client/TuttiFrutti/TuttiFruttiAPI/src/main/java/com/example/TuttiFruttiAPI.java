@@ -308,5 +308,19 @@ public class TuttiFruttiAPI {
 
         restTemplate.put(url, q);
     }
+
+    public void reportWordAsValid(String category, String word) {
+        //String url= serverURL+"game/"+gameId+"/round/qualification/"+userId;
+        String url = serverURL+"category/"+category+"/"+word+"/reportAsValid";
+
+        //req.body.category, req.body.isValid, req.body.player
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
+
+        restTemplate.put(url, null);
+    }
 }
 

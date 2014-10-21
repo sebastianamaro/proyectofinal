@@ -12,9 +12,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -186,6 +188,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
+        String myFbId = FacebookHelper.getUserId();
 
         TextView text=new TextView(getApplicationContext());
         if (playScoreSummary.getWord().isEmpty()) {
@@ -201,6 +204,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         //layout.addView(text);
 
         TextView score= null;
+        ImageView imgReport=null;
         if (isComplete) {
             score = new TextView(this.getApplicationContext());
             if (!playScoreSummary.getWord().isEmpty()) {
@@ -215,9 +219,27 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             score.setTextSize(10);
             score.setTypeface(null, Typeface.NORMAL);
             //layout.addView(score);
-        }
 
-        String myFbId = FacebookHelper.getUserId();
+            if (myFbId.equals(fbId) && playScoreSummary.getScoreInfo().getScore() == ScoresForPlay.INVALID.getValue()
+                    && playScoreSummary.isFixed())
+            {
+                imgReport = new ImageView(this.getApplicationContext());
+                imgReport.setImageResource(R.drawable.attention2_small);
+                imgReport.setPadding(10, 30, 25, 26);
+
+                imgReport.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            new ReportWordAsValidAsyncTask(playScoreSummary.getCategory(), playScoreSummary.getWord(), view).execute();
+                        } catch (Exception ex) {
+                            Log.e("LALA", ex.getMessage());
+                        }
+
+                    }
+                });
+            }
+        }
 
         if (!playScoreSummary.isFixed() && !playScoreSummary.isValidated() && !myFbId.equals(fbId) && !playScoreSummary.getWord().isEmpty()) {
             final ImageView imgOk = new ImageView(this.getApplicationContext());
@@ -264,6 +286,9 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             layout.addView(text);
             if (score != null)
                 layout.addView(score);
+            if (imgReport != null)
+                layout.addView(imgReport);
+
         }
 
 
@@ -350,6 +375,54 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             }else {
                 this.imgYes.setVisibility(View.GONE);
                 this.imgNo.setVisibility(View.GONE);
+                Dialog.dismiss();
+            }
+        }
+    }
+
+    public class ReportWordAsValidAsyncTask extends AsyncTask<Void, Void, Void>
+    {
+        TuttiFruttiAPI api;
+        String category;
+        String word;
+        View imgReport;
+        boolean connError;
+
+        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
+
+        public ReportWordAsValidAsyncTask(String category, String word, View imgReport)
+        {
+            this.category = category;
+            this.word = word;
+            this.imgReport = imgReport;
+        }
+
+        protected void onPreExecute(){
+            Dialog.setMessage("Enviando reporte...");
+            Dialog.show();
+            api=new TuttiFruttiAPI(getString(R.string.server_url));
+        }
+
+        @Override
+        protected Void doInBackground(Void... smth) {
+            try
+            {
+                api.reportWordAsValid(this.category, this.word);
+            }catch (ResourceAccessException ex)
+            {
+                this.connError = true;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (this.connError)
+            {
+                Dialog.dismiss();
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+            }else {
+                this.imgReport.setVisibility(View.GONE);
                 Dialog.dismiss();
             }
         }
