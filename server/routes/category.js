@@ -39,8 +39,9 @@ module.exports = function(app) {
       if (!hasValue(valueWord)){
         return res.status(204).send();  
       }
-      if (arrayContains(category.reportedWords,valueWord)){
-        var index = category.reportedWords.indexOf(valueWord);
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
+        var index = category.reportedWords.indexOf(reportedWord);
         category.reportedWords.splice(index, 1);
       }
 
@@ -55,6 +56,37 @@ module.exports = function(app) {
       });
     });
   }
+  reportWordAsValid = function(req, res)
+  {
+    Category.findOne({name:req.params.name}, function (err, category){
+      if (err) return res.send(err, 500);
+      if (!category) return res.send('Category not found', 404);   
+
+      var valueWord = req.params.word.toUpperCase().trim();
+      if (!hasValue(valueWord)){
+        return res.status(204).send();  
+      }
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord == undefined){
+        category.reportedWords.push( { "word":valueWord, "count":1 });
+      }
+      else
+      {
+        reportedWord.count = reportedWord.count + 1;
+      }
+
+      category.save(function(err) {
+        if(!err) {
+          console.log('Added word to reported words in category with id '+category.id);
+          return res.status(204).send();  
+        } else {
+          console.log('ERROR: Save category failed. ' + err);
+          return res.send('Save category failed',500);  
+        }
+      });
+    });
+
+  }
   addReportedWordToCategory = function(req, res){
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);
@@ -64,7 +96,8 @@ module.exports = function(app) {
       if (!hasValue(valueWord)){
         return res.status(204).send();  
       }
-      if (arrayContains(category.reportedWords,valueWord)){
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
         category.acceptedWords.push(valueWord);
       }
 
@@ -91,8 +124,9 @@ module.exports = function(app) {
       if (!arrayContains(category.acceptedWords,valueWord)){
         category.acceptedWords.push(valueWord);
       }
-      if (arrayContains(category.reportedWords,valueWord)){
-        var index = category.reportedWords.indexOf(valueWord);
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
+        var index = category.reportedWords.indexOf(reportedWord);
         category.reportedWords.splice(index, 1);
       }
 

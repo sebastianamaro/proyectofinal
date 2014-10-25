@@ -5,7 +5,7 @@ var categorySchema = new Schema({
   id:   {type: Number},
   name : { type: String },
   acceptedWords:   [ {type: String} ],
-  reportedWords:   [ {type: String} ],
+  reportedWords:   [ { count: { type : Number } , word: { type : String } } ],
   hits:   {type: Number},
   isFixed:   {type: Boolean},
   isReported:   {type: Boolean}
@@ -21,6 +21,13 @@ categorySchema.methods.setValues = function (category) {
 	this.isStared=category.isStared;
 	this.isReported=category.isReported;
 	this.isFixed=category.isFixed;
+}
+
+categorySchema.methods.getReportedWord = function(search)
+{
+  return this.reportedWords.filter(function (reportedWord) {
+    return reportedWord.word == search;
+  }).pop();
 }
 
 categorySchema.methods.asSummarized = function asSummarized() {
