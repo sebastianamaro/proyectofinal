@@ -46,4 +46,27 @@ public class UserGame extends FullGame implements Serializable {
         this.isFirstRound = isFirstRound;
     }
 
+    public boolean isFinishedOrRejected() {
+        return this.isFinished() || this.allPlayersRejected();
+    }
+
+    public boolean isFinished()
+    {
+        return this.getStatus().equals("CLOSED");
+    }
+
+    public boolean allPlayersRejected()
+    {
+        return this.getStatus().equals("ALLPLAYERSREJECTED");
+    }
+
+    public boolean SelectedFriendIsPlayer(String name) {
+        for (Player p : this.getPlayers())
+        {
+            if (p.getName().equals(name))
+                return true;
+        }
+
+        return false;
+    }
 }

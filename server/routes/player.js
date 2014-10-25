@@ -59,6 +59,7 @@ module.exports = function(app) {
 		        for (var i = games.length - 1; i >= 0; i--) {
 		        	var game = games[i];
               var playersNameArray =game.getOtherPlayersFirstNames();
+              var selectedFriendsNameArray =game.getSelectedFriendsFirstNames();
               var currentRound;
               var playerHasPlayed = false;
               var isFirstRound = true;
@@ -102,7 +103,9 @@ module.exports = function(app) {
                     "players": playersNameArray,
                     "isFirstRound":isFirstRound, 
                     "statusCode":statusCode,
-                    "playerHasPlayedCurrentRound":playerHasPlayed});
+                    "playerHasPlayedCurrentRound":playerHasPlayed,
+                    "randomPlayersCount" : game.randomPlayersCount,
+                    "selectedFriends":selectedFriendsNameArray});
 		        };
 	        }
 	      	res.send(gamesToReturn, 200); //add error manipulation
@@ -110,14 +113,18 @@ module.exports = function(app) {
     });
   }
 
-deleteFinishedGame = function(req,rest){
+deleteFinishedGame = function(req,res){
+    console.log("holaaa");
+    console.log("req.params.id " + req.params.id);
      Player.findOne({ fbId: req.params.id }, function (err, player){
         if (err) return res.send(err, 500);
         if (!player) return res.send('Player not found', 404);   
-        
+        console.log("existe el player");
         var finishedStatus = new Game().getStatus().FINISHED;
+        var allPlayersRejectedStatus = new Game().getStatus().ALL_PLAYERS_REJECTED;
+        var statuses = [allPlayersRejectedStatus,finishedStatus];
 
-        Game.findOne({ gameId: req.params.game, status: finishedStatus }, function(err, game) {
+        Game.findOne({ 'gameId': req.params.game, 'status': { $in :  statuses} }, function(err, game) {
             if (err) return res.send(err, 500);
             if (!game) return res.send('Game not found', 404);
 
@@ -186,7 +193,6 @@ deleteFinishedGame = function(req,rest){
   }
 
   getInvitationsForPlayer = function(req, res) {
-    console.log("holaaa");
       Player.findOne({ fbId: req.params.id }, function (err, player){
           if (err) return res.send(err, 500);
           if (!player) return res.send('Player not found', 404);   
@@ -200,7 +206,7 @@ deleteFinishedGame = function(req,rest){
                 gamesToReturn.push(game.asSummarized());
               };
             }
-            console.log("encontre invitaciones: "+gamesToReturn.length);  
+            console.log("Found : "+gamesToReturn.length + " invitations for player " + player.getName());  
             res.send(gamesToReturn, 200); //add error manipulation
           });
 
