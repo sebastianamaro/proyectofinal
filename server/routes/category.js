@@ -39,8 +39,9 @@ module.exports = function(app) {
       if (!hasValue(valueWord)){
         return res.status(204).send();  
       }
-      if (arrayContains(category.reportedWords,valueWord)){
-        var index = category.reportedWords.indexOf(valueWord);
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
+        var index = category.reportedWords.indexOf(reportedWord);
         category.reportedWords.splice(index, 1);
       }
 
@@ -65,9 +66,13 @@ module.exports = function(app) {
       if (!hasValue(valueWord)){
         return res.status(204).send();  
       }
-      
-      if (!arrayContains(category.reportedWords,valueWord)){
-        category.reportedWords.push(valueWord);
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord == undefined){
+        category.reportedWords.push( { "word":valueWord, "count":1 });
+      }
+      else
+      {
+        reportedWord.count = reportedWord.count + 1;
       }
 
       category.save(function(err) {
@@ -91,7 +96,8 @@ module.exports = function(app) {
       if (!hasValue(valueWord)){
         return res.status(204).send();  
       }
-      if (arrayContains(category.reportedWords,valueWord)){
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
         category.acceptedWords.push(valueWord);
       }
 
@@ -118,8 +124,9 @@ module.exports = function(app) {
       if (!arrayContains(category.acceptedWords,valueWord)){
         category.acceptedWords.push(valueWord);
       }
-      if (arrayContains(category.reportedWords,valueWord)){
-        var index = category.reportedWords.indexOf(valueWord);
+      var reportedWord = category.getReportedWord(valueWord);
+      if (reportedWord != undefined){
+        var index = category.reportedWords.indexOf(reportedWord);
         category.reportedWords.splice(index, 1);
       }
 
