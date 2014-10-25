@@ -105,7 +105,7 @@ public class TuttiFruttiAPI {
 
     public void deleteFinishedGame (String playerId,  int gameId)
     {
-        String url= serverURL+"/player/"+playerId+"/game/"+gameId;
+        String url= serverURL+"player/"+playerId+"/game/"+gameId;
         RestTemplate restTemplate = new RestTemplate();
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setConnectTimeout(3500);

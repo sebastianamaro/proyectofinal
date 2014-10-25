@@ -236,6 +236,14 @@ gameSchema.methods.getOtherPlayersFirstNames = function(){
 
   return playersNameArray;
 }
+gameSchema.methods.getSelectedFriendsFirstNames = function(){
+  var playersNameArray = [];
+  for (var j = this.selectedFriends.length - 1; j >= 0; j--) {
+        playersNameArray.push({ 'name' : this.selectedFriends[j].name.split(' ')[0]}); //Only first name
+  };
+
+  return playersNameArray;
+}
 gameSchema.methods.getRoundResults = function(){
   var roundResults = [];
   for (var i = this.rounds.length - 1; i >= 0; i--) {
@@ -389,7 +397,6 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       return callback("ERROR: player not found"); 
     }
 
-    console.log("aca 1");
     player.removeInvitation(game.gameId);
     player.save(function(err) {
       if(err) {
@@ -397,15 +404,15 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       } 
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
     });
-    console.log("aca 2");
+    
     if (game.opponentsType == game.getOpponentsType().FRIENDS){
-        console.log("es friends");
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-        var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
-        console.log("selected friends antes: " + game.selectedFriends);
+        var friend = game.getSelectedFriend(player.fbId);
+
+        var index = game.selectedFriends.indexOf(friend);
         if (index > -1) 
           game.selectedFriends.splice(index, 1);
-        console.log("selected frieds despues: " + game.selectedFriends);
+        
         if (game.selectedFriends.length + 1 == game.players.length)
         {
           if (game.players.length == 1)
@@ -423,6 +430,12 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       });
     return callback();
   });  
+}
+gameSchema.methods.getSelectedFriend = function(fbId)
+{
+  return this.selectedFriends.filter(function (friend) {
+    return friend.fbId == fbId;
+  }).pop();
 }
 gameSchema.methods.asSummarized = function(){
   return {

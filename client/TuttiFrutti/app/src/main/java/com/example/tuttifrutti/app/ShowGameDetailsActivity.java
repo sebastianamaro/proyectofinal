@@ -396,8 +396,12 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 holder.status.setText("Todavía no aceptó");
                 holder.status.setEnabled(false);
             }
-            else
+            else {
+                holder.name.setEnabled(true);
+                holder.status.setEnabled(true);
+                holder.friendPicture.setEnabled(true);
                 holder.status.setText("Ya es tu contrincante!");
+            }
 
             return convertView;
 

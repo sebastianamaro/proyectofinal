@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +26,6 @@ import com.example.TuttiFruttiCore.UserGame;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.example.tuttifrutti.app.Classes.NoLoggedUserException;
-import com.example.tuttifrutti.app.Classes.UncaughtExceptionHandler;
 
 import org.springframework.web.client.ResourceAccessException;
 
@@ -126,7 +125,7 @@ public class ViewGameStatusActivity extends ListActivity {
                 ArrayList<UserGame> finishedGames = new ArrayList<UserGame>();
 
                 for (UserGame ug : games) {
-                    if (ug.getStatus().equals("CLOSED"))
+                    if (ug.isFinishedOrRejected())
                         finishedGames.add(ug);
                     else
                         activeGames.add(ug);
@@ -274,7 +273,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 if (games.get(position) instanceof UserGame) {
                     UserGame ug = (UserGame) games.get(position);
-                    if (ug.getStatus().equals("CLOSED"))
+                    if (ug.isFinishedOrRejected())
                         return ITEM_VIEW_TYPE_FINISHED_USER_GAME;
                     else
                         return ITEM_VIEW_TYPE_USER_GAME;
@@ -426,7 +425,19 @@ public class ViewGameStatusActivity extends ListActivity {
                     namesToShow += player.getName() + " - ";
 
                 namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
-                holder.text2.setText(namesToShow);
+
+                if (rowItem.getSelectedFriends().size() > 0 && rowItem.getPlayers().size() <= (rowItem.getSelectedFriends().size()+1)) {
+                    for (Player selectedFriend : rowItem.getSelectedFriends()) {
+                        if (!rowItem.SelectedFriendIsPlayer(selectedFriend.getName()))
+                            namesToShow += " - <font color='grey'>" + selectedFriend.getName() + "</font>";
+                    }
+                }
+                else if (rowItem.getRandomPlayersCount() > 0 && rowItem.getPlayers().size() <= rowItem.getRandomPlayersCount())
+                {
+                    namesToShow += "<font color='grey'> +" + (rowItem.getRandomPlayersCount() - rowItem.getPlayers().size() +1)+ "</font>";
+                }
+
+                holder.text2.setText(Html.fromHtml(namesToShow), TextView.BufferType.SPANNABLE);
 
                 return convertView;
             }
@@ -454,8 +465,6 @@ public class ViewGameStatusActivity extends ListActivity {
                 return convertView;
             }
 
-
-
             private View SetRowFinishedGamesViewHolder(final int position, View convertView) {
                 FinishedGamesViewHolder holder = null;
 
@@ -476,12 +485,15 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 holder.text1.setText(toProperCase(rowItem.getMode()) + " - " + rowItem.getSpanishCategoriesType());
 
-                String namesToShow = "";
-                for (Player player : rowItem.getPlayers())
-                    namesToShow += player.getName() + " - ";
+                if (!rowItem.allPlayersRejected()) {
+                    String namesToShow = "";
+                    for (Player player : rowItem.getPlayers())
+                        namesToShow += player.getName() + " - ";
 
-                namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
-                holder.text2.setText(namesToShow);
+                    namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
+                    holder.text2.setText(namesToShow);
+                }else
+                    holder.text2.setText("Todos rechazaron");
 
                 View.OnClickListener deleteFinishedGameListener = new View.OnClickListener() {
 
