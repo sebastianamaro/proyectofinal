@@ -116,4 +116,9 @@ public class Game implements Serializable {
         else
             return "Aleatorios";
     }
+
+    public void clearSelectedFriends() {
+        if (this.selectedFriends != null)
+            this.selectedFriends.clear();
+    }
 }
