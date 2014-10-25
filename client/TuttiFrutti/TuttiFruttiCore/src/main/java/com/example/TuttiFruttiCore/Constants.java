@@ -10,7 +10,7 @@ public class Constants {
     public final static String ROUND_ID_EXTRA_MESSAGE = "com.example.tuttifrutti.ROUNDID";
     public final static String GAME_INFO_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMEINFO";
     public final static String GAME_SETTINGS_EXTRA_MESSAGE = "com.example.tuttifrutti.GAMESETTINGS";
-    public final static String STOP_NOTIFICATION_DATA = "com.example.tuttifrutti.STOP_NOTIFICATION_DATA";
+    public final static String ROUND_CLOSED_NOTIFICATION_DATA = "com.example.tuttifrutti.ROUND_CLOSED_NOTIFICATION_DATA";
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     /**
      * Substitute you own sender ID here. This is the project number you got
@@ -30,4 +30,9 @@ public class Constants {
     public final static int GAME_STATUS_CODE_NOT_STARTED = -2;
     public final static int GAME_STATUS_CODE_NO_PREV_ROUNDS = -1;
     public final static int GAME_STATUS_CODE_RESULTS_AVAILABLE = 1;
+
+    public final static int INVITATION = 1;
+    public final static int ROUND_ENABLED = 2;
+    public final static int ROUND_STARTED = 3;
+    public final static int ROUND_CLOSED = 4;
 }

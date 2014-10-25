@@ -38,7 +38,7 @@ import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
-import com.example.tuttifrutti.app.Classes.StopNotificationData;
+import com.example.tuttifrutti.app.Classes.GameAndPlayerNotificationData;
 
 import org.springframework.web.client.ResourceAccessException;
 
@@ -110,14 +110,14 @@ public class PlayRoundActivity extends FragmentActivity implements
     private final BroadcastReceiver gcmLocalReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            StopNotificationData stopNotificationData = (StopNotificationData) intent.getSerializableExtra(Constants.STOP_NOTIFICATION_DATA);
+            GameAndPlayerNotificationData gameAndPlayerNotificationData = (GameAndPlayerNotificationData) intent.getSerializableExtra(Constants.ROUND_CLOSED_NOTIFICATION_DATA);
             if (currentRound == null) {
                 TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                 int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
 
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
-            EndRoundAndSendData(false, stopNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!",false);
+            EndRoundAndSendData(false, gameAndPlayerNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!",false);
 
         }
     };

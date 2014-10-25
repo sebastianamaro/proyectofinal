@@ -214,7 +214,6 @@ deleteFinishedGame = function(req,res){
                 gamesToReturn.push(game.asSummarized());
               };
             }
-            console.log("Found : "+gamesToReturn.length + " invitations for player " + player.getName());  
             res.send(gamesToReturn, 200); //add error manipulation
           });
 

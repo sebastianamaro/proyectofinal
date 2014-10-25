@@ -13,7 +13,10 @@ public class UserGame extends FullGame implements Serializable {
     private int statusCode;
     private boolean isFirstRound;
 
-
+    public UserGame(int game_id) {
+        this.gameId = game_id;
+    }
+    public UserGame() {}
     public void setStatus(String status) {
         this.status = status;
     }

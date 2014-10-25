@@ -4,6 +4,7 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var Player = require('../models/player.js');
   var Play = require('../models/play.js');
+  var NotificationFile = require('../models/notification.js');
 
   setQualification = function(req,res){
     var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
@@ -119,13 +120,28 @@ module.exports = function(app) {
                   console.log('ERROR: ' + err);
                 }
               });    
-            }); // solo sirve si son todas controladas aunque eligio free
+            }); 
           });
           res.send('Round finished', 200);
       });
         
     });
   }
+  test = function(req, res) {
+    var notification = new Notification();
+    notification.setRegistrationId("APA91bHtuArrLIFGMj83MMnR8xnuY7wiCwK4tZr5hboSWQv99FWuO_Aykan3TymskNkLmaTXj7iKAl4-705v6IhfIir1RmDdaaE5CDi3ii9zyQpFC2E_uuvUrclzPHjA_O4Ur2OWBgEWOrNP_g0ww69pq4dQj5LHGF_LHlHCt_BboB3PcBMiGEk");
+    notification.setMessageType(notification.getMessagesTypes().INVITATION);
+    notification.setValues({'game_id': 1,'player':'Blecito'});
+    notification.send(function(err){
+          if (err){
+            console.log("Error when sendNotifications");
+            return  res.send('Error when sendNotifications', 500);
+          } else {
+            return res.send('Exitoooooo',200);
+          }
+        });
+  };
+   
   createGame = function(req,res){
     Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
       var largerId;
@@ -195,7 +211,6 @@ module.exports = function(app) {
 
       if (roundToShow == undefined)
       {
-        console.log('no hay ronda abierta');
         //si todavia no hay actual, mostrame los resultados de la anterior que ya esta cerrada
         roundToShow = game.getLastRound();
         showScores = true;
@@ -205,7 +220,6 @@ module.exports = function(app) {
       }
       else if (!roundToShow.hasPlayerSentHisLine(req.params.fbId))
       {
-        console.log('hay ronda abierta y no jugue');
         //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
         roundToShow = game.getRound(roundToShow.roundId -1);
         showScores = true;
@@ -215,7 +229,6 @@ module.exports = function(app) {
       }
       else
       {
-        console.log('hay ronda abierta y SI jugue');
         //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
         showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
         playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
@@ -226,8 +239,6 @@ module.exports = function(app) {
 
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
 
-      console.log("can player play: " + canPlayerPlay);
-      
       var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
       
       //roundNumber: para mostrar a que ronda pertenecen los resultados

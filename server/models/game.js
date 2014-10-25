@@ -204,22 +204,21 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
     for (var i = this.players.length - 1; i >= 0; i--) {
       var player = this.players[i];
       if (player.fbId == fbIdStopPlayer){
-        console.log("Wont send notification to stop player: "+player.name);
+        //Wont send notification to stop player
         continue;
       }
       if (round.hasSentNotificationToPlayer(player.fbId)) {
-        console.log("Wont send notification to a player that has already been notified "+player.name);
+        //Wont send notification to a player that has already been notified 
         continue;
       }
       if (round.hasPlayerSentHisLine(player.fbId)) {
-        console.log("Wont send notification to a player that has already sent line "+player.name);
+        //Wont send notification to a player that has already sent line 
         continue;
       }
-      console.log("Will send to notify this player: "+player.name);
-
       var gameId =this.gameId;
       var notification = new Notification();
       notification.setRegistrationId(player.registrationId);
+      notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
       Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
@@ -229,7 +228,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
           console.log("ERROR: player not found");
           return callback("ERROR: player not found"); 
         }
-        notification.setValues({'game_id':gameId, 'round_id':round.roundId, 'status' : 'FINISHED', 'player': foundPlayer.getName()});
+        notification.setValues({'game_id': gameId, 'player': foundPlayer.getName()});
         notification.send(function(err){
           if (err){
             console.log("Error when sendNotifications");
@@ -397,9 +396,7 @@ gameSchema.methods.acceptInvitation = function(request, callback){
         return callback("ERROR: save game failed. "+err);
       } 
     });
-    console.log('guardo el player');
     player.save(function(err) {
-
         if(err) {
           return callback("ERROR: save player failed after removeInvitation. "+err);
         } 
@@ -430,15 +427,11 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       } 
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
     });
-    
     if (game.opponentsType == game.getOpponentsType().FRIENDS){
         //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-        var friend = game.getSelectedFriend(player.fbId);
-
-        var index = game.selectedFriends.indexOf(friend);
+        var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
         if (index > -1) 
           game.selectedFriends.splice(index, 1);
-        
         if (game.selectedFriends.length + 1 == game.players.length)
         {
           if (game.players.length == 1)

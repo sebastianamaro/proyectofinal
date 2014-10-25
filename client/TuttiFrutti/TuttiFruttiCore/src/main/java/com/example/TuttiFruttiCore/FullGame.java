@@ -8,6 +8,11 @@ import java.util.ArrayList;
 public class FullGame extends Game {
     int gameId;
 
+    public FullGame(int game_id) {
+        this.gameId = game_id;
+    }
+    public FullGame() {}
+
     public void setGameId(int gameId) {
         this.gameId = gameId;
     }

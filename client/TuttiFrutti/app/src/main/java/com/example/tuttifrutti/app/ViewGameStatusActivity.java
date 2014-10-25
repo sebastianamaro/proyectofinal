@@ -3,6 +3,7 @@ package com.example.tuttifrutti.app;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -43,6 +44,15 @@ public class ViewGameStatusActivity extends ListActivity {
     String fbId;
 
     @Override
+    public void onWindowFocusChanged (boolean hasFocus){
+        if (hasFocus) {
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancelAll();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -51,7 +61,6 @@ public class ViewGameStatusActivity extends ListActivity {
             Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
             startActivity(i);
         }
-
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
 
