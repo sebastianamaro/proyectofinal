@@ -52,10 +52,13 @@ gameSchema.methods.getModes = function () {
 }
 gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
   if (!round.isClosed()){
+    console.log('not closed!');
      callback();
   } else {
     if (round.isFullyValidated(this)){
-      
+      console.log('fully validated');
+      console.log('this.roundsCount '+ this.roundsCount);
+      console.log('round.roundId '+ round.roundId);
        if(round.roundId == this.roundsCount)
          this.changeToStatusFinished();
        else 
