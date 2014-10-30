@@ -12,6 +12,7 @@ var gameSchema = new Schema({
   	status: { type: String },
   	categories: [ { id : { type : Number } , name : { type : String } , isFixed : { type : Boolean }} ],
     mode : { type: String },
+    roundsCount : { type : Number },
     categoriesType: { type: String },
     opponentsType: { type: String },
     players: [ Player.schema ],
@@ -51,10 +52,18 @@ gameSchema.methods.getModes = function () {
 }
 gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callback){
   if (!round.isClosed()){
+    console.log('not closed!');
      callback();
   } else {
     if (round.isFullyValidated(this)){
-      this.changeToWaitingForNextRound();
+      console.log('fully validated');
+      console.log('this.roundsCount '+ this.roundsCount);
+      console.log('round.roundId '+ round.roundId);
+       if(round.roundId == this.roundsCount)
+         this.changeToStatusFinished();
+       else 
+         this.changeToWaitingForNextRound();
+
       round.calculateScores(this, function(){
         callback();
       });
@@ -62,6 +71,10 @@ gameSchema.methods.moveToWaitingForNextRoundIfPossible = function (round, callba
       callback();
     }
   }
+}
+
+gameSchema.methods.changeToStatusFinished = function () {
+  this.status = this.getStatus().FINISHED;
 }
 
 gameSchema.methods.changeToStatusShowingResults = function () {
@@ -124,7 +137,7 @@ gameSchema.methods.setValues = function setValues(game){
   this.opponentsType = game.opponentsType;
   this.randomPlayersCount = game.randomPlayersCount;
   this.categories = [];
-
+  this.roundsCount= game.roundsCount;
   for (var i = game.selectedCategories.length - 1; i >= 0; i--) {
     var category= {'id': game.selectedCategories[i].id , 'name': game.selectedCategories[i].name.toUpperCase(), 'isFixed': game.selectedCategories[i].isFixed};
     this.categories.push(category);
@@ -447,7 +460,8 @@ gameSchema.methods.asSummarized = function(){
       'randomPlayersCount': this.randomPlayersCount ,
       'selectedCategories':  this.categories,
       'selectedFriends' : this.selectedFriends,
-      'players' : this.players
+      'players' : this.players,
+      'roundsCount' : this.roundsCount
   };
 }
 

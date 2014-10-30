@@ -54,6 +54,11 @@ module.exports = function(app) {
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
+      if (game.status == game.getStatus().FINISHED) 
+        {
+          console.log('finished game! '+ game.status)
+          return res.send('Game not found', 404);
+        }
       
       var playingRound = game.getPlayingRound();
       var reqRound = req.body;
@@ -108,14 +113,15 @@ module.exports = function(app) {
             if (game.getCategoriesType().FREE == game.categoriesType){
               game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
             } else {
-              if (currentRound.status == currentRound.getStatus().CLOSED){
-                game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+              if (currentRound.status == currentRound.getStatus().CLOSED){  
+                   game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
               }
             } 
             
-            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
+            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){  //VER DE MOVER LO QUE ESTA ARRIBA, ADENTRO DE ESTE METODO
               game.save(function(err) {
                 if(!err) {
+                  console.log('game.status '+ game.status);
                   console.log('Finished round');
                 } else {
                   console.log('ERROR: ' + err);

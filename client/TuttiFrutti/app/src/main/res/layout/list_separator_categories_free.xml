@@ -9,7 +9,7 @@
         android:textColor="@color/black"
         android:background="@drawable/rounded_corner_active_games"
         android:textSize="20sp"
-        android:text="Todas"
+        android:text="Libres"
         android:gravity="center"
         android:textStyle="bold"
         />

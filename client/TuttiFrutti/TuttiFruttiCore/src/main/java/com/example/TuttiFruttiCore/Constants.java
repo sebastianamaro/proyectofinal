@@ -26,6 +26,7 @@ public class Constants {
     // -2: notStarted
     // -1: noPreviousRounds
     // 1: previousRoundsAvailable
+    public final static int GAME_STATUS_CODE_FINISHED = -3;
     public final static int GAME_STATUS_CODE_NOT_STARTED = -2;
     public final static int GAME_STATUS_CODE_NO_PREV_ROUNDS = -1;
     public final static int GAME_STATUS_CODE_RESULTS_AVAILABLE = 1;

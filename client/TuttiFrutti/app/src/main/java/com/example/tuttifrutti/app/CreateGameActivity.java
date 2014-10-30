@@ -18,18 +18,31 @@ import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
+import antistatic.spinnerwheel.AbstractWheel;
+import antistatic.spinnerwheel.adapters.NumericWheelAdapter;
+
 
 public class CreateGameActivity extends ActionBarActivity {
 
     public static final String MODE_EXTRA_MESSAGE = "MODE_EXTRA_MESSAGE";
     public static final String OPONENTS_EXTRA_MESSAGE = "OPONENTS_EXTRA_MESSAGE";
     public static final String CATEGORIES_EXTRA_MESSAGE = "CATEGORIES_EXTRA_MESSAGE";
-
+    private AbstractWheel hours;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("");
         setContentView(R.layout.activity_create_game);
+
+        hours  = (AbstractWheel) findViewById(R.id.hour_horizontal);
+        NumericWheelAdapter hourAdapter = new NumericWheelAdapter(this, 1, 27, "%02d");
+        hourAdapter.setItemResource(R.layout.wheel_text_centered);
+        hourAdapter.setItemTextResource(R.id.text);
+        hours.setViewAdapter(hourAdapter);
+        hours.setVisibleItems(3);
+        hours.setCurrentItem(12);
+/*
+           */
     }
 
     public void createGame(View view) {
@@ -37,9 +50,10 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean mode = ((Switch) findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
         boolean oponents = ((Switch) findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
+        int rounds=hours.getCurrentItem()+1;
 
         Game gs = new Game();
-        gs.setSettings(mode, categories, oponents);
+        gs.setSettings(mode, categories, oponents, rounds);
 
         Intent intent;
         if (oponents)

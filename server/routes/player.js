@@ -52,7 +52,8 @@ module.exports = function(app) {
           var statusCodes = {
                       STATUS_NOT_STARTED : -2,
                       NO_PREVIOUS_ROUNDS : -1,
-                      RESULTS_AVAILABLE: 1
+                      RESULTS_AVAILABLE: 1,
+                      FINISHED: -3
                     };
 	        var gamesToReturn = [];
 	        if (games){
@@ -68,30 +69,35 @@ module.exports = function(app) {
               if (!game.hasStarted()){
                 statusCode = statusCodes.STATUS_NOT_STARTED;
               } else {
-                currentRound = game.getPlayingRound();
-                
-                //hay ronda abierta?
-                if (currentRound!=undefined) {              
-                  playerHasPlayed = currentRound.hasPlayerSentHisLine(player.fbId);
-
-                  //la que esta abierta, es la primera?
-                  if (game.rounds.length == 1){
-                    isFirstRound = true;
-                    //el jugador ya jugo?
-                    statusCode = (playerHasPlayed) ? statusCodes.RESULTS_AVAILABLE : statusCodes.NO_PREVIOUS_ROUNDS; 
-                    //al ser la primera, no tengo anterior
-                  } else {
-                    isFirstRound = false;
-                    statusCode = statusCodes.RESULTS_AVAILABLE;
-                  }    
+                if(game.status == game.getStatus().FINISHED)
+                {
+                    statusCode = statusCodes.FINISHED;
                 } else {
-                  //hay rondas cerradas?
-                  if (game.rounds.length >= 1){
-                      statusCode = statusCodes.RESULTS_AVAILABLE;
+                  currentRound = game.getPlayingRound();
+                  
+                  //hay ronda abierta?
+                  if (currentRound!=undefined) {              
+                    playerHasPlayed = currentRound.hasPlayerSentHisLine(player.fbId);
+
+                    //la que esta abierta, es la primera?
+                    if (game.rounds.length == 1){
+                      isFirstRound = true;
+                      //el jugador ya jugo?
+                      statusCode = (playerHasPlayed) ? statusCodes.RESULTS_AVAILABLE : statusCodes.NO_PREVIOUS_ROUNDS; 
+                      //al ser la primera, no tengo anterior
+                    } else {
                       isFirstRound = false;
+                      statusCode = statusCodes.RESULTS_AVAILABLE;
+                    }    
                   } else {
-                      statusCode  = statusCodes.NO_PREVIOUS_ROUNDS;
-                      isFirstRound = true;                     
+                    //hay rondas cerradas?
+                    if (game.rounds.length >= 1){
+                        statusCode = statusCodes.RESULTS_AVAILABLE;
+                        isFirstRound = false;
+                    } else {
+                        statusCode  = statusCodes.NO_PREVIOUS_ROUNDS;
+                        isFirstRound = true;                     
+                    }
                   }
                 }
               }
@@ -155,6 +161,8 @@ deleteFinishedGame = function(req,res){
             
             for (var i = categories.length - 1; i >= 0; i--) {
                
+               if(!categories[i].isReported){
+                
                   var summarizedCategory = categories[i].asSummarized();
 
                   
@@ -164,7 +172,7 @@ deleteFinishedGame = function(req,res){
                       summarizedCategory['isStared'] = false;
 
                  summarizedCategories.push(summarizedCategory);
-             
+               }
             }
 
              res.send(summarizedCategories, 200); //add error manipulation

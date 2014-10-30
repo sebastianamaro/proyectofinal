@@ -52,7 +52,7 @@ public class UserGame extends FullGame implements Serializable {
 
     public boolean isFinished()
     {
-        return this.getStatus().equals("CLOSED");
+        return this.getStatus().equals("FINISHED");
     }
 
     public boolean allPlayersRejected()
