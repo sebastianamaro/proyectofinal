@@ -116,6 +116,7 @@ module.exports = function(app) {
             game.moveToWaitingForNextRoundIfPossible(currentRound, function(){  //VER DE MOVER LO QUE ESTA ARRIBA, ADENTRO DE ESTE METODO
               game.save(function(err) {
                 if(!err) {
+                  console.log('game.status '+ game.status);
                   console.log('Finished round');
                 } else {
                   console.log('ERROR: ' + err);

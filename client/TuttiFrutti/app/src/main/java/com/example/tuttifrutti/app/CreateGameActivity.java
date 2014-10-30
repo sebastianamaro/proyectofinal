@@ -50,7 +50,7 @@ public class CreateGameActivity extends ActionBarActivity {
         boolean mode = ((Switch) findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
         boolean oponents = ((Switch) findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
-        int rounds=hours.getCurrentItem();
+        int rounds=hours.getCurrentItem()+1;
 
         Game gs = new Game();
         gs.setSettings(mode, categories, oponents, rounds);
