@@ -70,7 +70,8 @@ module.exports = function(app) {
                 statusCode = statusCodes.STATUS_NOT_STARTED;
               } else {
                 if(game.status == game.getStatus().FINISHED)
-                   statusCode = statusCodes.FINISHED;
+                {
+                    statusCode = statusCodes.FINISHED;
                 } else {
                   currentRound = game.getPlayingRound();
                   
