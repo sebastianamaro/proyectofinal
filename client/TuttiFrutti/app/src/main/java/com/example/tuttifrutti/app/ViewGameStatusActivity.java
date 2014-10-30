@@ -2,6 +2,7 @@ package com.example.tuttifrutti.app;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -89,12 +90,15 @@ public class ViewGameStatusActivity extends ListActivity {
 
     public class FillListViewAsyncTask extends AsyncTask<Void, Void, Void> {
         TuttiFruttiAPI api;
+        private ProgressDialog Dialog = new ProgressDialog(ViewGameStatusActivity.this);
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
         boolean connError;
 
         protected void onPreExecute() {
 
+            Dialog.setMessage("Obteniendo partidas...");
+            Dialog.show();
             api = new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -114,8 +118,10 @@ public class ViewGameStatusActivity extends ListActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+
             if (this.connError) {
                 // Call onRefreshComplete when the list has been refreshed.
+                Dialog.dismiss();
                 mPullToRefreshLayout.onRefreshComplete();
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }
@@ -148,9 +154,12 @@ public class ViewGameStatusActivity extends ListActivity {
 
                             if (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED ||   (ug.getStatusCode() == Constants.GAME_STATUS_CODE_NO_PREV_ROUNDS && ug.getIsFirstRound() && !ug.getPlayerHasPlayedCurrentRound())) {
                                 i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
-                            } else {
+                            } else if(ug.getStatusCode() == Constants.GAME_STATUS_CODE_FINISHED){
+                                i = new Intent(getApplicationContext(), ShowGameResultActivity.class);
+                            }else if (!ug.allPlayersRejected())
                                 i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
-                            }
+                             else
+                                return;
                         } else {
                             i = new Intent(getApplicationContext(), ShowGameDetailsActivity.class);
                         }
@@ -162,6 +171,7 @@ public class ViewGameStatusActivity extends ListActivity {
                 });
                 // Call onRefreshComplete when the list has been refreshed.
                 mPullToRefreshLayout.onRefreshComplete();
+                Dialog.dismiss();
             }
 
         }
@@ -311,7 +321,7 @@ public class ViewGameStatusActivity extends ListActivity {
             @Override
             public boolean isEnabled(int position) {
                 // A separator cannot be clicked !
-                return getItemViewType(position) == ITEM_VIEW_TYPE_FULL_GAME || getItemViewType(position) == ITEM_VIEW_TYPE_USER_GAME;
+                return getItemViewType(position) == ITEM_VIEW_TYPE_FULL_GAME || getItemViewType(position) == ITEM_VIEW_TYPE_USER_GAME ||getItemViewType(position) == ITEM_VIEW_TYPE_FINISHED_USER_GAME ;
             }
 
             private class ActiveGamesViewHolder {

@@ -24,6 +24,7 @@ import com.example.TuttiFruttiCore.GameRoundScoreSummary;
 import com.example.TuttiFruttiCore.PlayerResult;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiAPI;
+import com.example.TuttiFruttiCore.UserGame;
 
 import org.springframework.web.client.ResourceAccessException;
 
@@ -38,9 +39,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
         setTitle("");
 
         Intent intent = getIntent();
-        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
-        new GetScoresAsyncTask(gameId).execute();
+        new GetScoresAsyncTask(game.getGameId()).execute();
     }
 
 
