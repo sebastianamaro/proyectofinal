@@ -14,16 +14,18 @@ public class Game implements Serializable {
     private ArrayList<Category> selectedCategories;
     private ArrayList<Player> selectedFriends;
     private ArrayList<Player> players;
+    private int roundsCount;
 
     public Game(){}
-    public Game(String mode, String categoriesType, String opponentsType, int randomPlayersCount){
+    public Game(String mode, String categoriesType, String opponentsType, int randomPlayersCount, int roundsCount){
         this.mode=mode;
         this.categoriesType=categoriesType;
         this.opponentsType=opponentsType;
         this.randomPlayersCount=randomPlayersCount;
+        this.roundsCount=roundsCount;
     }
 
-    public void setSettings(boolean gameMode, boolean categories, boolean opponents)
+    public void setSettings(boolean gameMode, boolean categories, boolean opponents, int roundsCount)
     {
         if(gameMode)
             this.setMode("ONLINE");
@@ -39,6 +41,8 @@ public class Game implements Serializable {
             this.setCategoriesType("FIXED");
         else
             this.setCategoriesType("FREE");
+
+        this.roundsCount=roundsCount;
 
     }
     public String getMode(){return mode;}
@@ -120,5 +124,13 @@ public class Game implements Serializable {
     public void clearSelectedFriends() {
         if (this.selectedFriends != null)
             this.selectedFriends.clear();
+    }
+
+    public int getRoundsCount() {
+        return roundsCount;
+    }
+
+    public void setRoundsCount(int roundsCount) {
+        this.roundsCount = roundsCount;
     }
 }

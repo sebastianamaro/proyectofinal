@@ -108,12 +108,12 @@ module.exports = function(app) {
             if (game.getCategoriesType().FREE == game.categoriesType){
               game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
             } else {
-              if (currentRound.status == currentRound.getStatus().CLOSED){
-                game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+              if (currentRound.status == currentRound.getStatus().CLOSED){  
+                   game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
               }
             } 
             
-            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){
+            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){  //VER DE MOVER LO QUE ESTA ARRIBA, ADENTRO DE ESTE METODO
               game.save(function(err) {
                 if(!err) {
                   console.log('Finished round');

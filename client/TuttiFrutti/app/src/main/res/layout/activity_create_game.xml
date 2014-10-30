@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -56,6 +57,45 @@
         android:textOff="Libres"
         android:textOn="Controladas"
         />
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:layout_below="@id/categoriesSelector"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="37dp"
+        android:id="@+id/randomPlayersLayout">
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Cantidad de rondas: "
+            android:textSize="16sp"
+            android:gravity="center"
+            android:background="@color/lightgrey"
+            android:id="@+id/lblRounds"/>
+
+        <antistatic.spinnerwheel.WheelHorizontalView
+            android:id="@+id/hour_horizontal"
+            app:selectionDivider="@drawable/divider_dark_gradient_horizontal"
+            app:selectionDividerWidth="1px"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@id/lblRounds"
+            android:paddingLeft="20dp"/>
+
+
+    </RelativeLayout>
+
+
+
+
 
     <Button
         android:background="@drawable/largebutton"
