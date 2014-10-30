@@ -79,32 +79,17 @@ class IssnValidatorTest extends AbstractConstraintValidatorTest
         );
     }
 
-    public function getInvalidFormatedIssn()
+    public function getInvalidIssn()
     {
         return array(
             array(0),
             array('1539'),
-            array('2156-537A')
-        );
-    }
-
-    public function getInvalidValueIssn()
-    {
-        return array(
+            array('2156-537A'),
             array('1119-0231'),
             array('1684-5312'),
             array('1996-0783'),
             array('1684-537X'),
             array('1996-0795'),
-        );
-
-    }
-
-    public function getInvalidIssn()
-    {
-        return array_merge(
-            $this->getInvalidFormatedIssn(),
-            $this->getInvalidValueIssn()
         );
     }
 
@@ -147,9 +132,9 @@ class IssnValidatorTest extends AbstractConstraintValidatorTest
 
         $this->validator->validate($issn, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ value }}' => '"'.$issn.'"',
-        ));
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ value }}', '"'.$issn.'"')
+            ->assertRaised();
     }
 
     /**
@@ -164,9 +149,9 @@ class IssnValidatorTest extends AbstractConstraintValidatorTest
 
         $this->validator->validate($issn, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ value }}' => '"'.$issn.'"',
-        ));
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ value }}', '"'.$issn.'"')
+            ->assertRaised();
     }
 
     /**
@@ -182,38 +167,6 @@ class IssnValidatorTest extends AbstractConstraintValidatorTest
     }
 
     /**
-     * @dataProvider getInvalidFormatedIssn
-     */
-    public function testInvalidFormatIssn($issn)
-    {
-        $constraint = new Issn(array(
-            'message' => 'myMessage',
-        ));
-
-        $this->validator->validate($issn, $constraint);
-
-        $this->assertViolation('myMessage', array(
-            '{{ value }}' => '"'.$issn.'"',
-        ));
-    }
-
-    /**
-     * @dataProvider getInvalidValueIssn
-     */
-    public function testInvalidValueIssn($issn)
-    {
-        $constraint = new Issn(array(
-            'message' => 'myMessage',
-        ));
-
-        $this->validator->validate($issn, $constraint);
-
-        $this->assertViolation('myMessage', array(
-            '{{ value }}' => '"'.$issn.'"',
-        ));
-    }
-
-    /**
      * @dataProvider getInvalidIssn
      */
     public function testInvalidIssn($issn)
@@ -224,8 +177,8 @@ class IssnValidatorTest extends AbstractConstraintValidatorTest
 
         $this->validator->validate($issn, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ value }}' => '"'.$issn.'"',
-        ));
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ value }}', '"'.$issn.'"')
+            ->assertRaised();
     }
 }

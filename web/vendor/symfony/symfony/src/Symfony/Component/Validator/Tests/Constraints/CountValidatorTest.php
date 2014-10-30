@@ -65,14 +65,6 @@ abstract class CountValidatorTest extends AbstractConstraintValidatorTest
         );
     }
 
-    public function getNotFourElements()
-    {
-        return array_merge(
-            $this->getThreeOrLessElements(),
-            $this->getFiveOrMoreElements()
-        );
-    }
-
     public function getFiveOrMoreElements()
     {
         return array(
@@ -118,56 +110,83 @@ abstract class CountValidatorTest extends AbstractConstraintValidatorTest
     /**
      * @dataProvider getFiveOrMoreElements
      */
-    public function testInvalidValuesMax($value)
+    public function testTooManyValues($value)
     {
         $constraint = new Count(array(
             'max' => 4,
-            'maxMessage' => 'myMessage'
+            'maxMessage' => 'myMessage',
         ));
 
         $this->validator->validate($value, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ count }}' => count($value),
-            '{{ limit }}' => 4,
-        ), 'property.path', $value, 4);
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ count }}', count($value))
+            ->setParameter('{{ limit }}', 4)
+            ->setInvalidValue($value)
+            ->setPlural(4)
+            ->assertRaised();
     }
 
     /**
      * @dataProvider getThreeOrLessElements
      */
-    public function testInvalidValuesMin($value)
+    public function testTooFewValues($value)
     {
         $constraint = new Count(array(
             'min' => 4,
-            'minMessage' => 'myMessage'
+            'minMessage' => 'myMessage',
         ));
 
         $this->validator->validate($value, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ count }}' => count($value),
-            '{{ limit }}' => 4,
-        ), 'property.path', $value, 4);
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ count }}', count($value))
+            ->setParameter('{{ limit }}', 4)
+            ->setInvalidValue($value)
+            ->setPlural(4)
+            ->assertRaised();
     }
 
     /**
-     * @dataProvider getNotFourElements
+     * @dataProvider getFiveOrMoreElements
      */
-    public function testInvalidValuesExact($value)
+    public function testTooManyValuesExact($value)
     {
         $constraint = new Count(array(
             'min' => 4,
             'max' => 4,
-            'exactMessage' => 'myMessage'
+            'exactMessage' => 'myMessage',
         ));
 
         $this->validator->validate($value, $constraint);
 
-        $this->assertViolation('myMessage', array(
-            '{{ count }}' => count($value),
-            '{{ limit }}' => 4,
-        ), 'property.path', $value, 4);
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ count }}', count($value))
+            ->setParameter('{{ limit }}', 4)
+            ->setInvalidValue($value)
+            ->setPlural(4)
+            ->assertRaised();
+    }
+
+    /**
+     * @dataProvider getThreeOrLessElements
+     */
+    public function testTooFewValuesExact($value)
+    {
+        $constraint = new Count(array(
+            'min' => 4,
+            'max' => 4,
+            'exactMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($value, $constraint);
+
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ count }}', count($value))
+            ->setParameter('{{ limit }}', 4)
+            ->setInvalidValue($value)
+            ->setPlural(4)
+            ->assertRaised();
     }
 
     public function testDefaultOption()
