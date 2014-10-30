@@ -54,8 +54,12 @@ module.exports = function(app) {
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
+      if (game.status == game.getStatus().FINISHED) 
+        {
+          console.log('finished game! '+ game.status)
+          return res.send('Game not found', 404);
+        }
       
-      console.log('current game status'+ game.status)
       var playingRound = game.getPlayingRound();
       var reqRound = req.body;
 
