@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -39,12 +42,10 @@ public class ShowGameResultActivity extends ActionBarActivity {
         setTitle("");
 
         Intent intent = getIntent();
-        UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
-
-        new GetScoresAsyncTask(game.getGameId()).execute();
+        //UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
+        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        new GetScoresAsyncTask(gameId).execute();
     }
-
-
 
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameScoreSummary> {
         private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
@@ -93,7 +94,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 for (int i = result.getRoundsResult().size() - 1; i >= 0; i--) {
                     contentRow = new TableRow(getApplicationContext());
                     roundRes = result.getRoundsResult().get(i);
-                    AddHeaderTextView(contentRow, "Ronda " + roundRes.getRoundLetter());
+                    AddRoundHeaderTextView(contentRow, roundRes, gameId);
 
                     for (int j = 0; j < roundRes.getScores().size(); j++) {
                         ScoreInfo score = roundRes.getScores().get(j);
@@ -143,9 +144,10 @@ public class ShowGameResultActivity extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddHeaderTextView(TableRow row, String p) {
-        TextView text=new TextView(this.getApplicationContext());
-        text.setText(p);
+    private void AddHeaderTextView (TableRow row, String haderText)
+    {
+        TextView text = new TextView(this.getApplicationContext());
+        text.setText(haderText);
         text.setGravity(Gravity.CENTER);
         text.setBackgroundResource(R.drawable.cell_shape);
         text.setPadding(35, 35, 35, 35);
@@ -154,6 +156,31 @@ public class ShowGameResultActivity extends ActionBarActivity {
         text.setTypeface(null, Typeface.BOLD);
 
         row.addView(text);
+    }
+
+    private void AddRoundHeaderTextView(TableRow row, GameRoundScoreSummary roundScoreSummary, int gameId) {
+        final int fGameId = gameId;
+        final int froundId = roundScoreSummary.getRoundId();
+
+        Button b = new Button(this.getApplicationContext());
+        b.setText("Ronda " + roundScoreSummary.getRoundLetter());
+        b.setBackgroundResource(R.drawable.smallbutton);
+        b.setWidth(10);
+        b.setHeight(10);
+        //b.setTextSize(15);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), ShowRoundResultActivity.class);
+                i.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, fGameId);
+                i.putExtra(Constants.ROUND_ID_EXTRA_MESSAGE, froundId);
+
+                startActivity(i);
+            }
+        });
+
+        row.addView(b);
+
     }
 
     private void AddContentTextView(TableRow row, ScoreInfo p) {
