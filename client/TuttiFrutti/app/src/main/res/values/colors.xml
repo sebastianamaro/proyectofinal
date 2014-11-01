@@ -9,4 +9,6 @@
     <color name="yellow">#FEE356</color>
     <color name="skyblue">#7d14a8ce</color>
     <color name="lightgrey">#fff9faf5</color>
+    <color name="emphasis">#31b6e7</color>
+    <color name="bg_gray">#cecbce</color>
 </resources>

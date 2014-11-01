@@ -1,0 +1,100 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.tuttifrutti.app.ShowGameRulesActivity">
+
+    <ScrollView
+        android:id="@+id/layout"
+        android:layout_height="match_parent"
+        android:scrollbars="horizontal|vertical"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dip"
+        android:scrollbarStyle="outsideInset"
+        android:fillViewport="true">
+
+               <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/ModoOnline"
+                    android:text="Modo Online"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/sectionHeader"/>
+
+                <TextView
+                    android:id="@+id/ModoOnlineTexto"
+                    android:text="
+       Eligiendo este modo de juego, vas a poder jugar al instante con tus oponentes como en el tutti-frutti tradicional!
+        \n
+       ATENTI! apurate a contestar, antes de que alguien haga BASTA PARA MI, BASTA PARA TODOS!"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ModoOnline"/>
+
+                <TextView
+                    android:id="@+id/ModoOffline"
+                    android:text="Modo Offline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/sectionHeader"
+                    android:layout_below="@+id/ModoOnlineTexto"/>
+
+                <TextView
+                    android:id="@+id/ModoOfflineTexto"
+                    android:text="
+       Eligiendo este modo de juego, vas a poder jugar cuando puedas completar la ronda, cuanto mas rapido contesten todos, más dinámico va a ser el juego, asi que.. no te dejes estar!
+       \n
+       ATENTI! las palabras ingresadas en cada ronda que se van a tener en cuenta van a ser las que se completen antes del mejor tiempo de tus compañeros!
+       \n
+       Por ejemplo, si ingresaste la palabra JIRAFA en el minuto 2 y otra persona terminó todo antes del minuto 1, esa palabra no se va a tener en cuenta para la ronda"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ModoOffline"/>
+
+                <TextView
+                    android:id="@+id/CategoriasControladas"
+                    android:text="Categorías Controladas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/sectionHeader"
+                    android:layout_below="@+id/ModoOfflineTexto"/>
+
+                <TextView
+                    android:id="@+id/CategoriasControladasTexto"
+                    android:text="
+       Este tipo te va a permitir solamente elegir las categorías que te sugiere el juego. La decisión de si las palabras ingresadas por los jugadores son  correctas, la tiene el propio Tutti-Frutti.
+       \n
+       Si no estas de acuerdo con esta decision, siempre podes informarlo y lo vamos a revisar!"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/CategoriasControladas"/>
+
+                <TextView
+                    android:id="@+id/CategoriasLibres"
+                    android:text="Categorías Libres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/sectionHeader"
+                    android:layout_below="@+id/CategoriasControladasTexto"/>
+
+                <TextView
+                    android:id="@+id/CategoriasLibresTexto"
+                    android:text="
+       Este tipo te va a permitir ingresar las categorías que quieras, mas alla de las que te sugiere el juego. La decisión de si las palabras ingresadas por los jugadores son correctas, la tienen los mismos jugadores!
+       \n
+       Podés ser todo lo creativo que quieras!"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/CategoriasLibres"/>
+            </RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>

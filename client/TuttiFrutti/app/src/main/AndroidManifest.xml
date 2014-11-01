@@ -128,7 +128,10 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
-
+        <activity
+            android:name=".ShowGameRulesActivity"
+            android:label="@string/title_activity_show_game_rules" >
+        </activity>
     </application>
 
 </manifest>
