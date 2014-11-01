@@ -189,8 +189,7 @@ module.exports = function(app) {
 
     });
   }
-
-  getRoundScores = function(req, res){
+  getLatestRoundScores = function(req, res){
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       if (err) return res.send(err, 500);
@@ -238,6 +237,36 @@ module.exports = function(app) {
       console.log("can player play: " + canPlayerPlay);
       
       var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
+      
+      //roundNumber: para mostrar a que ronda pertenecen los resultados
+      //isComplete: para saber si muestra con scores o sin (si es parcial)
+      //canPlayerPlay: para saber si el usuario puede jugar la proxima ronda o todavía no
+      var roundScoresResult = { 
+                            'roundNumber':roundToShow.roundId,
+                            'isComplete':isComplete,
+                            'canPlayerPlay': canPlayerPlay,
+                            'roundScoreSummaries': scoresArray };
+
+      res.send(roundScoresResult, 200);            
+     });
+  }
+
+  getRoundScores = function(req, res){
+    console.log("entre a getRoundScores");
+    console.log("gameid:" + req.params.id);
+    Game.findOne({ 'gameId': req.params.id}, function (err, game){
+      if (err) return res.send(err, 500);
+      if (!game) return res.send('Game not found', 404);          
+      console.log("encontre el game");
+      var roundToShow = game.getRound(req.params.roundId);
+      var showScores = true;
+      var playersWhoHaveLines = game.players;;
+      var canPlayerPlay = false;
+      var isComplete = true;
+
+      if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
+      
+      var scoresArray=roundToShow.getScores(-1, game.categories, playersWhoHaveLines, showScores);
       
       //roundNumber: para mostrar a que ronda pertenecen los resultados
       //isComplete: para saber si muestra con scores o sin (si es parcial)

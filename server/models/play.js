@@ -99,13 +99,22 @@ playSchema.methods.validatePlay = function (category, letter) {
 
 playSchema.methods.asSummarized = function (fbId,category) {
   var scoreToSend = this.hasLateResult() ? -1 : this.score;
-  var validation = this.validations.filter(function (val) {return val.fbId == fbId; }).pop();
+  
   var validated = false;
   var isValid = false;
-  if (validation !== undefined){
-    validated = true;
-    isValid = validation.isValid;
+  if (fbId != -1)
+  {
+    var validation = this.validations.filter(function (val) {return val.fbId == fbId; }).pop();
+    if (validation !== undefined){
+      validated = true;
+      isValid = validation.isValid;
+    }
   }
+  else
+  {
+    validated = true;
+  }
+  
   return {'result': this.result,
            'scoreInfo': {'score': scoreToSend,
                      'best':false},

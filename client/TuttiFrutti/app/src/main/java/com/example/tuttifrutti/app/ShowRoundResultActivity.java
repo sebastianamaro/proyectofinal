@@ -37,7 +37,8 @@ import org.springframework.web.client.ResourceAccessException;
 import java.util.ArrayList;
 
 public class ShowRoundResultActivity extends ActionBarActivity {
-    UserGame gameInfo;
+    int gameId;
+    int roundId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,15 +53,31 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_round_result);
 
         Intent intent = getIntent();
-        gameInfo = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
+        if (intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE) != null) {
+            UserGame userGame = ((UserGame) intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE));
+            gameId = userGame.getGameId();
+            roundId = -1;
+        }
+        else
+        {
+            gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+            roundId = intent.getIntExtra(Constants.ROUND_ID_EXTRA_MESSAGE, -1);
+            Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
+            btnJugar.setVisibility(View.GONE);
+            Button btnGameResults= (Button) findViewById(R.id.btnSeeGameResults);
+            btnGameResults.setVisibility(View.GONE);
+        }
 
         new GetScoresAsyncTask().execute();
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-        startActivity(intent);
+        if (roundId == -1) {
+            Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
+            startActivity(intent);
+        }
+        super.onBackPressed();
     }
 
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, PlayerRoundScoreSummary> {
@@ -72,7 +89,10 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         protected PlayerRoundScoreSummary doInBackground(Void... filePlays) {
             String fbId = FacebookHelper.getUserId();
             try{
-                return api.getRoundScore(gameInfo.getGameId(), fbId);
+                if (roundId == -1)
+                    return api.getRoundScore(gameId, fbId);
+                else
+                    return api.getRoundScore(gameId, roundId);
             }catch (ResourceAccessException ex)
             {
                 this.connError = true;
@@ -93,6 +113,11 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
                 if (!result.getCanPlayerPlay())
                     btnJugar.setEnabled(false);
+
+                if (result.getRoundNumber() == 1 && !result.getIsComplete()) {
+                    Button btnGameResults = (Button) findViewById(R.id.btnSeeGameResults);
+                    btnGameResults.setVisibility(View.GONE);
+                }
 
                 String[] categories = new String[result.getRoundScoreSummaries().get(0).getPlays().size()];
 
@@ -314,7 +339,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
     public void playNextRound(View v)
     {
         Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
-        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameId);
 
         startActivity(intent);
     }
@@ -322,7 +347,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
     public void seeGameResults(View v)
     {
         Intent intent = new Intent(getApplicationContext(), ShowGameResultActivity.class);
-        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameInfo.getGameId());
+        intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameId);
 
         startActivity(intent);
     }
@@ -358,7 +383,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         protected Void doInBackground(Void... smth) {
             try
             {
-                api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameInfo.getGameId());
+                api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameId);
             }catch (ResourceAccessException ex)
             {
                 this.connError = true;

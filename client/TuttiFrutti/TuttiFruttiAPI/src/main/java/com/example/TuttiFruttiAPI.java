@@ -202,6 +202,18 @@ public class TuttiFruttiAPI {
         return restTemplate.getForObject(url,PlayerRoundScoreSummary.class);
     }
 
+    public PlayerRoundScoreSummary getRoundScore(int gameId, int roundId)
+    {
+        String url= serverURL+"game/"+gameId+"/round/"+roundId+"/scores";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3500);
+        restTemplate.setRequestFactory(requestFactory);
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        return restTemplate.getForObject(url,PlayerRoundScoreSummary.class);
+    }
+
     public void AddPlayer(Player newPlayer)
     {
         String url= serverURL+"player";
