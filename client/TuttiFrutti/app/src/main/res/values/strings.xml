@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="server_url">http://192.168.1.114:8080/</string>
+    <string name="server_url">http://192.168.1.115:8080/</string>
     <string name="app_name">TuttiFrutti</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

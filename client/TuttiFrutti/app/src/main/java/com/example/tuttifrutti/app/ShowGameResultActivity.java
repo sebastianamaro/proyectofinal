@@ -13,7 +13,10 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -163,11 +166,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
         final int froundId = roundScoreSummary.getRoundId();
 
         Button b = new Button(this.getApplicationContext());
+        b.setId(froundId);
         b.setText("Ronda " + roundScoreSummary.getRoundLetter());
         b.setBackgroundResource(R.drawable.smallbutton);
-        b.setWidth(10);
-        b.setHeight(10);
-        //b.setTextSize(15);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,8 +180,15 @@ public class ShowGameResultActivity extends ActionBarActivity {
             }
         });
 
-        row.addView(b);
+        RelativeLayout rl = new RelativeLayout(this.getApplicationContext());
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(270,110);
+        rl.setBackgroundResource(R.drawable.cell_shape);
+        rl.setPadding(20, 20, 20, 20);
 
+        rl.addView(b,lp);
+
+        row.addView(rl);
+        //row.addView(b);
     }
 
     private void AddContentTextView(TableRow row, ScoreInfo p) {
