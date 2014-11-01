@@ -2,4 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tuttifrutti.app.CreateGameActivity" >
+
+    <item android:id="@+id/action_showRulesFromCreateGame"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Reglas del Juego"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
 </menu>

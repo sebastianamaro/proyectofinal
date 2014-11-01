@@ -32,6 +32,7 @@
                     android:id="@+id/ModoOnlineTexto"
                     android:text="
        Eligiendo este modo de juego, vas a poder jugar al instante con tus oponentes como en el tutti-frutti tradicional!
+        \n
        ATENTI! apurate a contestar, antes de que alguien haga BASTA PARA MI, BASTA PARA TODOS!"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -49,7 +50,9 @@
                     android:id="@+id/ModoOfflineTexto"
                     android:text="
        Eligiendo este modo de juego, vas a poder jugar cuando puedas completar la ronda, cuanto mas rapido contesten todos, más dinámico va a ser el juego, asi que.. no te dejes estar!
+       \n
        ATENTI! las palabras ingresadas en cada ronda que se van a tener en cuenta van a ser las que se completen antes del mejor tiempo de tus compañeros!
+       \n
        Por ejemplo, si ingresaste la palabra JIRAFA en el minuto 2 y otra persona terminó todo antes del minuto 1, esa palabra no se va a tener en cuenta para la ronda"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -67,6 +70,7 @@
                     android:id="@+id/CategoriasControladasTexto"
                     android:text="
        Este tipo te va a permitir solamente elegir las categorías que te sugiere el juego. La decisión de si las palabras ingresadas por los jugadores son  correctas, la tiene el propio Tutti-Frutti.
+       \n
        Si no estas de acuerdo con esta decision, siempre podes informarlo y lo vamos a revisar!"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -84,7 +88,8 @@
                     android:id="@+id/CategoriasLibresTexto"
                     android:text="
        Este tipo te va a permitir ingresar las categorías que quieras, mas alla de las que te sugiere el juego. La decisión de si las palabras ingresadas por los jugadores son correctas, la tienen los mismos jugadores!
-       Podes ser todo lo creativo que quieras!"
+       \n
+       Podés ser todo lo creativo que quieras!"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/CategoriasLibres"/>
