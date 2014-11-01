@@ -15,6 +15,7 @@ import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
 import com.example.tuttifrutti.app.Classes.GameAndPlayerNotificationData;
 import com.example.tuttifrutti.app.Classes.GameNotificationData;
 import com.example.tuttifrutti.app.Classes.GenericNotificationData;
+import com.example.tuttifrutti.app.PlayRoundActivity;
 import com.example.tuttifrutti.app.ShowGameDetailsActivity;
 import com.example.tuttifrutti.app.ShowRoundResultActivity;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -58,31 +59,20 @@ public class GcmIntentService extends IntentService {
                 case Constants.ROUND_STARTED:
                     GameNotificationData roundStartedData =
                             new Gson().fromJson(dataJson, GameNotificationData.class);
-                    i =  new Intent(this, ShowRoundResultActivity.class);
-                    i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, new UserGame(roundStartedData .getGame_id()));
+                    i =  new Intent(this, PlayRoundActivity.class);
+                    i.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, roundStartedData.getGame_id());
                     this.showNotification(notificationData.getMessage_type(),"La ronda ya comenzó!", "Toca para ingresar a jugar", i);
                     break;
                 case Constants.ROUND_CLOSED:
                     GameAndPlayerNotificationData roundClosedNotificationData =
                             new Gson().fromJson(dataJson, GameAndPlayerNotificationData.class);
                     intentActivity.putExtra(Constants.ROUND_CLOSED_NOTIFICATION_DATA, roundClosedNotificationData );
+                    intentActivity.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, roundClosedNotificationData.getGame_id());
+                    sendBroadcast(intentActivity);
                     break;
             };
         }
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-
-        // The getMessage_type() intent parameter must be the intent you received
-        // in your BroadcastReceiver.
-        String messageType = gcm.getMessageType(intent);
-
-
-        if (!extras.isEmpty()) {
-            if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                intentActivity.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, 1);
-                sendBroadcast(intentActivity);
-            }
-        }
-
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 

@@ -29,29 +29,29 @@ public class InternalFileHelper {
                 Reader reader = new InputStreamReader(inputStream);
                 currentFilePlay = gson.fromJson(reader, com.example.TuttiFruttiCore.FilePlay.class);
 
+                /*
+                    we believe this cannot happen
                 if (currentFilePlay == null) {
                     currentFilePlay = new FilePlay();
                     currentFilePlay.RoundId = filePlay.getRoundId();
-                    currentFilePlay.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
-                    currentFilePlay.CategoriesValues = new String[filePlay.getCategoriesLength()];
-                }else if (currentFilePlay.CategoriesTimeStamp == null)
+                    currentFilePlay.initialize(filePlay.getCategoriesLength());
+
+                }else */
+                if (currentFilePlay.CategoriesTimeStamp == null)
                 {
-                    currentFilePlay.CategoriesTimeStamp = new Date[filePlay.getCategoriesLength()];
-                    currentFilePlay.CategoriesValues = new String[filePlay.getCategoriesLength()];
+                    currentFilePlay.initialize(filePlay.getCategoriesLength(), filePlay.getRoundId());
                 }
 
-
-                // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
-                if (currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] == null || !(currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()].equals(filePlay.getCategoryValue()))) {
-                    currentFilePlay.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
-                    currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
-                    writeFile=true;
-                }
+                    // pregunto si lo que ingreso es diferente de lo que yo ya tengo guardado (por si volvio a seleccionar el tab)
+                    if (currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] == null || !(currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()].equals(filePlay.getCategoryValue()))) {
+                        currentFilePlay.CategoriesTimeStamp[filePlay.getCategoryPosition()] = new Date();
+                        currentFilePlay.CategoriesValues[filePlay.getCategoryPosition()] = filePlay.getCategoryValue();
+                        writeFile = true;
+                    }
 
             } else {
                 currentFilePlay = new FilePlay();
-                currentFilePlay.RoundId = filePlay.getRoundId();
-                currentFilePlay.StartTime = new Date();
+                currentFilePlay.initialize(filePlay.getCategoriesLength(),filePlay.getRoundId());
                 writeFile=true;
             }
 

@@ -78,8 +78,6 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
-
         switch(keyCode)
         {
             case KeyEvent.KEYCODE_BACK:
@@ -114,11 +112,9 @@ public class PlayRoundActivity extends FragmentActivity implements
             if (currentRound == null) {
                 TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                 int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
-
                 currentRound = api.getCurrentRoundInformation(gameId);
             }
             EndRoundAndSendData(false, gameAndPlayerNotificationData.getPlayer()+" ha dicho basta para mi basta para todos!",false);
-
         }
     };
 
@@ -275,7 +271,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
         String categoryValue = textView.getText().toString();
-        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow,setEmptyPlays).execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, position, categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
+        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow,setEmptyPlays).execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, position,
+                categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
     }
 
 
@@ -288,7 +285,8 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected FullRound doInBackground(Integer... integers) {
             try {
-                api.startRound(integers[0]);
+                String fbId = FacebookHelper.getUserId();
+                api.startRound(integers[0], fbId);
                 return api.getCurrentRoundInformation(integers[0]);
             }catch (ResourceAccessException ex)
             {
@@ -342,7 +340,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                         }
                 );
 
-                new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, result.getRoundId()));
+                new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName,-1,null,currentRound.getCategories().length,currentRound.getRoundId()));
 
             }
         }
@@ -390,8 +388,11 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(FilePlay result) {
-
-            timer = new CountDownTimer(currentRound.getCategories().length * 1000 * 20, 1000) {
+            int seconds = (currentRound.getCategories().length  * 20) - currentRound.getSecondsAgoStarted();
+            if (seconds <=1 ){
+                seconds = 1;
+            }
+            timer = new CountDownTimer(seconds * 1000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
                     getActionBar().setTitle(String.format("%d min, %d sec",

@@ -49,6 +49,8 @@ public class ViewGameStatusActivity extends ListActivity {
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancelAll();
+
+            new FillListViewAsyncTask(true).execute();
         }
     }
 
@@ -74,16 +76,14 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 // Update the LastUpdatedLabel
                 refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancelAll();
                 // Do work to refresh the list here.
                 new FillListViewAsyncTask(false).execute();
             }
 
         });
-
-
-        new FillListViewAsyncTask(true).execute();
-
     }
 
     @Override

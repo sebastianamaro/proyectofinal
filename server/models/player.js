@@ -89,13 +89,12 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
     if (err){
       console.log("Error when send invitations");
     } else {
-      player.setNotificationSentForGame(gameId);
+      player.addInvitationToGame(gameId);
     }
   });
-  this.setNotificationSentForGame(gameId);
 }
 
-playerSchema.methods.setNotificationSentForGame = function(gameId){
+playerSchema.methods.addInvitationToGame = function(gameId){
   var fbId=this.fbId;
   this.invitations.push(gameId);
   this.save(function(err) {
@@ -112,9 +111,9 @@ playerSchema.methods.addGame = function(gameId){
 
 playerSchema.methods.removeInvitation = function(gameId){
   var index = this.invitations.indexOf(gameId);
-    if (index > -1) {
-        this.invitations.splice(index, 1);
-    }
+  if (index > -1) {
+    this.invitations.splice(index, 1);
+  }
 }
 
 module.exports = mongoose.model('Player', playerSchema);

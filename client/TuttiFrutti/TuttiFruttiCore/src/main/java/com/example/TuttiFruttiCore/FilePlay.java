@@ -14,4 +14,16 @@ public class FilePlay {
     public Date[] CategoriesTimeStamp;
     public String[] CategoriesValues;
     public Date StartTime;
+
+    public void initialize(int categoriesLength, int roundId) {
+
+        this.CategoriesTimeStamp = new Date[categoriesLength];
+        this.CategoriesValues = new String[categoriesLength];
+        for (int i = 0; i < categoriesLength; i++) {
+            this.CategoriesTimeStamp[i] = null;
+            this.CategoriesValues[i] = "";
+        }
+        this.RoundId = roundId;
+        this.StartTime = new Date();
+    }
 }

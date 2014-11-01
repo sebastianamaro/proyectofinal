@@ -55,24 +55,30 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
      return callback();
   } 
   if (round.isFullyValidated(this)){
-       
-      round.calculateScores(this, function(){
-      if (this.mode ==  this.getModes().ONLINE){
-        this.status = this.getStatus().SHOWING_RESULTS;
+    var game = this;
+    round.calculateScores(this, function(){
+      if (game.mode ==  game.getModes().ONLINE){
+        if (game.categoriesType == game.getCategoriesType().FIXED){
+          game.status = game.getStatus().SHOWING_RESULTS;
+          setTimeout(function() {
+              game.endShowingResults(game);
+              }, 1000*40);//40 seconds
+          return callback();
+        } else {
+          game.endShowingResults();
+        }
 
-        callback();
-        setTimeout(this.endShowingResults, 1000*40);//40 seconds
       }
-      this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
-
+      game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+ 
       if(round.roundId == this.roundsCount)
          this.changeToStatusFinished();
-      
+
       return callback();
     });
   } 
   this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
-  callback();
+  return callback();
 }
 
 gameSchema.methods.changeToStatusFinished = function () {
@@ -82,22 +88,59 @@ gameSchema.methods.changeToStatusFinished = function () {
 gameSchema.methods.changeToStatusShowingResults = function () {
   this.status = this.getStatus().SHOWING_RESULTS;
 }
-gameSchema.methods.endShowingResults = function () {
-  var round = this.getLastRound();
-  this.status = this.getStatus().WAITING_FOR_NEXT_ROUND;
-  var game = this;
-  this.sendNotificationsRoundStarted(function(){
+gameSchema.methods.endShowingResults = function (game) {
+  var round = game.getLastRound();
+  game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+  game.sendNotificationsRoundEnabled(function(){
     game.save(function(err) {
       if(err) {
         console.log('ERROR: ' + err);
       } else {
-        console.log('Sent invitations round started and saved game.');
+        console.log('Sent notifications round enabled.');
       }
     });
   });
 }
-gameSchema.methods.sendNotificationsRoundStarted = function (callback) {
-  callback(); //dummy until implemented on client side 
+gameSchema.methods.sendNotificationsRoundStarted = function (playerStarted,callback) {
+ for (var i = this.players.length - 1; i >= 0; i--) {
+      var player = this.players[i];
+      if (player.fbId == playerStarted){
+        //Wont send notification to player who started
+        continue;
+      }
+      var gameId =this.gameId;
+      var notification = new Notification();
+      notification.setRegistrationId(player.registrationId);
+      notification.setMessageType(notification.getMessagesTypes().ROUND_STARTED);
+      notification.setValues({'game_id': gameId});
+      notification.send(function(err){
+        if (err){
+          console.log("Error when sendNotifications");
+          return callback("Error when sendNotifications");
+        } else {
+          console.log("Sent notification ROUND_STARTED to "+player.name);
+          return callback();
+        }
+      });
+  }
+}
+gameSchema.methods.sendNotificationsRoundEnabled = function (callback) {
+  for (var i = this.players.length - 1; i >= 0; i--) {
+      var player = this.players[i];
+      var gameId =this.gameId;
+      var notification = new Notification();
+      notification.setRegistrationId(player.registrationId);
+      notification.setMessageType(notification.getMessagesTypes().ROUND_ENABLED);
+      notification.setValues({'game_id': gameId});
+      notification.send(function(err){
+        if (err){
+          console.log("Error when sendNotifications");
+          return callback("Error when sendNotifications");
+        } else {
+          return callback();
+        }
+      });
+  }
 }
 gameSchema.methods.isFixedCategoriesType = function () {
   return this.categoriesType == this.getCategoriesType().FIXED;
@@ -234,7 +277,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
             console.log("Error when sendNotifications");
             return callback("Error when sendNotifications");
           } else {
-            round.setNotificationSentForPlayer(foundPlayer, callback);
+            round.setNotificationSentForPlayer(player, callback);
           }
         });
     });
@@ -395,17 +438,14 @@ gameSchema.methods.acceptInvitation = function(request, callback){
       if(err) {
         return callback("ERROR: save game failed. "+err);
       } 
-    });
-    player.save(function(err) {
+      player.save(function(err) {
         if(err) {
           return callback("ERROR: save player failed after removeInvitation. "+err);
         } 
+        console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
+        return callback();
       });
-    
-    console.log("Invitation successfully accepted to player "+player.getName()+" in game "+game.gameId);
-    return callback();
-    
-    
+    });
   });
 }
 gameSchema.methods.rejectInvitation = function(request, callback){
@@ -426,36 +466,36 @@ gameSchema.methods.rejectInvitation = function(request, callback){
         return callback("ERROR: save player failed. "+err);
       } 
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
+      if (game.opponentsType == game.getOpponentsType().FRIENDS){
+          //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
+          var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
+          if (index > -1) 
+            game.selectedFriends.splice(index, 1);
+          if (game.selectedFriends.length + 1 == game.players.length)
+          {
+            if (game.players.length == 1)
+              game.status = game.getStatus().ALL_PLAYERS_REJECTED;
+            else
+              game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
+          }
+      }
+      game.save(function(err) {
+          if(err) {
+            return callback("ERROR: save game failed. "+err);
+          } 
+        });
+      return callback();
     });
-    if (game.opponentsType == game.getOpponentsType().FRIENDS){
-        //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-        var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
-        if (index > -1) 
-          game.selectedFriends.splice(index, 1);
-        if (game.selectedFriends.length + 1 == game.players.length)
-        {
-          if (game.players.length == 1)
-            game.status = game.getStatus().ALL_PLAYERS_REJECTED;
-          else
-            game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
-        }
-
-    }
-
-    game.save(function(err) {
-        if(err) {
-          return callback("ERROR: save game failed. "+err);
-        } 
-      });
-    return callback();
   });  
 }
+
 gameSchema.methods.getSelectedFriend = function(fbId)
 {
   return this.selectedFriends.filter(function (friend) {
     return friend.fbId == fbId;
   }).pop();
 }
+
 gameSchema.methods.asSummarized = function(){
   return {
       'gameId': this.gameId,
