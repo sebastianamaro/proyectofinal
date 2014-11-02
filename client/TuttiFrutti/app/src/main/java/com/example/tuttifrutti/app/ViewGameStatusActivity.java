@@ -67,13 +67,13 @@ public class ViewGameStatusActivity extends ListActivity {
                 refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
 
                 // Do work to refresh the list here.
-                new FillListViewAsyncTask().execute();
+                new FillListViewAsyncTask(false).execute();
             }
 
         });
 
 
-        new FillListViewAsyncTask().execute();
+        new FillListViewAsyncTask(true).execute();
 
     }
 
@@ -118,11 +118,20 @@ public class ViewGameStatusActivity extends ListActivity {
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
         boolean connError;
+        boolean showSpinner;
+
+        public FillListViewAsyncTask(boolean showSpiner){
+            this.showSpinner=showSpiner;
+            if(showSpiner)
+            {
+                Dialog.setMessage("Obteniendo partidas...");
+                Dialog.show();
+            }
+        }
 
         protected void onPreExecute() {
 
-            Dialog.setMessage("Obteniendo partidas...");
-            Dialog.show();
+
             api = new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -144,8 +153,10 @@ public class ViewGameStatusActivity extends ListActivity {
         protected void onPostExecute(Void result) {
 
             if (this.connError) {
-                // Call onRefreshComplete when the list has been refreshed.
-                Dialog.dismiss();
+
+                if(showSpinner)
+                     Dialog.dismiss();
+
                 mPullToRefreshLayout.onRefreshComplete();
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }
@@ -195,7 +206,9 @@ public class ViewGameStatusActivity extends ListActivity {
                 });
                 // Call onRefreshComplete when the list has been refreshed.
                 mPullToRefreshLayout.onRefreshComplete();
-                Dialog.dismiss();
+
+                if(showSpinner)
+                   Dialog.dismiss();
             }
 
         }

@@ -32,10 +32,13 @@ public class CreateGameActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("");
+        setTitle("Configuración");
         setContentView(R.layout.activity_create_game);
 
-        hours  = (AbstractWheel) findViewById(R.id.hour_horizontal);
+       hours  = (AbstractWheel) findViewById(R.id.hour_horizontal);
+
+
+
         NumericWheelAdapter hourAdapter = new NumericWheelAdapter(this, 1, 27, "%02d");
         hourAdapter.setItemResource(R.layout.wheel_text_centered);
         hourAdapter.setItemTextResource(R.id.text);

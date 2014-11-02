@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,91 +11,229 @@
     android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.example.tuttifrutti.app.CreateGameActivity">
-
-    <Switch
-        android:layout_marginTop="50dp"
-        android:layout_width="wrap_content"
-        android:background="@color/lightgrey"
+    <!--<RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Modo"
-        android:thumbTextPadding="29dp"
-        android:alpha="1"
-        android:layout_alignLeft="@+id/categoriesSelector"
-        android:layout_alignRight="@+id/categoriesSelector"
-        android:id="@+id/modeSelector"
-        android:checked="false"
-        android:textOff="Offline"
-        android:textOn="Online" />
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/title_container"
+        android:id="@+id/linearLayoutHeader">
 
-    <Switch
-        android:alpha="1"
-        android:layout_marginLeft="10dp"
-        android:background="@color/lightgrey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Oponentes"
-        android:id="@+id/oponentsSelector"
-        android:layout_below="@+id/modeSelector"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/categoriesSelector"
-        android:layout_marginTop="40dp"
-        android:textOff="Con amigos"
-        android:textOn="Aleatorio" />
-
-    <Switch
-        android:alpha="1"
-        android:layout_marginLeft="10dp"
-        android:background="@color/lightgrey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Categorias"
-        android:id="@+id/categoriesSelector"
-        android:layout_below="@+id/oponentsSelector"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="37dp"
-        android:textOff="Libres"
-        android:textOn="Controladas"
-        />
-
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_marginLeft="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:layout_below="@id/categoriesSelector"
-
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="37dp"
-        android:id="@+id/randomPlayersLayout">
         <TextView
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="Cantidad de rondas: "
-            android:textSize="16sp"
-            android:gravity="center"
-            android:background="@color/lightgrey"
-            android:id="@+id/lblRounds"/>
-
-        <antistatic.spinnerwheel.WheelHorizontalView
-            android:id="@+id/hour_horizontal"
-            app:selectionDivider="@drawable/divider_dark_gradient_horizontal"
-            app:selectionDividerWidth="1px"
-            android:layout_alignParentRight="true"
-            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
-            android:layout_toRightOf="@id/lblRounds"
-            android:paddingLeft="20dp"/>
+            android:layout_height="wrap_content"
+            android:text="Configuracion"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"/>
+        </RelativeLayout>
+-->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:id="@+id/linearLayoutMode">
 
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutModelbl"
+            android:background="@drawable/text_container">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Modo"
+                android:textAlignment="center"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:id="@+id/lblModo"
+                android:layout_marginBottom="3dp"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutModeswt"
+            android:background="@drawable/switch_container"
+            android:layout_below="@id/linearLayoutModelbl"
+            >
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1"
+            android:id="@+id/modeSelector"
+            android:checked="false"
+            android:textOff="OFFLINE"
+            android:textOn="ONLINE"
+            android:layout_centerHorizontal="true"
+            android:thumb="@drawable/apptheme_switch_inner_holo_light"
+            android:track="@drawable/apptheme_switch_track_holo_light"
+            />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_below="@id/linearLayoutMode"
+        android:id="@+id/linearLayoutOponents">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutOponentslbl"
+            android:background="@drawable/text_container">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Oponentes"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:id="@+id/lblOponentes"
+            android:layout_marginBottom="3dp"/>
+
+        </RelativeLayout>
 
 
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutOponentsswt"
+            android:background="@drawable/switch_container"
+            android:layout_below="@id/linearLayoutOponentslbl"
+            >
+        <Switch
+            android:alpha="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/oponentsSelector"
+            android:textOff="CON AMIGOS"
+            android:textOn="ALEATORIO"
+            android:layout_centerHorizontal="true"
+            android:thumb="@drawable/apptheme_switch_inner_holo_light"
+            android:track="@drawable/apptheme_switch_track_holo_light"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_below="@id/linearLayoutOponents"
+        android:id="@+id/linearLayoutCategories">
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutCategorieslbl"
+            android:background="@drawable/text_container">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categorías"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:id="@+id/lblCategorias"
+            android:layout_marginBottom="3dp"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutCategoriesswt"
+            android:background="@drawable/switch_container"
+            android:layout_below="@id/linearLayoutCategorieslbl"
+            >
+        <Switch
+            android:alpha="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/categoriesSelector"
+            android:textOff="LIBRES"
+            android:textOn="CONTROLADAS"
+            android:layout_centerHorizontal="true"
+            android:thumb="@drawable/apptheme_switch_inner_holo_light"
+            android:track="@drawable/apptheme_switch_track_holo_light"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_below="@id/linearLayoutCategories"
+        android:id="@+id/linearLayoutRoundsCount">
+
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutRoundsCountlbl"
+            android:background="@drawable/text_container">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cantidad de rondas: "
+                android:textAlignment="center"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_marginBottom="3dp"
+                android:id="@+id/lblRounds"/>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutRoundsCountswt"
+            android:background="@drawable/switch_container"
+            android:layout_below="@id/linearLayoutRoundsCountlbl"
+            >
+            <antistatic.spinnerwheel.WheelHorizontalView
+                android:layout_centerHorizontal="true"
+                android:id="@+id/hour_horizontal"
+                app:selectionDivider="@drawable/divider_dark_gradient_horizontal"
+                app:selectionDividerWidth="1px"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+        </RelativeLayout>
+    </RelativeLayout>
 
 
     <Button
@@ -105,8 +244,8 @@
         android:layout_height="wrap_content"
         android:text="Crear"
         android:id="@+id/create"
-        android:layout_marginTop="150dp"
-        android:layout_alignTop="@+id/categoriesSelector"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/linearLayoutRoundsCount"
         android:layout_centerHorizontal="true"
         android:onClick="createGame" />
 
