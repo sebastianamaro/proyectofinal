@@ -23,10 +23,6 @@ class AppKernel extends Kernel
             new tuttifruttiweb\UtilsBundle\UtilsBundle(),
             new tuttifruttiweb\StatisticsBundle\StatisticsBundle(),
             new tuttifruttiweb\PlayerBundle\PlayerBundle(),
-
-
-
-
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
