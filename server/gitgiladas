@@ -1,0 +1,6 @@
+git cob "lalala"---crea branch y me hace checkout en lalala (me deja ahí parada)
+
+git checkout lalala
+git add lala.js pepe.js
+git cim "hice ble"
+git ph ---- pushea al remoto, si no existe branch la crea en remoto

@@ -112,7 +112,7 @@ class CategoryController extends Controller
 
         return $form;
     }
-    public function addReportedWordAction($id,$word){
+    public function acceptReportedWordAction($id,$word){
       $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
       $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
       $category = new Category();
@@ -120,12 +120,12 @@ class CategoryController extends Controller
       if (!$category->getId()){
         throw $this->createNotFoundException('No se encuentra la categoría.');
       }
-      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word;            
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/word/'.$word;            
       $reqJson  = new HttpPutJson($url,array());
       $categoryData = $this->get('api_caller')->call($reqJson);
       return $this->redirect($this->generateUrl('category_show', array('id' => $id)));
     }
-    public function removeReportedWordAction($id,$word){
+    public function rejectReportedWordAction($id,$word){
       $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;
       $categoryData = $this->get('api_caller')->call(new HttpGetJson($url,array()));
       $category = new Category();
@@ -133,7 +133,7 @@ class CategoryController extends Controller
       if (!$category->getId()){
         throw $this->createNotFoundException('No se encuentra la categoría.');
       }
-      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word.'?reported';            
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/word/'.$word.'?reported';            
       $reqJson  = new HttpDeleteJson($url,array());
       $categoryData = $this->get('api_caller')->call($reqJson);
       return $this->redirect($this->generateUrl('category_show', array('id' => $id)));
@@ -146,7 +146,7 @@ class CategoryController extends Controller
       if (!$category->getId()){
         throw $this->createNotFoundException('No se encuentra la categoría.');
       }
-      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/'.$word;            
+      $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id.'/word/'.$word;            
       $reqJson  = new HttpDeleteJson($url,array());
       $categoryData = $this->get('api_caller')->call($reqJson);
       return $this->redirect($this->generateUrl('category_show', array('id' => $id)));

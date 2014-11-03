@@ -1,5 +1,0 @@
-_assetic:
-    resource: .
-    type: assetic
-_app:
-    resource: /home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/config/routing_dev.yml

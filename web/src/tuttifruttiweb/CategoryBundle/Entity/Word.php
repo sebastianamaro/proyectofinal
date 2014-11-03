@@ -3,6 +3,7 @@
 namespace tuttifruttiweb\CategoryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use tuttifruttiweb\UtilsBundle\Utils\StringModifier;
 
 /**
  * Word
@@ -13,7 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Word
 {
     public function __construct($value=''){
-        $this->value = $value;
+        $str = new StringModifier();
+        $this->value = $str->removeAccents(strtoupper($value));
     }
     /**
      * @var integer
