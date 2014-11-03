@@ -124,25 +124,22 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 txtOpponentsMode.setText(result.getSpanishOpponentsType());
                 txtCategoriesMode.setText(result.getSpanishCategoriesType());*/
 
-                if(isPlayableGame(game))
-                {
-                    ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
-                    String myId = FacebookHelper.getUserId();
-                    for (Player p : result.getPlayers()) {
-                        String playerFbId = p.getFbId();
-                        if (!playerFbId.equals(myId))
-                            players.add(new SummarizedPlayer(p, true));
+                ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
+                String myId = FacebookHelper.getUserId();
+                for (Player p : result.getPlayers()) {
+                    String playerFbId = p.getFbId();
+                    if (!playerFbId.equals(myId))
+                        players.add(new SummarizedPlayer(p, true));
+                }
+
+                if (result.getOpponentsType().equals("FRIENDS"))
+                    for (Player p : result.getSelectedFriends()) {
+                        if (!result.getPlayers().contains(p))
+                            players.add(new SummarizedPlayer(p, false));
                     }
 
-                    if (result.getOpponentsType().equals("FRIENDS"))
-                        for (Player p : result.getSelectedFriends()) {
-                            if (!result.getPlayers().contains(p))
-                                players.add(new SummarizedPlayer(p, false));
-                        }
-
-                    GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
-                    detailsList.setAdapter(gda);
-                }
+                GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
+                detailsList.setAdapter(gda);
 
 
                 if (!result.getOpponentsType().equals("FRIENDS"))
@@ -166,23 +163,26 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         Context context;
         private int playersSeparatorIndex=0;
         private int categoriesSeparatorIndex;
-        private static final int ITEM_VIEW_TYPE_PLAYERS_SEPARATOR = 0;
-        private static final int ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR = 1;
-        private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 2;
-        private static final int ITEM_VIEW_TYPE_PLAYER = 3;
-        private static final int ITEM_VIEW_TYPE_CATEGORY = 4;
-        private static final int ITEM_VIEW_TYPE_COUNT = 5;
+        private static final int ITEM_VIEW_TYPE_INFORMATION_SEPARATOR = 0;
+        private static final int ITEM_VIEW_TYPE_INFORMATION = 1;
+        private static final int ITEM_VIEW_TYPE_PLAYERS_SEPARATOR = 2;
+        private static final int ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR = 3;
+        private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 4;
+        private static final int ITEM_VIEW_TYPE_PLAYER = 5;
+        private static final int ITEM_VIEW_TYPE_CATEGORY = 6;
+        private static final int ITEM_VIEW_TYPE_COUNT = 7;
+        private static final String detailsText = "Detalles";
         private static final String playersText = "Jugadores";
         private static final String categoriesText = "Categorias";
         boolean showsPlayers;
 
 
-        public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, ArrayList<Category> categories)
+        public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, Game game)
         {
             this.context=context;
             this.details = new ArrayList<Object>();
             this.details.addAll(players);
-            this.details.addAll(categories);
+            this.details.addAll(game.getSelectedCategories());
 
 
             showsPlayers = players.size() > 0;
