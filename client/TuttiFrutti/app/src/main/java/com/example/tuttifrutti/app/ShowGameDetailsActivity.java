@@ -15,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +44,6 @@ import java.util.ArrayList;
 public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
     FullGame game;
-    Button acceptButton;
-    Button rejectButton;
     ListView detailsList;
 
     @Override
@@ -68,14 +67,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
         else
         {
-            Button b = (Button)findViewById(R.id.btnPlay);
-            b.setVisibility(View.INVISIBLE);
-            detailsList.setVisibility(View.GONE);
+            RelativeLayout playRL = (RelativeLayout)findViewById(R.id.btnPlayLayout);
+            playRL.setVisibility(View.GONE);
 
-            acceptButton = (Button) findViewById(R.id.accept);
-            rejectButton = (Button) findViewById(R.id.reject);
-            acceptButton.setVisibility(View.VISIBLE);
-            rejectButton.setVisibility(View.VISIBLE);
+            RelativeLayout invitationRL=(RelativeLayout)findViewById(R.id.btnInvitationLayout);
+            invitationRL.setVisibility(View.VISIBLE);
         }
 
 
@@ -124,22 +120,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             } else {
 
-                TextView txtGameMode = (TextView) findViewById(R.id.gameModeTextView);
-                TextView txtOpponentsMode = (TextView) findViewById(R.id.opponentsModeTextView);
-                TextView txtCategoriesMode = (TextView) findViewById(R.id.categoryModeTextView);
-                TextView txtCreador = (TextView) findViewById(R.id.creadorTextView);
-
-                txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
+                /*txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
                 txtOpponentsMode.setText(result.getSpanishOpponentsType());
-                txtCategoriesMode.setText(result.getSpanishCategoriesType());
-                txtCreador.setText(result.getOwner().getName());
-
-                TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
-                TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);
-                lbl.setVisibility(View.GONE);
-                txt.setVisibility(View.GONE);
-
-
+                txtCategoriesMode.setText(result.getSpanishCategoriesType());*/
 
                 if(isPlayableGame(game))
                 {
@@ -157,8 +140,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                                 players.add(new SummarizedPlayer(p, false));
                         }
 
-
-
                     GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
                     detailsList.setAdapter(gda);
                 }
@@ -170,12 +151,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                     int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size() - 1);
 
                     if (randomPlayersLeftToAccept > 0) {
-                        lbl.setVisibility(View.VISIBLE);
-                        txt.setVisibility(View.VISIBLE);
-                        txt.setText(Integer.toString(randomPlayersLeftToAccept));
+                        //TODO no mostrar la row
                     }
                 }
-
             }
         }
     }
