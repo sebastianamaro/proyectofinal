@@ -44,14 +44,13 @@ public class ViewGameStatusActivity extends ListActivity {
     String fbId;
 
     @Override
-    public void onWindowFocusChanged (boolean hasFocus){
-        if (hasFocus) {
+    public void onResume (){
+        super.onResume();
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancelAll();
 
             new FillListViewAsyncTask(true).execute();
-        }
     }
 
     @Override
