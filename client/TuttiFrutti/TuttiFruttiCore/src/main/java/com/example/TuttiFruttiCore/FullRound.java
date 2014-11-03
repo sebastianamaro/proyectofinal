@@ -5,6 +5,8 @@ public class FullRound extends Round {
     private String[] categories;
     private String gameStatus;
     private String gameMode;
+    private String player;
+    private int secondsAgoStarted;
 
     public void setLetter(String letter)
     {
@@ -39,4 +41,20 @@ public class FullRound extends Round {
     public String getGameMode() { return gameMode; }
 
     public void setGameMode(String gameMode) { this.gameMode = gameMode; }
+
+    public String getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(String player) {
+        this.player = player;
+    }
+
+    public int getSecondsAgoStarted() {
+        return secondsAgoStarted;
+    }
+
+    public void setSecondsAgoStarted(int secondsAgoStarted) {
+        this.secondsAgoStarted = secondsAgoStarted;
+    }
 }

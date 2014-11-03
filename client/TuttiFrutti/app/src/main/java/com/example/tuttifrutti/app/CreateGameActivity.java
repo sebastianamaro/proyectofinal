@@ -1,10 +1,6 @@
 package com.example.tuttifrutti.app;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,12 +8,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
-import com.example.TuttiFruttiAPI;
+
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
-import com.example.TuttiFruttiCore.Player;
-import com.example.TuttiFruttiCore.PlayServicesHelper;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
 
 import antistatic.spinnerwheel.AbstractWheel;
 import antistatic.spinnerwheel.adapters.NumericWheelAdapter;
@@ -26,7 +19,7 @@ import antistatic.spinnerwheel.adapters.NumericWheelAdapter;
 public class CreateGameActivity extends ActionBarActivity {
 
     public static final String MODE_EXTRA_MESSAGE = "MODE_EXTRA_MESSAGE";
-    public static final String OPONENTS_EXTRA_MESSAGE = "OPONENTS_EXTRA_MESSAGE";
+    public static final String OPPONENTS_EXTRA_MESSAGE = "OPPONENTS_EXTRA_MESSAGE";
     public static final String CATEGORIES_EXTRA_MESSAGE = "CATEGORIES_EXTRA_MESSAGE";
     private AbstractWheel hours;
     @Override
@@ -71,15 +64,15 @@ public class CreateGameActivity extends ActionBarActivity {
     public void createGame(View view) {
 
         boolean mode = ((Switch) findViewById(R.id.modeSelector)).isChecked(); //true:online, false:offline
-        boolean oponents = ((Switch) findViewById(R.id.oponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
+        boolean opponents = ((Switch) findViewById(R.id.opponentsSelector)).isChecked(); //true:aleatorio, false:con amigos
         boolean categories = ((Switch) findViewById(R.id.categoriesSelector)).isChecked(); //true:controladas, false:libres
         int rounds=hours.getCurrentItem()+1;
 
         Game gs = new Game();
-        gs.setSettings(mode, categories, oponents, rounds);
+        gs.setSettings(mode, categories, opponents, rounds);
 
         Intent intent;
-        if (oponents)
+        if (opponents)
             intent = new Intent(getApplicationContext(), ChooseRandomPlayersCountActivity.class);
         else
             intent = new Intent(getApplicationContext(), ChooseFriendsActivity.class);

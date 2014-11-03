@@ -11,18 +11,22 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Symfony\Bundle\MonologBundle\MonologBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Lsw\ApiCallerBundle\LswApiCallerBundle(),
             new Ideup\SimplePaginatorBundle\IdeupSimplePaginatorBundle(),
+            new Symfony\Bundle\MonologBundle\MonologBundle(),
+            new Lsw\ApiCallerBundle\LswApiCallerBundle(),
             new Lexik\Bundle\FormFilterBundle\LexikFormFilterBundle(),
             new tuttifruttiweb\CategoryBundle\CategoryBundle(),
             new tuttifruttiweb\UtilsBundle\UtilsBundle(),
             new tuttifruttiweb\StatisticsBundle\StatisticsBundle(),
             new tuttifruttiweb\PlayerBundle\PlayerBundle(),
+
+
+
+
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

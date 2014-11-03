@@ -71,7 +71,6 @@ playerSchema.methods.getFirstName = function () {
 }
 playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
   if (this.fbId == from.fbId){
-    console.log("wont send the invitation to the creator");
     return; //wont send the invitation to the creator
   }
   var invitationAlreadySent = this.invitations.filter(function (invitation) {
@@ -79,24 +78,23 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
             }).pop();
 
   if (invitationAlreadySent !== undefined){
-    console.log("wont send the invitation to sb already invited");
     return; //wont send the invitation to sb already invited. this validation is just in case
   }
   var notification = new Notification();
-  /*notification.setRegistrationId(this.registrationId);
-  notification.setValues({'gameId':gameId, 'reason' : 'INVITATION'});
+  notification.setRegistrationId(this.registrationId);
+  notification.setValues({'game_id':gameId, 'player': from.name});
+  notification.setMessageType(notification.getMessagesTypes().INVITATION);
   var player = this;
   notification.send(function(err){
     if (err){
       console.log("Error when send invitations");
     } else {
-      player.setNotificationSentForGame(gameId);
+      player.addInvitationToGame(gameId);
     }
-  });*/
-  this.setNotificationSentForGame(gameId);
+  });
 }
 
-playerSchema.methods.setNotificationSentForGame = function(gameId){
+playerSchema.methods.addInvitationToGame = function(gameId){
   var fbId=this.fbId;
   this.invitations.push(gameId);
   this.save(function(err) {
@@ -113,9 +111,9 @@ playerSchema.methods.addGame = function(gameId){
 
 playerSchema.methods.removeInvitation = function(gameId){
   var index = this.invitations.indexOf(gameId);
-    if (index > -1) {
-        this.invitations.splice(index, 1);
-    }
+  if (index > -1) {
+    this.invitations.splice(index, 1);
+  }
 }
 
 module.exports = mongoose.model('Player', playerSchema);

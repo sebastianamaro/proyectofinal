@@ -19,11 +19,6 @@ public class FilePlay {
         this.roundId=roundId;
     }
 
-    public FilePlay(String fileName, int roundId){
-        this.fileName=fileName;
-        this.roundId=roundId;
-    }
-
     public String getFileName() {
         return fileName;
     }

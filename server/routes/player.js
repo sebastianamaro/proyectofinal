@@ -50,7 +50,7 @@ module.exports = function(app) {
       	
       	Game.find({ gameId: { $in : player.games } }, function(err, games) {
           var statusCodes = {
-                      STATUS_NOT_STARTED : -2,
+                      NOT_STARTED : -2,
                       NO_PREVIOUS_ROUNDS : -1,
                       RESULTS_AVAILABLE: 1,
                       FINISHED: -3
@@ -67,7 +67,7 @@ module.exports = function(app) {
               var statusCode;
               
               if (!game.hasStarted()){
-                statusCode = statusCodes.STATUS_NOT_STARTED;
+                statusCode = statusCodes.NOT_STARTED;
               } else {
                 if(game.status == game.getStatus().FINISHED)
                 {
@@ -214,7 +214,6 @@ deleteFinishedGame = function(req,res){
                 gamesToReturn.push(game.asSummarized());
               };
             }
-            console.log("Found : "+gamesToReturn.length + " invitations for player " + player.getName());  
             res.send(gamesToReturn, 200); //add error manipulation
           });
 

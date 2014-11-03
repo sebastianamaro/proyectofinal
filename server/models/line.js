@@ -18,6 +18,10 @@ lineSchema.methods.setQualification = function (judge, category, isValid) {
   var playToQualify = this.plays.filter(function (play) { return play.category == category;}).pop();  
   playToQualify.setQualification(judge,isValid);
 }
+lineSchema.methods.hasAllWords = function () {
+  var playWithoutWord = this.plays.filter(function (play) { return play.word == '';}).pop();  
+  return playWithoutWord == undefined;
+}
 lineSchema.methods.setValues = function (line, foundPlayer) {
   var thisLine = this;
   thisLine.player = { fbId: foundPlayer.fbId, name: foundPlayer.name };
@@ -33,7 +37,7 @@ lineSchema.methods.setLateResults = function (bestTime) {
     var playTimestamp = moment(play.timeStamp);
     var time = playTimestamp.diff(startTimestamp, 'seconds');
     if (time > bestTime){
-      play.setLateResult();
+      play.setLateResultIfHasWord();
     }
   };
 }
@@ -59,11 +63,6 @@ lineSchema.methods.isFullyValidated = function (categories, playersAmount) {
     }
   }
   return true;
-}
-lineSchema.methods.getPlaySimilarTo = function (searchedPlay) {
-  return this.plays.filter(function (play) {
-    return play.isSimilarTo(searchedPlay);
-  }).pop();
 }
 
 lineSchema.methods.setTotalScore = function (gameId, roundId) {

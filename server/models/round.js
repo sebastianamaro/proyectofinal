@@ -11,7 +11,8 @@ var roundSchema = new Schema({
   letter:   { type: String },
   status:   { type: String },  
   lines: [Line.schema], 
-  notifications: [ { type: String } ]
+  notifications: [ { type: String } ],
+  startTimestamp: { type: Date }
 }, { _id : false });
 
 roundSchema.methods.getStatus = function () {
@@ -24,6 +25,7 @@ roundSchema.methods.getStatus = function () {
 roundSchema.methods.start = function (letter) {
   this.letter = letter;
   this.status = this.getStatus().OPENED;
+  this.startTimestamp = new Date();
 }
 
 roundSchema.methods.addLine = function (newLine, foundPlayer) {
@@ -58,7 +60,6 @@ roundSchema.methods.getPlayersWhoHavePlayed = function () {
   for (var i = this.lines.length - 1; i >= 0; i--) {
      players.push(this.lines[i].player);
   };
-
   return players;
 }
 
@@ -70,7 +71,7 @@ roundSchema.methods.checkAllPlayersFinished = function (game) {
 
 roundSchema.methods.hasPlayerSentHisLine = function (fbId){
   var existingLine = this.lines.filter(function (line) {
-    return line.player.fbId == fbId && line.plays.length>0; 
+    return line.player.fbId == fbId; 
   }).pop();  
   return existingLine !== undefined;
 }
@@ -101,22 +102,39 @@ roundSchema.methods.finish = function (game) {
   this.status = this.getStatus().CLOSED;
 }
 
-roundSchema.methods.setLateResults = function (){
-  var bestLine;
-  var bestTime = Number.MAX_VALUE;
-  var iLine = -1;
+roundSchema.methods.getEarliestStart = function (){
+  var earliestStart = new moment();
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
-    var finishTimestamp = moment(line.finishTimestamp);
     var startTimestamp = moment(line.startTimestamp);
-    var time = finishTimestamp.diff(startTimestamp, 'seconds');
-    if (time <= bestTime){
-      bestLine = line;
-      bestTime = time;
-      iLine = i;
+    if (earliestStart !== undefined || startTimestamp <= earliestStart){
+      earliestStart = startTimestamp;
     }
   };
-  console.log("Best time is "+bestTime+" seconds for line of player "+bestLine.player.name);
+  return earliestStart;
+}
+roundSchema.methods.setLateResults = function (isOnline){
+  var bestLine;
+  var bestTime = Number.MAX_VALUE;
+  var earliestStart = this.getEarliestStart();
+  var iLine = -1;
+  var delayAllowed = (isOnline) ? 5 : 0;
+  for (var i = this.lines.length - 1; i >= 0; i--) {
+    var line = this.lines[i];
+    if (line.hasAllWords()){
+      var startTimestamp = (isOnline) ? moment(earliestStart) : moment(line.startTimestamp);
+      var finishTimestamp = moment(line.finishTimestamp);
+      var time = finishTimestamp.diff(startTimestamp, 'seconds');
+      if (time <= bestTime){
+        bestLine = line;
+        bestTime = time;
+        iLine = i;
+      }
+    }
+  };
+
+  console.log("Best time is "+bestTime);
+  bestTime = bestTime + delayAllowed;
   for (var i = this.lines.length - 1; i >= 0; i--) {
     if (iLine !== i){
       var line = this.lines[i];
@@ -130,7 +148,7 @@ roundSchema.methods.isClosed = function () {
 }
 
 roundSchema.methods.calculateScores = function (game, callback){
-  this.setLateResults();
+  this.setLateResults(game.getModes().ONLINE==game.mode);
   var round = this;
   var categoriesNames = [];
   for (var i = game.categories.length - 1; i >= 0; i--) {
@@ -146,6 +164,7 @@ roundSchema.methods.calculateScores = function (game, callback){
 }
 
 roundSchema.methods.calculateAndSetTotalScores = function (){
+  console.log("calculateAndSetTotalScores");
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
     var totalScore = 0;
@@ -289,18 +308,29 @@ roundSchema.methods.getScores = function (fbId, categories, players, showScores)
 
   return scores;
 }
+roundSchema.methods.getSecondsAgoStarted = function () {
+  if (this.lines.length >0){
+    return this.lines[0].plays.length * 20 + 1;
+  }
+  var now = moment(new Date());
+  var startTimestamp = this.startTimestamp;
+  var diff = now.diff(startTimestamp, 'seconds');
+  return diff;
+}
 roundSchema.methods.asSummarized = function (game) {
   var categories=[];
   for (var i = game.categories.length - 1; i >= 0; i--) {
     categories.push(game.categories[i].name);
   };
+  var secondsAgoStarted = (game.mode == game.getModes().ONLINE) ? this.getSecondsAgoStarted() : 0;
   return {'letter': this.letter,
           'status': this.status,
           'roundId': this.roundId,
           'gameId': game.gameId,
-          'categories': categories,
+          'categories': categories, 
           'gameStatus': game.status,
-          'gameMode':game.mode
+          'gameMode':game.mode,
+          'secondsAgoStarted': secondsAgoStarted
           };
 }
 module.exports = mongoose.model('Round', roundSchema);

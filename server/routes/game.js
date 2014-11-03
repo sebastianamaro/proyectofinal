@@ -4,6 +4,7 @@ module.exports = function(app) {
   var Round = require('../models/round.js');
   var Player = require('../models/player.js');
   var Play = require('../models/play.js');
+  var NotificationFile = require('../models/notification.js');
 
   setQualification = function(req,res){
     var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
@@ -14,7 +15,7 @@ module.exports = function(app) {
       var round = game.getLastRound();
       
       round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
-      game.moveToWaitingForNextRoundIfPossible(round, function(){
+      game.moveToNextStatusIfPossible(round, function(){
 
         game.save(function(err) {
           if(!err) {
@@ -38,6 +39,7 @@ module.exports = function(app) {
       if (!playingRound) return res.send('No playing round', 404);
       var roundWithCategories = playingRound.asSummarized(game);
       res.send(roundWithCategories);      
+
     })
   }
   alterRound = function(req, res) {
@@ -62,18 +64,22 @@ module.exports = function(app) {
       
       var playingRound = game.getPlayingRound();
       var reqRound = req.body;
+      var playerStarted = req.body.player;
 
       if (playingRound){
           console.log('Return existing round with letter '+playingRound.letter);
       } else {
         var assignedLetter = game.getNextLetter();
+        console.log('assignedLetter is'+assignedLetter);
         var round = new Round();
         round.start(assignedLetter);
         game.addRound(round);
         game.status = game.getStatus().PLAYING;
         game.save(function(err) {
           if(!err) {
-            console.log('Created round with letter '+assignedLetter);
+            game.sendNotificationsRoundStarted(playerStarted,function(){
+              console.log('Created round with letter '+assignedLetter);
+            });
           } else {
             console.log('ERROR: ' + err);
           }
@@ -97,10 +103,10 @@ module.exports = function(app) {
       if (!currentRound) return res.send('Round not found', 404);
 
       if (currentRound.hasPlayerSentHisLine(reqRound.line.player.fbId)) {
-        console.log('player: ' +reqRound.line.player+' has already sent his line.')
+        //player has already sent his line
         return res.send('Added line to round', 200);
       }; 
-      console.log("The player who stopped is "+reqRound.line.player.fbId);
+      //The player who stopped is reqRound.line.player
       
       Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
             if (err) return res.send(err, 500);
@@ -110,15 +116,7 @@ module.exports = function(app) {
             currentRound.addLine(reqRound.line, foundPlayer);
             currentRound.finishIfAllPlayersFinished(game);
             console.log(currentRound.status+" is the round status");
-            if (game.getCategoriesType().FREE == game.categoriesType){
-              game.status = game.getStatus().WAITING_FOR_QUALIFICATIONS;
-            } else {
-              if (currentRound.status == currentRound.getStatus().CLOSED){  
-                   game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-              }
-            } 
-            
-            game.moveToWaitingForNextRoundIfPossible(currentRound, function(){  //VER DE MOVER LO QUE ESTA ARRIBA, ADENTRO DE ESTE METODO
+            game.moveToNextStatusIfPossible(currentRound, function(){
               game.save(function(err) {
                 if(!err) {
                   console.log('game.status '+ game.status);
@@ -126,14 +124,15 @@ module.exports = function(app) {
                 } else {
                   console.log('ERROR: ' + err);
                 }
-              });    
-            }); // solo sirve si son todas controladas aunque eligio free
+              });
+            }); 
           });
           res.send('Round finished', 200);
       });
         
     });
   }
+
   createGame = function(req,res){
     Game.findOne({}).sort('-gameId').exec(function(err, doc) { 
       var largerId;
@@ -201,41 +200,34 @@ module.exports = function(app) {
       var canPlayerPlay;
       var isComplete;
 
-      if (roundToShow == undefined)
-      {
-        console.log('no hay ronda abierta');
+      if (roundToShow == undefined){
         //si todavia no hay actual, mostrame los resultados de la anterior que ya esta cerrada
         roundToShow = game.getLastRound();
         showScores = true;
         playersWhoHaveLines = game.players;
-        canPlayerPlay = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
+        canPlayerPlay = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS &&
+                        game.status !== game.getStatus().SHOWING_RESULTS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones o está pausado mostrando resultados
         isComplete = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
-      }
-      else if (!roundToShow.hasPlayerSentHisLine(req.params.fbId))
-      {
-        console.log('hay ronda abierta y no jugue');
-        //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
-        roundToShow = game.getRound(roundToShow.roundId -1);
-        showScores = true;
-        playersWhoHaveLines = game.players;
-        canPlayerPlay = true; //va a jugar la actual
-        isComplete = true;
-      }
-      else
-      {
-        console.log('hay ronda abierta y SI jugue');
-        //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
-        showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
-        playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
-        console.log('playersWhoHaveLines: ' + playersWhoHaveLines);
-        canPlayerPlay = false;
-        isComplete = false;
+      } else {
+        if (!roundToShow.hasPlayerSentHisLine(req.params.fbId)){
+          //si la actual todavia no la jugue, mostrame los resultados de la anterior que ya esta cerrada
+          roundToShow = game.getRound(roundToShow.roundId -1);
+          showScores = true;
+          playersWhoHaveLines = game.players;
+          canPlayerPlay = true; //va a jugar la actual
+          isComplete = true;
+        } else {
+          //si ya jugue pero no esta cerrada, mostrame solo las jugadas de la actual abierta
+          showScores = false; //si hay una abierta es porque todos todavia no mandaron sus lines
+          playersWhoHaveLines = roundToShow.getPlayersWhoHavePlayed(); //mostrar solo las jugadas de los que si mandaron su line
+          console.log('playersWhoHaveLines: ' + playersWhoHaveLines);
+          canPlayerPlay = false;
+          isComplete = false;
+        }
       }
 
       if (!roundToShow || roundToShow == undefined) return res.send('No round to show results of', 404);
 
-      console.log("can player play: " + canPlayerPlay);
-      
       var scoresArray=roundToShow.getScores(req.params.fbId, game.categories, playersWhoHaveLines, showScores);
       
       //roundNumber: para mostrar a que ronda pertenecen los resultados

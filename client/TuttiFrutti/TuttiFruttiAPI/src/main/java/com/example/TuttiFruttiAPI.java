@@ -127,7 +127,7 @@ public class TuttiFruttiAPI {
         restTemplate.postForEntity(url, game, null);
     }
 
-    public void startRound(int gameId)
+    public void startRound(int gameId, String fbId)
     {
         String url=serverURL+"game/"+gameId+"/round";/* object.body tiene que tener status=Playing*/
         RestTemplate restTemplate = new RestTemplate();
@@ -136,6 +136,7 @@ public class TuttiFruttiAPI {
         requestFactory.setConnectTimeout(3500);
         restTemplate.setRequestFactory(requestFactory);
         FullRound fr= new FullRound();
+        fr.setPlayer(fbId);
         fr.setStatus("OPENED");
         restTemplate.put(url, fr);
     }

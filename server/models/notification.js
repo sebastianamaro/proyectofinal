@@ -10,6 +10,7 @@ Notification.prototype.send =  function(callback){
 	var keys = Object.keys(this.values);
 	var body = {};
 
+	body['message_type'] = this.messageType;
 	for (var i = keys.length - 1; i >= 0; i--) {
 		var key = keys[i];
 		body[key] = this.values[key];
@@ -30,10 +31,24 @@ Notification.prototype.send =  function(callback){
 	});
 }
 
-Notification.prototype.setRegistrationId= function (registrationId){
+Notification.prototype.setRegistrationId = function (registrationId){
 	this.registrationId = registrationId;
 }
 
-Notification.prototype.setValues= function (values){
+Notification.prototype.setValues = function (values){
 	this.values = values;
 }
+
+Notification.prototype.setMessageType = function (messageType){
+	this.messageType = messageType;
+}
+
+Notification.prototype.getMessagesTypes= function (){
+     return {
+        INVITATION      : 1,
+        ROUND_ENABLED  	: 2,
+        ROUND_STARTED   : 3,
+        ROUND_CLOSED	: 4
+      };
+}
+

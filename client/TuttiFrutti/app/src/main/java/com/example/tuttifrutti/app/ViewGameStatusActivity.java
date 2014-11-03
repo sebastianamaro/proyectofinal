@@ -3,6 +3,7 @@ package com.example.tuttifrutti.app;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -43,6 +44,17 @@ public class ViewGameStatusActivity extends ListActivity {
     String fbId;
 
     @Override
+    public void onWindowFocusChanged (boolean hasFocus){
+        if (hasFocus) {
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancelAll();
+
+            new FillListViewAsyncTask(true).execute();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -51,7 +63,6 @@ public class ViewGameStatusActivity extends ListActivity {
             Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
             startActivity(i);
         }
-
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
 
@@ -65,16 +76,14 @@ public class ViewGameStatusActivity extends ListActivity {
 
                 // Update the LastUpdatedLabel
                 refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancelAll();
                 // Do work to refresh the list here.
                 new FillListViewAsyncTask(false).execute();
             }
 
         });
-
-
-        new FillListViewAsyncTask(true).execute();
-
     }
 
     @Override
@@ -136,8 +145,7 @@ public class ViewGameStatusActivity extends ListActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... filePlays) {
-            fbId = FacebookHelper.getUserId();
+        protected Void doInBackground(Void... filePlays) {            fbId = FacebookHelper.getUserId();
             try {
                 games = api.getGames(fbId);
                 invitations = api.getPendingInvitations(fbId);

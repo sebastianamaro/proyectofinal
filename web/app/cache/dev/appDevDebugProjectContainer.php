@@ -45,7 +45,6 @@ class appDevDebugProjectContainer extends Container
             'assetic.filter.cssrewrite' => 'getAssetic_Filter_CssrewriteService',
             'assetic.filter_manager' => 'getAssetic_FilterManagerService',
             'assetic.request_listener' => 'getAssetic_RequestListenerService',
-            'assetic.value_supplier.default' => 'getAssetic_ValueSupplier_DefaultService',
             'cache_clearer' => 'getCacheClearerService',
             'cache_warmer' => 'getCacheWarmerService',
             'controller_name_converter' => 'getControllerNameConverterService',
@@ -123,12 +122,15 @@ class appDevDebugProjectContainer extends Container
             'ideup.simple_paginator' => 'getIdeup_SimplePaginatorService',
             'ideup.simple_paginator.adapter_factory' => 'getIdeup_SimplePaginator_AdapterFactoryService',
             'kernel' => 'getKernelService',
+            'lexik_form_filter.apply_filter.doctrine_dbal' => 'getLexikFormFilter_ApplyFilter_DoctrineDbalService',
+            'lexik_form_filter.apply_filter.doctrine_orm' => 'getLexikFormFilter_ApplyFilter_DoctrineOrmService',
             'lexik_form_filter.data_extraction_method.default' => 'getLexikFormFilter_DataExtractionMethod_DefaultService',
             'lexik_form_filter.data_extraction_method.key_values' => 'getLexikFormFilter_DataExtractionMethod_KeyValuesService',
             'lexik_form_filter.data_extraction_method.text' => 'getLexikFormFilter_DataExtractionMethod_TextService',
-            'lexik_form_filter.doctrine_subscriber' => 'getLexikFormFilter_DoctrineSubscriberService',
             'lexik_form_filter.filter_prepare' => 'getLexikFormFilter_FilterPrepareService',
             'lexik_form_filter.form_data_extractor' => 'getLexikFormFilter_FormDataExtractorService',
+            'lexik_form_filter.get_filter.doctrine_dbal' => 'getLexikFormFilter_GetFilter_DoctrineDbalService',
+            'lexik_form_filter.get_filter.doctrine_orm' => 'getLexikFormFilter_GetFilter_DoctrineOrmService',
             'lexik_form_filter.query_builder_updater' => 'getLexikFormFilter_QueryBuilderUpdaterService',
             'lexik_form_filter.type.filter' => 'getLexikFormFilter_Type_FilterService',
             'lexik_form_filter.type.filter_boolean' => 'getLexikFormFilter_Type_FilterBooleanService',
@@ -152,6 +154,7 @@ class appDevDebugProjectContainer extends Container
             'monolog.handler.debug' => 'getMonolog_Handler_DebugService',
             'monolog.handler.main' => 'getMonolog_Handler_MainService',
             'monolog.logger.api_caller' => 'getMonolog_Logger_ApiCallerService',
+            'monolog.logger.assetic' => 'getMonolog_Logger_AsseticService',
             'monolog.logger.deprecation' => 'getMonolog_Logger_DeprecationService',
             'monolog.logger.doctrine' => 'getMonolog_Logger_DoctrineService',
             'monolog.logger.emergency' => 'getMonolog_Logger_EmergencyService',
@@ -303,7 +306,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getAnnotationReaderService()
     {
-        return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\FileCacheReader(new \Doctrine\Common\Annotations\AnnotationReader(), '/var/www/proyectofinal/web/app/cache/dev/annotations', true);
+        return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\FileCacheReader(new \Doctrine\Common\Annotations\AnnotationReader(), '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/annotations', true);
     }
 
     /**
@@ -355,9 +358,9 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getAssetic_AssetManagerService()
     {
-        $this->services['assetic.asset_manager'] = $instance = new \Assetic\Factory\LazyAssetManager($this->get('assetic.asset_factory'), array('twig' => new \Assetic\Factory\Loader\CachedFormulaLoader(new \Assetic\Extension\Twig\TwigFormulaLoader($this->get('twig')), new \Assetic\Cache\ConfigCache('/var/www/proyectofinal/web/app/cache/dev/assetic/config'), true)));
+        $this->services['assetic.asset_manager'] = $instance = new \Assetic\Factory\LazyAssetManager($this->get('assetic.asset_factory'), array('twig' => new \Assetic\Factory\Loader\CachedFormulaLoader(new \Assetic\Extension\Twig\TwigFormulaLoader($this->get('twig'), $this->get('monolog.logger.assetic', ContainerInterface::NULL_ON_INVALID_REFERENCE)), new \Assetic\Cache\ConfigCache('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/assetic/config'), true)));
 
-        $instance->addResource(new \Symfony\Bundle\AsseticBundle\Factory\Resource\DirectoryResource($this->get('templating.loader'), '', '/var/www/proyectofinal/web/app/Resources/views', '/\\.[^.]+\\.twig$/'), 'twig');
+        $instance->addResource(new \Symfony\Bundle\AsseticBundle\Factory\Resource\DirectoryResource($this->get('templating.loader'), '', '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/Resources/views', '/\\.[^.]+\\.twig$/'), 'twig');
 
         return $instance;
     }
@@ -369,13 +372,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getAssetic_ControllerService()
     {
-        $instance = new \Symfony\Bundle\AsseticBundle\Controller\AsseticController($this->get('request'), $this->get('assetic.asset_manager'), $this->get('assetic.cache'), false, $this->get('profiler', ContainerInterface::NULL_ON_INVALID_REFERENCE));
-
-        if ($this->has('assetic.value_supplier.default')) {
-            $instance->setValueSupplier($this->get('assetic.value_supplier.default', ContainerInterface::NULL_ON_INVALID_REFERENCE));
-        }
-
-        return $instance;
+        return new \Symfony\Bundle\AsseticBundle\Controller\AsseticController($this->get('request'), $this->get('assetic.asset_manager'), $this->get('assetic.cache'), false, $this->get('profiler', ContainerInterface::NULL_ON_INVALID_REFERENCE));
     }
 
     /**
@@ -443,7 +440,7 @@ class appDevDebugProjectContainer extends Container
         $a = $this->get('kernel');
         $b = $this->get('templating.filename_parser');
 
-        $c = new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplateFinder($a, $b, '/var/www/proyectofinal/web/app/Resources');
+        $c = new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplateFinder($a, $b, '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/Resources');
 
         return $this->services['cache_warmer'] = new \Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate(array(0 => new \Symfony\Bundle\FrameworkBundle\CacheWarmer\TemplatePathsCacheWarmer($c, $this->get('templating.locator')), 1 => new \Symfony\Bundle\AsseticBundle\CacheWarmer\AssetManagerCacheWarmer($this), 2 => new \Symfony\Bundle\FrameworkBundle\CacheWarmer\RouterCacheWarmer($this->get('router')), 3 => new \Symfony\Bundle\TwigBundle\CacheWarmer\TemplateCacheCacheWarmer($this, $c), 4 => new \Symfony\Bridge\Doctrine\CacheWarmer\ProxyCacheWarmer($this->get('doctrine'))));
     }
@@ -565,10 +562,12 @@ class appDevDebugProjectContainer extends Container
         $this->services['debug.event_dispatcher'] = $instance = new \Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher(new \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher($this), $this->get('debug.stopwatch'), $this->get('monolog.logger.event', ContainerInterface::NULL_ON_INVALID_REFERENCE));
 
         $instance->addListenerService('kernel.controller', array(0 => 'data_collector.router', 1 => 'onKernelController'), 0);
+        $instance->addListenerService('kernel.request', array(0 => 'assetic.request_listener', 1 => 'onKernelRequest'), 0);
         $instance->addListenerService('console.command', array(0 => 'monolog.handler.console', 1 => 'onCommand'), 255);
         $instance->addListenerService('console.terminate', array(0 => 'monolog.handler.console', 1 => 'onTerminate'), -255);
-        $instance->addListenerService('kernel.request', array(0 => 'assetic.request_listener', 1 => 'onKernelRequest'), 0);
         $instance->addListenerService('lexik_filter.prepare', array(0 => 'lexik_form_filter.filter_prepare', 1 => 'onFilterBuilderPrepare'), 0);
+        $instance->addListenerService('lexik_filter.apply_filters.orm', array(0 => 'lexik_form_filter.apply_filter.doctrine_orm', 1 => 'onApplyFilterCondition'), 0);
+        $instance->addListenerService('lexik_filter.apply_filters.dbal', array(0 => 'lexik_form_filter.apply_filter.doctrine_dbal', 1 => 'onApplyFilterCondition'), 0);
         $instance->addSubscriberService('response_listener', 'Symfony\\Component\\HttpKernel\\EventListener\\ResponseListener');
         $instance->addSubscriberService('streamed_response_listener', 'Symfony\\Component\\HttpKernel\\EventListener\\StreamedResponseListener');
         $instance->addSubscriberService('locale_listener', 'Symfony\\Component\\HttpKernel\\EventListener\\LocaleListener');
@@ -590,7 +589,8 @@ class appDevDebugProjectContainer extends Container
         $instance->addSubscriberService('sensio_framework_extra.view.listener', 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\TemplateListener');
         $instance->addSubscriberService('sensio_framework_extra.cache.listener', 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\HttpCacheListener');
         $instance->addSubscriberService('sensio_framework_extra.security.listener', 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\SecurityListener');
-        $instance->addSubscriberService('lexik_form_filter.doctrine_subscriber', 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineSubscriber');
+        $instance->addSubscriberService('lexik_form_filter.get_filter.doctrine_orm', 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineORMSubscriber');
+        $instance->addSubscriberService('lexik_form_filter.get_filter.doctrine_dbal', 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineDBALSubscriber');
         $instance->addSubscriberService('web_profiler.debug_toolbar', 'Symfony\\Bundle\\WebProfilerBundle\\EventListener\\WebDebugToolbarListener');
 
         return $instance;
@@ -699,15 +699,15 @@ class appDevDebugProjectContainer extends Container
         $a = $this->get('annotation_reader');
 
         $b = new \Doctrine\Common\Cache\ArrayCache();
-        $b->setNamespace('sf2orm_default_ccb32cca23fe7c8432d90ba00f961df92bd174c5b914c4f3a1838e6e67942da2');
+        $b->setNamespace('sf2orm_default_0cdbbcff83f164fc1eabffcb15fc6621c135ff740439a9fa874f4d1e7b2abfa4');
 
         $c = new \Doctrine\Common\Cache\ArrayCache();
-        $c->setNamespace('sf2orm_default_ccb32cca23fe7c8432d90ba00f961df92bd174c5b914c4f3a1838e6e67942da2');
+        $c->setNamespace('sf2orm_default_0cdbbcff83f164fc1eabffcb15fc6621c135ff740439a9fa874f4d1e7b2abfa4');
 
         $d = new \Doctrine\Common\Cache\ArrayCache();
-        $d->setNamespace('sf2orm_default_ccb32cca23fe7c8432d90ba00f961df92bd174c5b914c4f3a1838e6e67942da2');
+        $d->setNamespace('sf2orm_default_0cdbbcff83f164fc1eabffcb15fc6621c135ff740439a9fa874f4d1e7b2abfa4');
 
-        $e = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($a, array(0 => '/var/www/proyectofinal/web/src/tuttifruttiweb/CategoryBundle/Entity', 1 => '/var/www/proyectofinal/web/src/tuttifruttiweb/PlayerBundle/Entity'));
+        $e = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($a, array(0 => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/CategoryBundle/Entity', 1 => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/PlayerBundle/Entity'));
 
         $f = new \Doctrine\ORM\Mapping\Driver\DriverChain();
         $f->addDriver($e, 'tuttifruttiweb\\CategoryBundle\\Entity');
@@ -719,7 +719,7 @@ class appDevDebugProjectContainer extends Container
         $g->setQueryCacheImpl($c);
         $g->setResultCacheImpl($d);
         $g->setMetadataDriverImpl($f);
-        $g->setProxyDir('/var/www/proyectofinal/web/app/cache/dev/doctrine/orm/Proxies');
+        $g->setProxyDir('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/doctrine/orm/Proxies');
         $g->setProxyNamespace('Proxies');
         $g->setAutoGenerateProxyClasses(true);
         $g->setClassMetadataFactoryName('Doctrine\\ORM\\Mapping\\ClassMetadataFactory');
@@ -782,7 +782,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getFileLocatorService()
     {
-        return $this->services['file_locator'] = new \Symfony\Component\HttpKernel\Config\FileLocator($this->get('kernel'), '/var/www/proyectofinal/web/app/Resources');
+        return $this->services['file_locator'] = new \Symfony\Component\HttpKernel\Config\FileLocator($this->get('kernel'), '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/Resources');
     }
 
     /**
@@ -1499,6 +1499,32 @@ class appDevDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'lexik_form_filter.apply_filter.doctrine_dbal' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener A Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener instance.
+     */
+    protected function getLexikFormFilter_ApplyFilter_DoctrineDbalService()
+    {
+        return $this->services['lexik_form_filter.apply_filter.doctrine_dbal'] = new \Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener(NULL);
+    }
+
+    /**
+     * Gets the 'lexik_form_filter.apply_filter.doctrine_orm' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener A Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener instance.
+     */
+    protected function getLexikFormFilter_ApplyFilter_DoctrineOrmService()
+    {
+        return $this->services['lexik_form_filter.apply_filter.doctrine_orm'] = new \Lexik\Bundle\FormFilterBundle\Event\Listener\DoctrineApplyFilterListener(NULL);
+    }
+
+    /**
      * Gets the 'lexik_form_filter.data_extraction_method.default' service.
      *
      * This service is shared.
@@ -1538,19 +1564,6 @@ class appDevDebugProjectContainer extends Container
     }
 
     /**
-     * Gets the 'lexik_form_filter.doctrine_subscriber' service.
-     *
-     * This service is shared.
-     * This method always returns the same instance of the service.
-     *
-     * @return \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineSubscriber A Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineSubscriber instance.
-     */
-    protected function getLexikFormFilter_DoctrineSubscriberService()
-    {
-        return $this->services['lexik_form_filter.doctrine_subscriber'] = new \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineSubscriber();
-    }
-
-    /**
      * Gets the 'lexik_form_filter.filter_prepare' service.
      *
      * This service is shared.
@@ -1580,6 +1593,32 @@ class appDevDebugProjectContainer extends Container
         $instance->addMethod($this->get('lexik_form_filter.data_extraction_method.key_values'));
 
         return $instance;
+    }
+
+    /**
+     * Gets the 'lexik_form_filter.get_filter.doctrine_dbal' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineDBALSubscriber A Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineDBALSubscriber instance.
+     */
+    protected function getLexikFormFilter_GetFilter_DoctrineDbalService()
+    {
+        return $this->services['lexik_form_filter.get_filter.doctrine_dbal'] = new \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineDBALSubscriber();
+    }
+
+    /**
+     * Gets the 'lexik_form_filter.get_filter.doctrine_orm' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineORMSubscriber A Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineORMSubscriber instance.
+     */
+    protected function getLexikFormFilter_GetFilter_DoctrineOrmService()
+    {
+        return $this->services['lexik_form_filter.get_filter.doctrine_orm'] = new \Lexik\Bundle\FormFilterBundle\Event\Subscriber\DoctrineORMSubscriber();
     }
 
     /**
@@ -1871,7 +1910,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getMonolog_Handler_MainService()
     {
-        return $this->services['monolog.handler.main'] = new \Monolog\Handler\StreamHandler('/var/www/proyectofinal/web/app/logs/dev.log', 100, true);
+        return $this->services['monolog.handler.main'] = new \Monolog\Handler\StreamHandler('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/logs/dev.log', 100, true);
     }
 
     /**
@@ -1885,6 +1924,25 @@ class appDevDebugProjectContainer extends Container
     protected function getMonolog_Logger_ApiCallerService()
     {
         $this->services['monolog.logger.api_caller'] = $instance = new \Symfony\Bridge\Monolog\Logger('api_caller');
+
+        $instance->pushHandler($this->get('monolog.handler.console'));
+        $instance->pushHandler($this->get('monolog.handler.main'));
+        $instance->pushHandler($this->get('monolog.handler.debug'));
+
+        return $instance;
+    }
+
+    /**
+     * Gets the 'monolog.logger.assetic' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Symfony\Bridge\Monolog\Logger A Symfony\Bridge\Monolog\Logger instance.
+     */
+    protected function getMonolog_Logger_AsseticService()
+    {
+        $this->services['monolog.logger.assetic'] = $instance = new \Symfony\Bridge\Monolog\Logger('assetic');
 
         $instance->pushHandler($this->get('monolog.handler.console'));
         $instance->pushHandler($this->get('monolog.handler.main'));
@@ -2104,7 +2162,7 @@ class appDevDebugProjectContainer extends Container
         $d = new \Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector($this->get('doctrine'));
         $d->addLogger('default', $this->get('doctrine.dbal.logger.profiling.default'));
 
-        $this->services['profiler'] = $instance = new \Symfony\Component\HttpKernel\Profiler\Profiler(new \Symfony\Component\HttpKernel\Profiler\FileProfilerStorage('file:/var/www/proyectofinal/web/app/cache/dev/profiler', '', '', 86400), $a);
+        $this->services['profiler'] = $instance = new \Symfony\Component\HttpKernel\Profiler\Profiler(new \Symfony\Component\HttpKernel\Profiler\FileProfilerStorage('file:/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/profiler', '', '', 86400), $a);
 
         $instance->add($c);
         $instance->add($this->get('data_collector.request'));
@@ -2203,7 +2261,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getRouterService()
     {
-        return $this->services['router'] = new \Symfony\Bundle\FrameworkBundle\Routing\Router($this, '/var/www/proyectofinal/web/app/cache/dev/assetic/routing.yml', array('cache_dir' => '/var/www/proyectofinal/web/app/cache/dev', 'debug' => true, 'generator_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper', 'generator_cache_class' => 'appDevUrlGenerator', 'matcher_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_base_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_dumper_class' => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper', 'matcher_cache_class' => 'appDevUrlMatcher', 'strict_requirements' => true), $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE), $this->get('monolog.logger.router', ContainerInterface::NULL_ON_INVALID_REFERENCE));
+        return $this->services['router'] = new \Symfony\Bundle\FrameworkBundle\Routing\Router($this, '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/assetic/routing.yml', array('cache_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev', 'debug' => true, 'generator_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', 'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper', 'generator_cache_class' => 'appDevUrlGenerator', 'matcher_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_base_class' => 'Symfony\\Bundle\\FrameworkBundle\\Routing\\RedirectableUrlMatcher', 'matcher_dumper_class' => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper', 'matcher_cache_class' => 'appDevUrlMatcher', 'strict_requirements' => true, 'resource_type' => 'yaml'), $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE), $this->get('monolog.logger.router', ContainerInterface::NULL_ON_INVALID_REFERENCE));
     }
 
     /**
@@ -2238,7 +2296,7 @@ class appDevDebugProjectContainer extends Container
         $d->addLoader(new \Symfony\Component\Routing\Loader\XmlFileLoader($a));
         $d->addLoader(new \Symfony\Component\Routing\Loader\YamlFileLoader($a));
         $d->addLoader(new \Symfony\Component\Routing\Loader\PhpFileLoader($a));
-        $d->addLoader(new \Symfony\Bundle\AsseticBundle\Routing\AsseticLoader($this->get('assetic.asset_manager')));
+        $d->addLoader(new \Symfony\Bundle\AsseticBundle\Routing\AsseticLoader($this->get('assetic.asset_manager'), array()));
         $d->addLoader(new \Symfony\Component\Routing\Loader\AnnotationDirectoryLoader($a, $c));
         $d->addLoader(new \Symfony\Component\Routing\Loader\AnnotationFileLoader($a, $c));
         $d->addLoader($c);
@@ -2323,7 +2381,7 @@ class appDevDebugProjectContainer extends Container
 
         $h = new \Symfony\Component\Security\Http\EntryPoint\BasicAuthenticationEntryPoint('No se permite el acceso');
 
-        return $this->services['security.firewall.map.context.secured_area'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($g, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => $this->get('security.user.provider.concrete.in_memory')), 'secured_area', $a, $this->get('debug.event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\BasicAuthenticationListener($b, $c, 'secured_area', $h, $a), 3 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '541844d5cd489', $a), 4 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $g, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'secured_area', $h, NULL, NULL, $a));
+        return $this->services['security.firewall.map.context.secured_area'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($g, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => $this->get('security.user.provider.concrete.in_memory')), 'secured_area', $a, $this->get('debug.event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\BasicAuthenticationListener($b, $c, 'secured_area', $h, $a), 3 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '5451a7184d642', $a), 4 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $g, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'secured_area', $h, NULL, NULL, $a));
     }
 
     /**
@@ -2349,7 +2407,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSecurity_SecureRandomService()
     {
-        return $this->services['security.secure_random'] = new \Symfony\Component\Security\Core\Util\SecureRandom('/var/www/proyectofinal/web/app/cache/dev/secure_random.seed', $this->get('monolog.logger.security', ContainerInterface::NULL_ON_INVALID_REFERENCE));
+        return $this->services['security.secure_random'] = new \Symfony\Component\Security\Core\Util\SecureRandom('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/secure_random.seed', $this->get('monolog.logger.security', ContainerInterface::NULL_ON_INVALID_REFERENCE));
     }
 
     /**
@@ -2401,7 +2459,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSensioDistribution_WebconfiguratorService()
     {
-        $this->services['sensio_distribution.webconfigurator'] = $instance = new \Sensio\Bundle\DistributionBundle\Configurator\Configurator('/var/www/proyectofinal/web/app');
+        $this->services['sensio_distribution.webconfigurator'] = $instance = new \Sensio\Bundle\DistributionBundle\Configurator\Configurator('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app');
 
         $instance->addStep(new \Sensio\Bundle\DistributionBundle\Configurator\Step\DoctrineStep(), 10);
         $instance->addStep(new \Sensio\Bundle\DistributionBundle\Configurator\Step\SecretStep(), 0);
@@ -2567,7 +2625,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSession_Storage_FilesystemService()
     {
-        return $this->services['session.storage.filesystem'] = new \Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage('/var/www/proyectofinal/web/app/cache/dev/sessions', 'MOCKSESSID', $this->get('session.storage.metadata_bag'));
+        return $this->services['session.storage.filesystem'] = new \Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/sessions', 'MOCKSESSID', $this->get('session.storage.metadata_bag'));
     }
 
     /**
@@ -2815,7 +2873,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getTemplating_Helper_CodeService()
     {
-        return $this->services['templating.helper.code'] = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\CodeHelper(NULL, '/var/www/proyectofinal/web/app', 'UTF-8');
+        return $this->services['templating.helper.code'] = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\CodeHelper(NULL, '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app', 'UTF-8');
     }
 
     /**
@@ -3357,7 +3415,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getTranslator_DefaultService()
     {
-        return $this->services['translator.default'] = new \Symfony\Bundle\FrameworkBundle\Translation\Translator($this, $this->get('translator.selector'), array('translation.loader.php' => array(0 => 'php'), 'translation.loader.yml' => array(0 => 'yml'), 'translation.loader.xliff' => array(0 => 'xlf', 1 => 'xliff'), 'translation.loader.po' => array(0 => 'po'), 'translation.loader.mo' => array(0 => 'mo'), 'translation.loader.qt' => array(0 => 'ts'), 'translation.loader.csv' => array(0 => 'csv'), 'translation.loader.res' => array(0 => 'res'), 'translation.loader.dat' => array(0 => 'dat'), 'translation.loader.ini' => array(0 => 'ini'), 'translation.loader.json' => array(0 => 'json')), array('cache_dir' => '/var/www/proyectofinal/web/app/cache/dev/translations', 'debug' => true));
+        return $this->services['translator.default'] = new \Symfony\Bundle\FrameworkBundle\Translation\Translator($this, $this->get('translator.selector'), array('translation.loader.php' => array(0 => 'php'), 'translation.loader.yml' => array(0 => 'yml'), 'translation.loader.xliff' => array(0 => 'xlf', 1 => 'xliff'), 'translation.loader.po' => array(0 => 'po'), 'translation.loader.mo' => array(0 => 'mo'), 'translation.loader.qt' => array(0 => 'ts'), 'translation.loader.csv' => array(0 => 'csv'), 'translation.loader.res' => array(0 => 'res'), 'translation.loader.dat' => array(0 => 'dat'), 'translation.loader.ini' => array(0 => 'ini'), 'translation.loader.json' => array(0 => 'json')), array('cache_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/translations', 'debug' => true));
     }
 
     /**
@@ -3370,14 +3428,14 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getTwigService()
     {
-        $this->services['twig'] = $instance = new \Twig_Environment($this->get('twig.loader'), array('debug' => true, 'strict_variables' => true, 'exception_controller' => 'twig.controller.exception:showAction', 'autoescape_service' => NULL, 'autoescape_service_method' => NULL, 'cache' => '/var/www/proyectofinal/web/app/cache/dev/twig', 'charset' => 'UTF-8', 'paths' => array()));
+        $this->services['twig'] = $instance = new \Twig_Environment($this->get('twig.loader'), array('debug' => true, 'strict_variables' => true, 'exception_controller' => 'twig.controller.exception:showAction', 'autoescape_service' => NULL, 'autoescape_service_method' => NULL, 'cache' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/twig', 'charset' => 'UTF-8', 'paths' => array()));
 
         $instance->addExtension(new \Symfony\Bundle\SecurityBundle\Twig\Extension\LogoutUrlExtension($this->get('templating.helper.logout_url')));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\SecurityExtension($this->get('security.context', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\TranslationExtension($this->get('translator')));
         $instance->addExtension(new \Symfony\Bundle\TwigBundle\Extension\AssetsExtension($this, $this->get('router.request_context', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
         $instance->addExtension(new \Symfony\Bundle\TwigBundle\Extension\ActionsExtension($this));
-        $instance->addExtension(new \Symfony\Bridge\Twig\Extension\CodeExtension(NULL, '/var/www/proyectofinal/web/app', 'UTF-8'));
+        $instance->addExtension(new \Symfony\Bridge\Twig\Extension\CodeExtension(NULL, '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app', 'UTF-8'));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\RoutingExtension($this->get('router')));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\YamlExtension());
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\StopwatchExtension($this->get('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
@@ -3385,7 +3443,7 @@ class appDevDebugProjectContainer extends Container
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\HttpKernelExtension($this->get('fragment.handler')));
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\FormExtension(new \Symfony\Bridge\Twig\Form\TwigRenderer(new \Symfony\Bridge\Twig\Form\TwigRendererEngine(array(0 => 'form_div_layout.html.twig')), $this->get('form.csrf_provider', ContainerInterface::NULL_ON_INVALID_REFERENCE))));
         $instance->addExtension(new \Twig_Extension_Debug());
-        $instance->addExtension(new \Symfony\Bundle\AsseticBundle\Twig\AsseticExtension($this->get('assetic.asset_factory'), $this->get('templating.name_parser'), true, array(), array(), $this->get('assetic.value_supplier.default', ContainerInterface::NULL_ON_INVALID_REFERENCE)));
+        $instance->addExtension(new \Symfony\Bundle\AsseticBundle\Twig\AsseticExtension($this->get('assetic.asset_factory'), $this->get('templating.name_parser'), true, array(), array(), new \Symfony\Bundle\AsseticBundle\DefaultValueSupplier($this)));
         $instance->addExtension(new \Doctrine\Bundle\DoctrineBundle\Twig\DoctrineExtension());
         $instance->addExtension($this->get('twig.extension.ideup.simple_paginator'));
         $instance->addExtension(new \Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension());
@@ -3445,22 +3503,22 @@ class appDevDebugProjectContainer extends Container
     {
         $this->services['twig.loader'] = $instance = new \Symfony\Bundle\TwigBundle\Loader\FilesystemLoader($this->get('templating.locator'), $this->get('templating.name_parser'));
 
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views', 'Framework');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views', 'Security');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views', 'Twig');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views', 'Swiftmailer');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views', 'Doctrine');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/leaseweb/api-caller-bundle/Lsw/ApiCallerBundle/Resources/views', 'LswApiCaller');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/ideup/simple-paginator-bundle/Ideup/SimplePaginatorBundle/Resources/views', 'IdeupSimplePaginator');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/lexik/form-filter-bundle/Lexik/Bundle/FormFilterBundle/Resources/views', 'LexikFormFilter');
-        $instance->addPath('/var/www/proyectofinal/web/src/tuttifruttiweb/CategoryBundle/Resources/views', 'Category');
-        $instance->addPath('/var/www/proyectofinal/web/src/tuttifruttiweb/UtilsBundle/Resources/views', 'Utils');
-        $instance->addPath('/var/www/proyectofinal/web/src/tuttifruttiweb/StatisticsBundle/Resources/views', 'Statistics');
-        $instance->addPath('/var/www/proyectofinal/web/src/tuttifruttiweb/PlayerBundle/Resources/views', 'Player');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/WebProfilerBundle/Resources/views', 'WebProfiler');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/views', 'SensioDistribution');
-        $instance->addPath('/var/www/proyectofinal/web/app/Resources/views');
-        $instance->addPath('/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views', 'Framework');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views', 'Security');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views', 'Twig');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/swiftmailer-bundle/Symfony/Bundle/SwiftmailerBundle/Resources/views', 'Swiftmailer');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/doctrine/doctrine-bundle/Doctrine/Bundle/DoctrineBundle/Resources/views', 'Doctrine');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/ideup/simple-paginator-bundle/Ideup/SimplePaginatorBundle/Resources/views', 'IdeupSimplePaginator');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/leaseweb/api-caller-bundle/Lsw/ApiCallerBundle/Resources/views', 'LswApiCaller');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/lexik/form-filter-bundle/Lexik/Bundle/FormFilterBundle/Resources/views', 'LexikFormFilter');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/CategoryBundle/Resources/views', 'Category');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/UtilsBundle/Resources/views', 'Utils');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/StatisticsBundle/Resources/views', 'Statistics');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/src/tuttifruttiweb/PlayerBundle/Resources/views', 'Player');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bundle/WebProfilerBundle/Resources/views', 'WebProfiler');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/views', 'SensioDistribution');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/Resources/views');
+        $instance->addPath('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form');
 
         return $instance;
     }
@@ -3519,7 +3577,7 @@ class appDevDebugProjectContainer extends Container
         $instance->setConstraintValidatorFactory(new \Symfony\Bundle\FrameworkBundle\Validator\ConstraintValidatorFactory($this, array('validator.expression' => 'validator.expression', 'Symfony\\Component\\Validator\\Constraints\\EmailValidator' => 'validator.email', 'security.validator.user_password' => 'security.validator.user_password', 'doctrine.orm.validator.unique' => 'doctrine.orm.validator.unique')));
         $instance->setTranslator($this->get('translator'));
         $instance->setTranslationDomain('validators');
-        $instance->addXmlMappings(array(0 => '/var/www/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml'));
+        $instance->addXmlMappings(array(0 => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml'));
         $instance->enableAnnotationMapping($this->get('annotation_reader'));
         $instance->addMethodMapping('loadValidatorMetadata');
         $instance->setApiVersion(3);
@@ -3620,7 +3678,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getAssetic_AssetFactoryService()
     {
-        $this->services['assetic.asset_factory'] = $instance = new \Symfony\Bundle\AsseticBundle\Factory\AssetFactory($this->get('kernel'), $this, $this->getParameterBag(), '/var/www/proyectofinal/web/app/../web', true);
+        $this->services['assetic.asset_factory'] = $instance = new \Symfony\Bundle\AsseticBundle\Factory\AssetFactory($this->get('kernel'), $this, $this->getParameterBag(), '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/../web', true);
 
         $instance->addWorker(new \Symfony\Bundle\AsseticBundle\Factory\Worker\UseControllerWorker());
 
@@ -3641,24 +3699,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getAssetic_CacheService()
     {
-        return $this->services['assetic.cache'] = new \Assetic\Cache\FilesystemCache('/var/www/proyectofinal/web/app/cache/dev/assetic/assets');
-    }
-
-    /**
-     * Gets the 'assetic.value_supplier.default' service.
-     *
-     * This service is shared.
-     * This method always returns the same instance of the service.
-     *
-     * This service is private.
-     * If you want to be able to request this service from the container directly,
-     * make it public, otherwise you might end up with broken code.
-     *
-     * @return \Symfony\Bundle\AsseticBundle\DefaultValueSupplier A Symfony\Bundle\AsseticBundle\DefaultValueSupplier instance.
-     */
-    protected function getAssetic_ValueSupplier_DefaultService()
-    {
-        return $this->services['assetic.value_supplier.default'] = new \Symfony\Bundle\AsseticBundle\DefaultValueSupplier($this);
+        return $this->services['assetic.cache'] = new \Assetic\Cache\FilesystemCache('/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/assetic/assets');
     }
 
     /**
@@ -3746,7 +3787,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSecurity_Authentication_ManagerService()
     {
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('security.user.provider.concrete.in_memory'), new \Symfony\Component\Security\Core\User\UserChecker(), 'secured_area', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('541844d5cd489')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('security.user.provider.concrete.in_memory'), new \Symfony\Component\Security\Core\User\UserChecker(), 'secured_area', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('5451a7184d642')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 
@@ -3859,7 +3900,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getTemplating_LocatorService()
     {
-        return $this->services['templating.locator'] = new \Symfony\Bundle\FrameworkBundle\Templating\Loader\TemplateLocator($this->get('file_locator'), '/var/www/proyectofinal/web/app/cache/dev');
+        return $this->services['templating.locator'] = new \Symfony\Bundle\FrameworkBundle\Templating\Loader\TemplateLocator($this->get('file_locator'), '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev');
     }
 
     /**
@@ -3930,23 +3971,23 @@ class appDevDebugProjectContainer extends Container
     protected function getDefaultParameters()
     {
         return array(
-            'kernel.root_dir' => '/var/www/proyectofinal/web/app',
+            'kernel.root_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app',
             'kernel.environment' => 'dev',
             'kernel.debug' => true,
             'kernel.name' => 'app',
-            'kernel.cache_dir' => '/var/www/proyectofinal/web/app/cache/dev',
-            'kernel.logs_dir' => '/var/www/proyectofinal/web/app/logs',
+            'kernel.cache_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev',
+            'kernel.logs_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/logs',
             'kernel.bundles' => array(
                 'FrameworkBundle' => 'Symfony\\Bundle\\FrameworkBundle\\FrameworkBundle',
                 'SecurityBundle' => 'Symfony\\Bundle\\SecurityBundle\\SecurityBundle',
                 'TwigBundle' => 'Symfony\\Bundle\\TwigBundle\\TwigBundle',
-                'MonologBundle' => 'Symfony\\Bundle\\MonologBundle\\MonologBundle',
                 'SwiftmailerBundle' => 'Symfony\\Bundle\\SwiftmailerBundle\\SwiftmailerBundle',
                 'AsseticBundle' => 'Symfony\\Bundle\\AsseticBundle\\AsseticBundle',
                 'DoctrineBundle' => 'Doctrine\\Bundle\\DoctrineBundle\\DoctrineBundle',
                 'SensioFrameworkExtraBundle' => 'Sensio\\Bundle\\FrameworkExtraBundle\\SensioFrameworkExtraBundle',
-                'LswApiCallerBundle' => 'Lsw\\ApiCallerBundle\\LswApiCallerBundle',
                 'IdeupSimplePaginatorBundle' => 'Ideup\\SimplePaginatorBundle\\IdeupSimplePaginatorBundle',
+                'MonologBundle' => 'Symfony\\Bundle\\MonologBundle\\MonologBundle',
+                'LswApiCallerBundle' => 'Lsw\\ApiCallerBundle\\LswApiCallerBundle',
                 'LexikFormFilterBundle' => 'Lexik\\Bundle\\FormFilterBundle\\LexikFormFilterBundle',
                 'CategoryBundle' => 'tuttifruttiweb\\CategoryBundle\\CategoryBundle',
                 'UtilsBundle' => 'tuttifruttiweb\\UtilsBundle\\UtilsBundle',
@@ -4027,7 +4068,7 @@ class appDevDebugProjectContainer extends Container
             'debug.errors_logger_listener.class' => 'Symfony\\Component\\HttpKernel\\EventListener\\ErrorsLoggerListener',
             'debug.event_dispatcher.class' => 'Symfony\\Component\\HttpKernel\\Debug\\TraceableEventDispatcher',
             'debug.stopwatch.class' => 'Symfony\\Component\\Stopwatch\\Stopwatch',
-            'debug.container.dump' => '/var/www/proyectofinal/web/app/cache/dev/appDevDebugProjectContainer.xml',
+            'debug.container.dump' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/appDevDebugProjectContainer.xml',
             'debug.controller_resolver.class' => 'Symfony\\Component\\HttpKernel\\Controller\\TraceableControllerResolver',
             'debug.debug_handlers_listener.class' => 'Symfony\\Component\\HttpKernel\\EventListener\\DebugHandlersListener',
             'kernel.secret' => 'fgskljkgdjfdk',
@@ -4053,7 +4094,7 @@ class appDevDebugProjectContainer extends Container
             'session.storage.options' => array(
                 'gc_probability' => 1,
             ),
-            'session.save_path' => '/var/www/proyectofinal/web/app/cache/dev/sessions',
+            'session.save_path' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/sessions',
             'session.metadata.update_threshold' => '0',
             'security.secure_random.class' => 'Symfony\\Component\\Security\\Core\\Util\\SecureRandom',
             'form.resolved_type_factory.class' => 'Symfony\\Component\\Form\\ResolvedFormTypeFactory',
@@ -4129,7 +4170,7 @@ class appDevDebugProjectContainer extends Container
             'data_collector.form.extractor.class' => 'Symfony\\Component\\Form\\Extension\\DataCollector\\FormDataExtractor',
             'profiler_listener.only_exceptions' => false,
             'profiler_listener.only_master_requests' => false,
-            'profiler.storage.dsn' => 'file:/var/www/proyectofinal/web/app/cache/dev/profiler',
+            'profiler.storage.dsn' => 'file:/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/profiler',
             'profiler.storage.username' => '',
             'profiler.storage.password' => '',
             'profiler.storage.lifetime' => 86400,
@@ -4153,7 +4194,7 @@ class appDevDebugProjectContainer extends Container
             'router.request_context.host' => 'localhost',
             'router.request_context.scheme' => 'http',
             'router.request_context.base_url' => '',
-            'router.resource' => '/var/www/proyectofinal/web/app/cache/dev/assetic/routing.yml',
+            'router.resource' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/assetic/routing.yml',
             'router.cache_class_prefix' => 'appDev',
             'request_listener.http_port' => 80,
             'request_listener.https_port' => 443,
@@ -4267,55 +4308,11 @@ class appDevDebugProjectContainer extends Container
                 'exception_controller' => 'twig.controller.exception:showAction',
                 'autoescape_service' => NULL,
                 'autoescape_service_method' => NULL,
-                'cache' => '/var/www/proyectofinal/web/app/cache/dev/twig',
+                'cache' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/twig',
                 'charset' => 'UTF-8',
                 'paths' => array(
 
                 ),
-            ),
-            'monolog.logger.class' => 'Symfony\\Bridge\\Monolog\\Logger',
-            'monolog.gelf.publisher.class' => 'Gelf\\MessagePublisher',
-            'monolog.gelfphp.publisher.class' => 'Gelf\\Publisher',
-            'monolog.handler.stream.class' => 'Monolog\\Handler\\StreamHandler',
-            'monolog.handler.console.class' => 'Symfony\\Bridge\\Monolog\\Handler\\ConsoleHandler',
-            'monolog.handler.group.class' => 'Monolog\\Handler\\GroupHandler',
-            'monolog.handler.buffer.class' => 'Monolog\\Handler\\BufferHandler',
-            'monolog.handler.rotating_file.class' => 'Monolog\\Handler\\RotatingFileHandler',
-            'monolog.handler.syslog.class' => 'Monolog\\Handler\\SyslogHandler',
-            'monolog.handler.syslogudp.class' => 'Monolog\\Handler\\SyslogUdpHandler',
-            'monolog.handler.null.class' => 'Monolog\\Handler\\NullHandler',
-            'monolog.handler.test.class' => 'Monolog\\Handler\\TestHandler',
-            'monolog.handler.gelf.class' => 'Monolog\\Handler\\GelfHandler',
-            'monolog.handler.rollbar.class' => 'Monolog\\Handler\\RollbarHandler',
-            'monolog.handler.flowdock.class' => 'Monolog\\Handler\\FlowdockHandler',
-            'monolog.handler.browser_console.class' => 'Monolog\\Handler\\BrowserConsoleHandler',
-            'monolog.handler.firephp.class' => 'Symfony\\Bridge\\Monolog\\Handler\\FirePHPHandler',
-            'monolog.handler.chromephp.class' => 'Symfony\\Bridge\\Monolog\\Handler\\ChromePhpHandler',
-            'monolog.handler.debug.class' => 'Symfony\\Bridge\\Monolog\\Handler\\DebugHandler',
-            'monolog.handler.swift_mailer.class' => 'Symfony\\Bridge\\Monolog\\Handler\\SwiftMailerHandler',
-            'monolog.handler.native_mailer.class' => 'Monolog\\Handler\\NativeMailerHandler',
-            'monolog.handler.socket.class' => 'Monolog\\Handler\\SocketHandler',
-            'monolog.handler.pushover.class' => 'Monolog\\Handler\\PushoverHandler',
-            'monolog.handler.raven.class' => 'Monolog\\Handler\\RavenHandler',
-            'monolog.handler.newrelic.class' => 'Monolog\\Handler\\NewRelicHandler',
-            'monolog.handler.hipchat.class' => 'Monolog\\Handler\\HipChatHandler',
-            'monolog.handler.cube.class' => 'Monolog\\Handler\\CubeHandler',
-            'monolog.handler.amqp.class' => 'Monolog\\Handler\\AmqpHandler',
-            'monolog.handler.error_log.class' => 'Monolog\\Handler\\ErrorLogHandler',
-            'monolog.handler.loggly.class' => 'Monolog\\Handler\\LogglyHandler',
-            'monolog.handler.logentries.class' => 'Monolog\\Handler\\LogEntriesHandler',
-            'monolog.activation_strategy.not_found.class' => 'Symfony\\Bundle\\MonologBundle\\NotFoundActivationStrategy',
-            'monolog.handler.fingers_crossed.class' => 'Monolog\\Handler\\FingersCrossedHandler',
-            'monolog.handler.fingers_crossed.error_level_activation_strategy.class' => 'Monolog\\Handler\\FingersCrossed\\ErrorLevelActivationStrategy',
-            'monolog.handler.filter.class' => 'Monolog\\Handler\\FilterHandler',
-            'monolog.handler.mongo.class' => 'Monolog\\Handler\\MongoDBHandler',
-            'monolog.mongo.client.class' => 'MongoClient',
-            'monolog.swift_mailer.handlers' => array(
-
-            ),
-            'monolog.handlers_to_channels' => array(
-                'monolog.handler.console' => NULL,
-                'monolog.handler.main' => NULL,
             ),
             'swiftmailer.class' => 'Swift_Mailer',
             'swiftmailer.transport.sendmail.class' => 'Swift_Transport_SendmailTransport',
@@ -4341,7 +4338,7 @@ class appDevDebugProjectContainer extends Container
             'swiftmailer.mailer.default.transport.smtp.auth_mode' => NULL,
             'swiftmailer.mailer.default.transport.smtp.timeout' => 30,
             'swiftmailer.mailer.default.transport.smtp.source_ip' => NULL,
-            'swiftmailer.spool.default.memory.path' => '/var/www/proyectofinal/web/app/cache/dev/swiftmailer/spool/default',
+            'swiftmailer.spool.default.memory.path' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/swiftmailer/spool/default',
             'swiftmailer.mailer.default.spool.enabled' => true,
             'swiftmailer.mailer.default.plugin.impersonate' => NULL,
             'swiftmailer.mailer.default.single_address' => NULL,
@@ -4363,11 +4360,12 @@ class appDevDebugProjectContainer extends Container
             'assetic.directory_resource.class' => 'Symfony\\Bundle\\AsseticBundle\\Factory\\Resource\\DirectoryResource',
             'assetic.filter_manager.class' => 'Symfony\\Bundle\\AsseticBundle\\FilterManager',
             'assetic.worker.ensure_filter.class' => 'Assetic\\Factory\\Worker\\EnsureFilterWorker',
+            'assetic.worker.cache_busting.class' => 'Assetic\\Factory\\Worker\\CacheBustingWorker',
             'assetic.value_supplier.class' => 'Symfony\\Bundle\\AsseticBundle\\DefaultValueSupplier',
             'assetic.node.paths' => array(
 
             ),
-            'assetic.cache_dir' => '/var/www/proyectofinal/web/app/cache/dev/assetic',
+            'assetic.cache_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/assetic',
             'assetic.bundles' => array(
 
             ),
@@ -4379,8 +4377,8 @@ class appDevDebugProjectContainer extends Container
             'assetic.debug' => true,
             'assetic.use_controller' => true,
             'assetic.enable_profiler' => false,
-            'assetic.read_from' => '/var/www/proyectofinal/web/app/../web',
-            'assetic.write_to' => '/var/www/proyectofinal/web/app/../web',
+            'assetic.read_from' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/../web',
+            'assetic.write_to' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/../web',
             'assetic.variables' => array(
 
             ),
@@ -4453,7 +4451,7 @@ class appDevDebugProjectContainer extends Container
             'doctrine.orm.naming_strategy.default.class' => 'Doctrine\\ORM\\Mapping\\DefaultNamingStrategy',
             'doctrine.orm.naming_strategy.underscore.class' => 'Doctrine\\ORM\\Mapping\\UnderscoreNamingStrategy',
             'doctrine.orm.auto_generate_proxy_classes' => true,
-            'doctrine.orm.proxy_dir' => '/var/www/proyectofinal/web/app/cache/dev/doctrine/orm/Proxies',
+            'doctrine.orm.proxy_dir' => '/home/mcortes/dev/Proyecto/dev/proyectofinal/web/app/cache/dev/doctrine/orm/Proxies',
             'doctrine.orm.proxy_namespace' => 'Proxies',
             'sensio_framework_extra.view.guesser.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Templating\\TemplateGuesser',
             'sensio_framework_extra.controller.listener.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\ControllerListener',
@@ -4465,6 +4463,54 @@ class appDevDebugProjectContainer extends Container
             'sensio_framework_extra.converter.doctrine.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Request\\ParamConverter\\DoctrineParamConverter',
             'sensio_framework_extra.converter.datetime.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\Request\\ParamConverter\\DateTimeParamConverter',
             'sensio_framework_extra.view.listener.class' => 'Sensio\\Bundle\\FrameworkExtraBundle\\EventListener\\TemplateListener',
+            'simple_paginator_adapter_factory.class' => 'Ideup\\SimplePaginatorBundle\\Paginator\\Adapter\\AdapterFactory',
+            'simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Paginator\\Paginator',
+            'twig.extension.simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Twig\\Extension\\PaginatorExtension',
+            'templating.helper.simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Templating\\Helper\\PaginatorHelper',
+            'monolog.logger.class' => 'Symfony\\Bridge\\Monolog\\Logger',
+            'monolog.gelf.publisher.class' => 'Gelf\\MessagePublisher',
+            'monolog.gelfphp.publisher.class' => 'Gelf\\Publisher',
+            'monolog.handler.stream.class' => 'Monolog\\Handler\\StreamHandler',
+            'monolog.handler.console.class' => 'Symfony\\Bridge\\Monolog\\Handler\\ConsoleHandler',
+            'monolog.handler.group.class' => 'Monolog\\Handler\\GroupHandler',
+            'monolog.handler.buffer.class' => 'Monolog\\Handler\\BufferHandler',
+            'monolog.handler.rotating_file.class' => 'Monolog\\Handler\\RotatingFileHandler',
+            'monolog.handler.syslog.class' => 'Monolog\\Handler\\SyslogHandler',
+            'monolog.handler.syslogudp.class' => 'Monolog\\Handler\\SyslogUdpHandler',
+            'monolog.handler.null.class' => 'Monolog\\Handler\\NullHandler',
+            'monolog.handler.test.class' => 'Monolog\\Handler\\TestHandler',
+            'monolog.handler.gelf.class' => 'Monolog\\Handler\\GelfHandler',
+            'monolog.handler.rollbar.class' => 'Monolog\\Handler\\RollbarHandler',
+            'monolog.handler.flowdock.class' => 'Monolog\\Handler\\FlowdockHandler',
+            'monolog.handler.browser_console.class' => 'Monolog\\Handler\\BrowserConsoleHandler',
+            'monolog.handler.firephp.class' => 'Symfony\\Bridge\\Monolog\\Handler\\FirePHPHandler',
+            'monolog.handler.chromephp.class' => 'Symfony\\Bridge\\Monolog\\Handler\\ChromePhpHandler',
+            'monolog.handler.debug.class' => 'Symfony\\Bridge\\Monolog\\Handler\\DebugHandler',
+            'monolog.handler.swift_mailer.class' => 'Symfony\\Bridge\\Monolog\\Handler\\SwiftMailerHandler',
+            'monolog.handler.native_mailer.class' => 'Monolog\\Handler\\NativeMailerHandler',
+            'monolog.handler.socket.class' => 'Monolog\\Handler\\SocketHandler',
+            'monolog.handler.pushover.class' => 'Monolog\\Handler\\PushoverHandler',
+            'monolog.handler.raven.class' => 'Monolog\\Handler\\RavenHandler',
+            'monolog.handler.newrelic.class' => 'Monolog\\Handler\\NewRelicHandler',
+            'monolog.handler.hipchat.class' => 'Monolog\\Handler\\HipChatHandler',
+            'monolog.handler.cube.class' => 'Monolog\\Handler\\CubeHandler',
+            'monolog.handler.amqp.class' => 'Monolog\\Handler\\AmqpHandler',
+            'monolog.handler.error_log.class' => 'Monolog\\Handler\\ErrorLogHandler',
+            'monolog.handler.loggly.class' => 'Monolog\\Handler\\LogglyHandler',
+            'monolog.handler.logentries.class' => 'Monolog\\Handler\\LogEntriesHandler',
+            'monolog.activation_strategy.not_found.class' => 'Symfony\\Bundle\\MonologBundle\\NotFoundActivationStrategy',
+            'monolog.handler.fingers_crossed.class' => 'Monolog\\Handler\\FingersCrossedHandler',
+            'monolog.handler.fingers_crossed.error_level_activation_strategy.class' => 'Monolog\\Handler\\FingersCrossed\\ErrorLevelActivationStrategy',
+            'monolog.handler.filter.class' => 'Monolog\\Handler\\FilterHandler',
+            'monolog.handler.mongo.class' => 'Monolog\\Handler\\MongoDBHandler',
+            'monolog.mongo.client.class' => 'MongoClient',
+            'monolog.swift_mailer.handlers' => array(
+
+            ),
+            'monolog.handlers_to_channels' => array(
+                'monolog.handler.console' => NULL,
+                'monolog.handler.main' => NULL,
+            ),
             'api_caller.options' => array(
                 'timeout' => 10,
                 'ssl_verifypeer' => false,
@@ -4477,10 +4523,6 @@ class appDevDebugProjectContainer extends Container
             'api_call_logger.class' => 'Lsw\\ApiCallerBundle\\Logger\\ApiCallLogger',
             'api_caller.data_collector.class' => 'Lsw\\ApiCallerBundle\\DataCollector\\ApiCallDataCollector',
             'api_caller.data_collector.template' => 'LswApiCallerBundle:Collector:api',
-            'simple_paginator_adapter_factory.class' => 'Ideup\\SimplePaginatorBundle\\Paginator\\Adapter\\AdapterFactory',
-            'simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Paginator\\Paginator',
-            'twig.extension.simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Twig\\Extension\\PaginatorExtension',
-            'templating.helper.simple_paginator.class' => 'Ideup\\SimplePaginatorBundle\\Templating\\Helper\\PaginatorHelper',
             'lexik_form_filter.query_builder_updater.class' => 'Lexik\\Bundle\\FormFilterBundle\\Filter\\FilterBuilderUpdater',
             'lexik_form_filter.form_data_extractor.class' => 'Lexik\\Bundle\\FormFilterBundle\\Filter\\DataExtractor\\FormDataExtractor',
             'lexik_form_filter.data_extraction_method.default.class' => 'Lexik\\Bundle\\FormFilterBundle\\Filter\\DataExtractor\\Method\\DefaultExtractionMethod',
@@ -4503,7 +4545,11 @@ class appDevDebugProjectContainer extends Container
             'lexik_form_filter.type.filter_sharedable.class' => 'Lexik\\Bundle\\FormFilterBundle\\Filter\\Extension\\Type\\SharedableFilterType',
             'lexik_form_filter.type_extension.filter_extension.class' => 'Lexik\\Bundle\\FormFilterBundle\\Filter\\Extension\\FilterTypeExtension',
             'lexik_form_filter.filter_prepare.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Listener\\PrepareListener',
-            'lexik_form_filter.doctrine_subscriber.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineSubscriber',
+            'lexik_form_filter.get_filter.doctrine_orm.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineORMSubscriber',
+            'lexik_form_filter.get_filter.doctrine_dbal.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Subscriber\\DoctrineDBALSubscriber',
+            'lexik_form_filter.apply_filter.doctrine_orm.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Listener\\DoctrineApplyFilterListener',
+            'lexik_form_filter.apply_filter.doctrine_dbal.class' => 'Lexik\\Bundle\\FormFilterBundle\\Event\\Listener\\DoctrineApplyFilterListener',
+            'lexik_form_filter.where_method' => NULL,
             'web_profiler.controller.profiler.class' => 'Symfony\\Bundle\\WebProfilerBundle\\Controller\\ProfilerController',
             'web_profiler.controller.router.class' => 'Symfony\\Bundle\\WebProfilerBundle\\Controller\\RouterController',
             'web_profiler.controller.exception.class' => 'Symfony\\Bundle\\WebProfilerBundle\\Controller\\ExceptionController',

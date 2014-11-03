@@ -97,6 +97,7 @@ EOF
         }
 
         $output->writeln(sprintf("Server running on <info>http://%s</info>\n", $input->getArgument('address')));
+        $output->writeln('Quit the server with CONTROL-C.');
 
         $builder = $this->createPhpProcessBuilder($input, $output, $env);
         $builder->setWorkingDirectory($documentRoot);
@@ -113,6 +114,16 @@ EOF
         }
 
         $process->run($callback);
+
+        if (!$process->isSuccessful()) {
+            $output->writeln('<error>Built-in server terminated unexpectedly</error>');
+
+            if (OutputInterface::VERBOSITY_VERBOSE > $output->getVerbosity()) {
+                $output->writeln('<error>Run the command again with -v option for more details</error>');
+            }
+        }
+
+        return $process->getExitCode();
     }
 
     private function createPhpProcessBuilder(InputInterface $input, OutputInterface $output, $env)
@@ -122,6 +133,14 @@ EOF
             ->get('kernel')
             ->locateResource(sprintf('@FrameworkBundle/Resources/config/router_%s.php', $env))
         ;
+
+        if (!file_exists($router)) {
+            $output->writeln(sprintf('<error>The given router script "%s" does not exist</error>', $router));
+
+            return 1;
+        }
+
+        $router = realpath($router);
 
         return new ProcessBuilder(array(PHP_BINARY, '-S', $input->getArgument('address'), $router));
     }
