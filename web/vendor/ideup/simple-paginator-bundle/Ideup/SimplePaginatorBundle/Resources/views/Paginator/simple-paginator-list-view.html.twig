@@ -1,0 +1,63 @@
+<ul class="{{ container_class }}">
+    <!-- FIRST -->
+    {% if currentPage > 1 %}
+        {% set rParams =  {'page': firstPage, 'paginatorId': id} | merge(routeParams) %}
+        <li class="{{ firstEnabledClass }}">
+            <a href="{{ path(route, rParams) }}">{{ firstPageText }}</a>
+        </li>
+    {% else %}
+        <li class="{{ firstDisabledClass }}">
+            {{ firstPageText }}
+        </li>
+    {% endif %}
+
+    <!-- PREVIOUS -->
+    {% if currentPage > 1 %}   
+        {% set rParams =  {'page': previousPage, 'paginatorId': id} | merge(routeParams) %}
+        <li class="{{ previousEnabledClass }}">
+            <a href="{{ path(route, rParams) }}">{{ previousPageText }}</a>
+        </li>
+    {% else %}
+        <li class="{{ previousDisabledClass }}">
+            {{ previousPageText }}
+        </li>
+    {% endif %}
+
+    <!-- NUMBERS -->
+    {% for page in minPage..maxPage %}
+        {% if page == currentPage %}
+            <li class="{{ currentClass }}">
+                {{ page }}
+            </li>
+        {% else %}
+            {% set rParams =  {'page': page, 'paginatorId': id} | merge(routeParams) %}
+            <li>
+                <a href="{{ path(route, rParams) }}">{{ page }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+
+    <!-- NEXT -->
+    {% if currentPage < lastPage %}
+        {% set rParams =  {'page': nextPage, 'paginatorId': id} | merge(routeParams) %}
+        <li class="{{ nextEnabledClass }}">
+            <a href="{{ path(route, rParams) }}">{{ nextPageText }}</a>
+        </li>
+    {% else %}
+        <li class="{{ nextDisabledClass }}">
+            {{ nextPageText }}
+        </li>
+    {% endif %}
+
+    <!-- LAST -->
+    {% if currentPage < lastPage %}
+        {% set rParams =  {'page': lastPage, 'paginatorId': id} | merge(routeParams) %}
+        <li class="{{ lastEnabledClass }}">
+            <a href="{{ path(route, rParams) }}">{{ lastPageText }}</a>
+        </li>
+    {% else %}
+        <li class="{{ lastDisabledClass }}">
+            {{ lastPageText }}
+        </li>
+    {% endif %}
+</ul>

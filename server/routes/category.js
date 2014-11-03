@@ -87,7 +87,7 @@ module.exports = function(app) {
     });
 
   }
-  addReportedWordToCategory = function(req, res){
+  acceptReportedWordAsValid = function(req, res){
     Category.findOne({id:req.params.id}, function (err, category){
       if (err) return res.send(err, 500);
       if (!category) return res.send('Category not found', 404);   

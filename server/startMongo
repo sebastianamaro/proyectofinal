@@ -1,0 +1,1 @@
+sudo mongod --dbpath /home/mcortes/dev/Proyecto/dev/proyectofinal/server/db --journal --port 30000 --logpath /home/mcortes/dev/Proyecto/dev/proyectofinal/server/db/logs --fork
