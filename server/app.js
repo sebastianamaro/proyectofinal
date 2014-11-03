@@ -35,14 +35,15 @@ app.get('/category?:criteria', getCategories);
 app.get('/category/hitsPerType', getCategoryHitsPerType); 
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
-app.put('/category/:id/:word', addWordToCategory); 
-app.put('/category/:id/:word?addAsValid', addReportedWordToCategory);
 app.put('/category/:name/:word/reportAsValid', reportWordAsValid); 
 app.put('/category/:id?report', reportCategory); 
-app.delete('/category/:id/:word?reject', removeReportedWordFromCategory); 
-app.delete('/category/:id/:word', removeAcceptedWordFromCategory); 
-app.delete('/category/:id', removeCategory); 
 app.post('/category', createCategory); 
+app.delete('/category/:id', removeCategory); 
+
+//app.post('/category/:id/word/:word', addWordToCategory); 
+app.put('/category/:id/word/:word', acceptReportedWordAsValid); 
+app.delete('/category/:id/word/:word', removeAcceptedWordFromCategory); 
+app.delete('/category/:id/word/:word?reported', removeReportedWordFromCategory); 
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
