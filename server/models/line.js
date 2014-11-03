@@ -53,8 +53,6 @@ lineSchema.methods.isFullyValidated = function (categories, playersAmount) {
   for (var i = this.plays.length - 1; i >= 0; i--) {
     var play = this.plays[i];
     var category = categories.filter(function (cat) {
-        console.log(cat.name.toUpperCase()); 
-        console.log(play.category.toUpperCase()); 
         return cat.name.toUpperCase() == play.category.toUpperCase(); }).pop();
     if (!category.isFixed){
       if (! play.isValidated(playersAmount)){
