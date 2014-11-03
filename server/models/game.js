@@ -64,7 +64,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
               game.endShowingResults(game);
               }, 1000*40);//40 seconds
         } else {
-          game.endShowingResults();
+          game.endShowingResults(game);
         }
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
