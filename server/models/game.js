@@ -52,33 +52,39 @@ gameSchema.methods.getModes = function () {
 }
 gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
   if (!round.isClosed()){
-     return callback();
+    return callback();
   } 
   if (round.isFullyValidated(this)){
     var game = this;
-    round.calculateScores(this, function(){
+    round.calculateScores(game, function(){
       if (game.mode ==  game.getModes().ONLINE){
         if (game.categoriesType == game.getCategoriesType().FIXED){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
               game.endShowingResults(game);
               }, 1000*40);//40 seconds
-          return callback();
         } else {
           game.endShowingResults();
         }
-
+      } else {
+        game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
       }
-      game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
- 
+
       if(round.roundId == this.roundsCount)
          this.changeToStatusFinished();
 
-      return callback();
+      game.save(function(err) {
+                if(!err) {
+                  console.log('Finished round');
+                } else {
+                  console.log('ERROR: ' + err);
+                }
+              });
     });
-  } 
-  this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
-  return callback();
+  } else {
+    this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
+    return callback();
+  }
 }
 
 gameSchema.methods.changeToStatusFinished = function () {
@@ -359,7 +365,7 @@ gameSchema.methods.getPlayerResults = function(partialScores){
   return playerResults;
 }
 gameSchema.methods.sendInvitations = function(callback){
-  var creator = this.creator[0];
+  var creator = this.creator[0].getFirstName();
   var gameId = this.gameId;
   
   var selectedFriendsFbsId = [];

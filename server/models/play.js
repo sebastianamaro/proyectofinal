@@ -42,7 +42,7 @@ playSchema.methods.setOnlyResult = function () {
   this.result = 'ONLY';
 }
 
-playSchema.methods.setLateResult = function setLateResult() {
+playSchema.methods.setLateResult = function () {
   this.score = 0;
   this.result = 'LATE';
 }
@@ -68,6 +68,16 @@ playSchema.methods.setInvalidResult = function () {
 
 playSchema.methods.isValidated = function(playersAmount){
   return this.word == '' || this.validations.length == playersAmount -1;
+}
+
+playSchema.methods.setLateResultIfHasWord = function () {
+  if (this.hasWord()){
+    this.setLateResult();
+  }
+}
+
+playSchema.methods.hasWord = function () {
+  return this.word !== undefined && this.word !== '';
 }
 
 playSchema.methods.validatePlay = function (category, letter) {

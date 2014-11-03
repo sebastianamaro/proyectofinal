@@ -103,10 +103,10 @@ module.exports = function(app) {
       if (!currentRound) return res.send('Round not found', 404);
 
       if (currentRound.hasPlayerSentHisLine(reqRound.line.player.fbId)) {
-        console.log('player: ' +reqRound.line.player+' has already sent his line.')
+        //player has already sent his line
         return res.send('Added line to round', 200);
       }; 
-      console.log("The player who stopped is "+reqRound.line.player.fbId);
+      //The player who stopped is reqRound.line.player
       
       Player.findOne({ 'fbId': reqRound.line.player.fbId }, function (err, foundPlayer){
             if (err) return res.send(err, 500);
@@ -124,7 +124,7 @@ module.exports = function(app) {
                 } else {
                   console.log('ERROR: ' + err);
                 }
-              });    
+              });
             }); 
           });
           res.send('Round finished', 200);
@@ -205,7 +205,8 @@ module.exports = function(app) {
         roundToShow = game.getLastRound();
         showScores = true;
         playersWhoHaveLines = game.players;
-        canPlayerPlay = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
+        canPlayerPlay = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS &&
+                        game.status !== game.getStatus().SHOWING_RESULTS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones o está pausado mostrando resultados
         isComplete = game.status !== game.getStatus().WAITING_FOR_QUALIFICATIONS; //quizas no hay ronda abierta pero la anterior todavia no tiene las calificaciones
       } else {
         if (!roundToShow.hasPlayerSentHisLine(req.params.fbId)){

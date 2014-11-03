@@ -118,6 +118,7 @@ roundSchema.methods.setLateResults = function (isOnline){
   var bestTime = Number.MAX_VALUE;
   var earliestStart = this.getEarliestStart();
   var iLine = -1;
+  var delayAllowed = (isOnline) ? 5 : 0;
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
     if (line.hasAllWords()){
@@ -133,6 +134,7 @@ roundSchema.methods.setLateResults = function (isOnline){
   };
 
   console.log("Best time is "+bestTime);
+  bestTime = bestTime + delayAllowed;
   for (var i = this.lines.length - 1; i >= 0; i--) {
     if (iLine !== i){
       var line = this.lines[i];
@@ -146,7 +148,7 @@ roundSchema.methods.isClosed = function () {
 }
 
 roundSchema.methods.calculateScores = function (game, callback){
-  this.setLateResults();
+  this.setLateResults(game.getModes().ONLINE==game.mode);
   var round = this;
   var categoriesNames = [];
   for (var i = game.categories.length - 1; i >= 0; i--) {
@@ -162,6 +164,7 @@ roundSchema.methods.calculateScores = function (game, callback){
 }
 
 roundSchema.methods.calculateAndSetTotalScores = function (){
+  console.log("calculateAndSetTotalScores");
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
     var totalScore = 0;
@@ -306,17 +309,20 @@ roundSchema.methods.getScores = function (fbId, categories, players, showScores)
   return scores;
 }
 roundSchema.methods.getSecondsAgoStarted = function () {
-
-    var now = moment(new Date());
-    var startTimestamp = this.startTimestamp;
-    var diff = now.diff(startTimestamp, 'seconds');
-    return diff;
+  if (this.lines.length >0){
+    return this.lines[0].plays.length * 20 + 1;
+  }
+  var now = moment(new Date());
+  var startTimestamp = this.startTimestamp;
+  var diff = now.diff(startTimestamp, 'seconds');
+  return diff;
 }
 roundSchema.methods.asSummarized = function (game) {
   var categories=[];
   for (var i = game.categories.length - 1; i >= 0; i--) {
     categories.push(game.categories[i].name);
   };
+  var secondsAgoStarted = (game.mode == game.getModes().ONLINE) ? this.getSecondsAgoStarted() : 0;
   return {'letter': this.letter,
           'status': this.status,
           'roundId': this.roundId,
@@ -324,7 +330,7 @@ roundSchema.methods.asSummarized = function (game) {
           'categories': categories, 
           'gameStatus': game.status,
           'gameMode':game.mode,
-          'secondsAgoStarted':this.getSecondsAgoStarted()
+          'secondsAgoStarted': secondsAgoStarted
           };
 }
 module.exports = mongoose.model('Round', roundSchema);

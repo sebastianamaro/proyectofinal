@@ -145,8 +145,7 @@ public class ViewGameStatusActivity extends ListActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... filePlays) {
-            fbId = FacebookHelper.getUserId();
+        protected Void doInBackground(Void... filePlays) {            fbId = FacebookHelper.getUserId();
             try {
                 games = api.getGames(fbId);
                 invitations = api.getPendingInvitations(fbId);

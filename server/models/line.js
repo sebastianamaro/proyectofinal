@@ -37,7 +37,7 @@ lineSchema.methods.setLateResults = function (bestTime) {
     var playTimestamp = moment(play.timeStamp);
     var time = playTimestamp.diff(startTimestamp, 'seconds');
     if (time > bestTime){
-      play.setLateResult();
+      play.setLateResultIfHasWord();
     }
   };
 }
