@@ -39,6 +39,7 @@ roundSchema.methods.addLine = function (newLine, foundPlayer) {
 roundSchema.methods.isFullyValidated = function(game){
   for (var i = this.lines.length - 1; i >= 0; i--) {
     var line = this.lines[i];
+    console.log("a isFullyValidated le paso: " + game.categories);
     if (!line.isFullyValidated(game.categories, game.players.length)){
       return false;
     }

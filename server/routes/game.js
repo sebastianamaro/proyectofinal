@@ -16,16 +16,7 @@ module.exports = function(app) {
       
       round.setQualification(req.params.fbId, req.body.category, req.body.isValid, req.body.judgedPlayer);
       game.moveToNextStatusIfPossible(round, function(){
-
-        game.save(function(err) {
-          if(!err) {
-            console.log('Qualification set ');
-            res.send('Qualification set', 200);   
-          } else {
-            console.log('ERROR: ' + err);
-            res.send('ERROR: ' + err,500);   
-          }
-        });
+        res.send('Qualification set', 200);   
       });
     })
   }

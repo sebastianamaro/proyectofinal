@@ -51,27 +51,33 @@ gameSchema.methods.getModes = function () {
       };
 }
 gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
+  var game = this;
   if (!round.isClosed()){
+    game.save(function(err) {
+                if(!err) {
+                  console.log('Finished round');
+                } else {
+                  console.log('ERROR: ' + err);
+                }
+              });
+
     return callback();
   } 
   if (round.isFullyValidated(this)){
-    var game = this;
     round.calculateScores(game, function(){
       if (game.mode ==  game.getModes().ONLINE){
-        if (game.categoriesType == game.getCategoriesType().FIXED){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
               game.endShowingResults(game);
               }, 1000*40);//40 seconds
-        } else {
-          game.endShowingResults(game);
-        }
+        
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
       }
 
-      if(round.roundId == this.roundsCount)
-         this.changeToStatusFinished();
+      if(round.roundId == this.roundsCount) {
+          this.changeToStatusFinished();
+      } 
 
       game.save(function(err) {
                 if(!err) {
@@ -80,9 +86,18 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
                   console.log('ERROR: ' + err);
                 }
               });
+      return callback();
     });
+
   } else {
     this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
+    game.save(function(err) {
+            if(!err) {
+              console.log('Finished round');
+            } else {
+              console.log('ERROR: ' + err);
+            }
+          });
     return callback();
   }
 }
