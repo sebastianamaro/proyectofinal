@@ -13,9 +13,7 @@
     <LinearLayout android:id="@+id/topText"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true">
+        android:layout_height="wrap_content">
 
         <com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView
             android:id="@+id/searchView"
