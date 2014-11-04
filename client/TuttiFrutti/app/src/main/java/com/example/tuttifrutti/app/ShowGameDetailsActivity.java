@@ -120,10 +120,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             } else {
 
-                /*txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
-                txtOpponentsMode.setText(result.getSpanishOpponentsType());
-                txtCategoriesMode.setText(result.getSpanishCategoriesType());*/
-
                 ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
                 String myId = FacebookHelper.getUserId();
                 for (Player p : result.getPlayers()) {
@@ -141,16 +137,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
                 detailsList.setAdapter(gda);
 
-
-                if (!result.getOpponentsType().equals("FRIENDS"))
-                {
-                    //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
-                    int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size() - 1);
-
-                    if (randomPlayersLeftToAccept > 0) {
-                        //TODO no mostrar la row
-                    }
-                }
             }
         }
     }
@@ -161,7 +147,8 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         private ArrayList<Object> details;
         Context context;
-        private int playersSeparatorIndex=0;
+        private int detailsSeparatorIndex=0;
+        private int playersSeparatorIndex;
         private int categoriesSeparatorIndex;
         private static final int ITEM_VIEW_TYPE_INFORMATION_SEPARATOR = 0;
         private static final int ITEM_VIEW_TYPE_INFORMATION = 1;
@@ -175,12 +162,41 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         private static final String playersText = "Jugadores";
         private static final String categoriesText = "Categorias";
         boolean showsPlayers;
+        boolean showsRandomPlayersCount;
+        Game game;
 
 
         public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, Game game)
         {
+            this.game=game;
             this.context=context;
             this.details = new ArrayList<Object>();
+
+            /*
+            * OWNER
+            * MODE
+            * OPPONENTS
+            * CATEGORIES TYPE
+            * RANDOM PLAYERS COUNT?
+            *
+            * */
+
+            this.details.add(game.getOwner().getName());
+            this.details.add(game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
+            this.details.add(game.getSpanishOpponentsType());
+            this.details.add(game.getSpanishCategoriesType());
+
+            if (!game.getOpponentsType().equals("FRIENDS"))
+            {
+                int randomPlayersLeftToAccept = game.getRandomPlayersCount() - (game.getPlayers().size() - 1);
+                if (randomPlayersLeftToAccept > 0) {
+                    showsRandomPlayersCount=true;
+                    this.details.add(randomPlayersLeftToAccept);
+                }
+            }
+
+
+
             this.details.addAll(players);
             this.details.addAll(game.getSelectedCategories());
 
@@ -190,13 +206,22 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             if (showsPlayers)
             {
+                playersSeparatorIndex=6;
+                if(showsRandomPlayersCount)
+                    playersSeparatorIndex++;
+
                 this.details.add(playersSeparatorIndex, playersText);
-                this.categoriesSeparatorIndex = players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+                this.categoriesSeparatorIndex = playersSeparatorIndex+players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
 
                 this.details.add(categoriesSeparatorIndex-1, null);
             }
             else {
-                this.categoriesSeparatorIndex = 0; // Solo el header de invitaciones
+                if(showsRandomPlayersCount)
+                    categoriesSeparatorIndex++;
+                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
+
+                this.playersSeparatorIndex=-1;
+
             }
 
             this.details.add(categoriesSeparatorIndex, categoriesText);
@@ -215,13 +240,18 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             if(getItem(position) instanceof Category)
                 return ITEM_VIEW_TYPE_CATEGORY;
 
-            if(showsPlayers && position==0)
+
+            if(showsPlayers && position==playersSeparatorIndex)
                 return ITEM_VIEW_TYPE_PLAYERS_SEPARATOR;
 
             if(position==categoriesSeparatorIndex)
                 return ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR;
 
+            if(position ==0) //details
+                return ITEM_VIEW_TYPE_INFORMATION_SEPARATOR;
 
+            if(position <=7)
+                return ITEM_VIEW_TYPE_INFORMATION;
             return -1;
         }
 
@@ -310,6 +340,15 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.list_separator_category, null);
+            }
+            return convertView;
+        }
+
+        private View SetRowDetailsSeparatorViewHolder(View convertView) {
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_separator_details, null);
             }
             return convertView;
         }
