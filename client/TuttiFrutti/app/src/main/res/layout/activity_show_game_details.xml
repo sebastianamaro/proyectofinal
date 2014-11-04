@@ -10,7 +10,15 @@
     tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
     android:background="@drawable/background">
 
-
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnLayout"
+        android:layout_marginBottom="20dp">
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnPlayLayout">
             <Button
                 android:id="@+id/btnPlay"
                 android:background="@drawable/largebutton"
@@ -19,148 +27,26 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Jugar!"
+
                 android:layout_centerHorizontal="true"
-                android:onClick="play"
-                />
+                android:onClick="play"/>
 
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnInvitationLayout"
+            android:visibility="gone"
+            android:layout_below="@+id/btnPlayLayout">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btnPlay"
-        android:paddingTop="20dp"
-        tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
-        android:id="@+id/creatorLayout">
-        <TextView
+        <Button
+            android:background="@drawable/largebutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Creada por: "
-            android:id="@+id/lblCreador"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/creadorTextView"
-            android:layout_toRightOf="@id/lblCreador"
-            android:paddingLeft="50dp"
-            android:layout_alignParentTop="true"
-            android:text=""/>
-
-    </RelativeLayout>
-
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/creatorLayout"
-                android:paddingTop="20dp"
-                tools:context="com.example.tuttifrutti.app.ShowGameDetailsActivity"
-                android:id="@+id/modeLayout">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Modo: "
-                    android:id="@+id/lblModo"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/gameModeTextView"
-                    android:layout_toRightOf="@id/lblModo"
-                    android:paddingLeft="50dp"
-                    android:layout_alignParentTop="true"
-                    android:text=""/>
-
-            </RelativeLayout>
-
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:layout_below="@id/modeLayout"
-                tools:context="com.example.tuttifrutti.app.ManageInvitationActivity"
-                android:id="@+id/opponentsLayout">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Oponentes: "
-                    android:id="@+id/lblopponents"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/opponentsModeTextView"
-                    android:layout_toRightOf="@id/lblopponents"
-                    android:paddingLeft="20dp"
-                    android:layout_alignParentTop="true"
-                    android:text=""/>
-
-            </RelativeLayout>
-
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:layout_below="@id/opponentsLayout"
-                tools:context="com.example.tuttifrutti.app.ManageInvitationActivity"
-                android:id="@+id/categoryLayout">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Categorías: "
-
-                    android:id="@+id/lblcategory"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/categoryModeTextView"
-                    android:layout_toRightOf="@id/lblcategory"
-                    android:paddingLeft="20dp"
-                    android:layout_alignParentTop="true"
-                    android:text=""/>
-
-            </RelativeLayout>
-
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:layout_below="@id/categoryLayout"
-                tools:context="com.example.tuttifrutti.app.ManageInvitationActivity"
-                android:id="@+id/randomPlayersLayout">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cantidad de juadores que faltan aceptar: "
-                    android:id="@+id/lblRandomPlayers"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/categoryRandomPlayersTextView"
-                    android:layout_toRightOf="@id/lblRandomPlayers"
-                    android:paddingLeft="20dp"
-                    android:layout_alignParentTop="true"
-                    android:text=""/>
-
-            </RelativeLayout>
-
-
-
-            <ListView
-                android:layout_marginTop="45dp"
-                android:id="@+id/detailsList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/randomPlayersLayout">
-
-            </ListView>
+            android:text="Aceptar"
+            android:id="@+id/accept"
+            android:layout_marginLeft="35dp"
+            android:onClick="acceptInvitation"  />
 
             <Button
                 android:background="@drawable/largebutton"
@@ -168,25 +54,29 @@
                 android:layout_height="wrap_content"
                 android:text="Rechazar"
                 android:id="@+id/reject"
-                android:onClick="rejectInvitation"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="50dp"
-                android:visibility="gone"
-                android:layout_marginBottom="63dp" />
+                android:layout_marginLeft="40dp"
+                android:layout_toRightOf="@+id/accept"
+                android:onClick="rejectInvitation"/>
 
-            <Button
-                android:background="@drawable/largebutton"
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="5dp"
+        android:id="@+id/divider"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/btnLayout"
+        android:background="@color/blue"/>
+
+            <ListView
+                android:layout_marginTop="5dp"
+                android:id="@+id/detailsList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Aceptar"
-                android:layout_alignParentRight="true"
-                android:id="@+id/accept"
-                android:onClick="acceptInvitation"
-                android:layout_alignParentBottom="true"
-                android:layout_marginRight="50dp"
-                android:visibility="gone"
-                android:layout_marginBottom="63dp" />
+                android:layout_below="@+id/divider">
 
+            </ListView>
 
 </RelativeLayout>
 

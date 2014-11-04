@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +45,6 @@ import java.util.ArrayList;
 public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
     FullGame game;
-    Button acceptButton;
-    Button rejectButton;
     ListView detailsList;
 
     @Override
@@ -68,14 +68,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
         else
         {
-            Button b = (Button)findViewById(R.id.btnPlay);
-            b.setVisibility(View.INVISIBLE);
-            detailsList.setVisibility(View.GONE);
+            RelativeLayout playRL = (RelativeLayout)findViewById(R.id.btnPlayLayout);
+            playRL.setVisibility(View.GONE);
 
-            acceptButton = (Button) findViewById(R.id.accept);
-            rejectButton = (Button) findViewById(R.id.reject);
-            acceptButton.setVisibility(View.VISIBLE);
-            rejectButton.setVisibility(View.VISIBLE);
+            RelativeLayout invitationRL=(RelativeLayout)findViewById(R.id.btnInvitationLayout);
+            invitationRL.setVisibility(View.VISIBLE);
         }
 
 
@@ -100,6 +97,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         TuttiFruttiAPI api;
         FullGame gameInfo;
         boolean connError;
+        private ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
 
         @Override
         protected Game doInBackground(FullGame... userGame) {
@@ -115,7 +113,10 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            Dialog.setMessage("Obteniendo detalles...");
+            Dialog.show();
         }
 
         @Override
@@ -124,58 +125,23 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             } else {
 
-                TextView txtGameMode = (TextView) findViewById(R.id.gameModeTextView);
-                TextView txtOpponentsMode = (TextView) findViewById(R.id.opponentsModeTextView);
-                TextView txtCategoriesMode = (TextView) findViewById(R.id.categoryModeTextView);
-                TextView txtCreador = (TextView) findViewById(R.id.creadorTextView);
-
-                txtGameMode.setText(result.getMode().substring(0, 1).toUpperCase() + result.getMode().substring(1).toLowerCase());
-                txtOpponentsMode.setText(result.getSpanishOpponentsType());
-                txtCategoriesMode.setText(result.getSpanishCategoriesType());
-                txtCreador.setText(result.getOwner().getName());
-
-                TextView txt = (TextView) findViewById(R.id.categoryRandomPlayersTextView);
-                TextView lbl = (TextView) findViewById(R.id.lblRandomPlayers);
-                lbl.setVisibility(View.GONE);
-                txt.setVisibility(View.GONE);
-
-
-
-                if(isPlayableGame(game))
-                {
-                    ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
-                    String myId = FacebookHelper.getUserId();
-                    for (Player p : result.getPlayers()) {
-                        String playerFbId = p.getFbId();
-                        if (!playerFbId.equals(myId))
-                            players.add(new SummarizedPlayer(p, true));
-                    }
-
-                    if (result.getOpponentsType().equals("FRIENDS"))
-                        for (Player p : result.getSelectedFriends()) {
-                            if (!result.getPlayers().contains(p))
-                                players.add(new SummarizedPlayer(p, false));
-                        }
-
-
-
-                    GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result.getSelectedCategories());
-                    detailsList.setAdapter(gda);
+                ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
+                String myId = FacebookHelper.getUserId();
+                for (Player p : result.getPlayers()) {
+                    String playerFbId = p.getFbId();
+                    if (!playerFbId.equals(myId))
+                        players.add(new SummarizedPlayer(p, true));
                 }
 
-
-                if (!result.getOpponentsType().equals("FRIENDS"))
-                {
-                    //random players count es sin contarme a mi, entonces a get players le tengo que restar 1
-                    int randomPlayersLeftToAccept = result.getRandomPlayersCount() - (result.getPlayers().size() - 1);
-
-                    if (randomPlayersLeftToAccept > 0) {
-                        lbl.setVisibility(View.VISIBLE);
-                        txt.setVisibility(View.VISIBLE);
-                        txt.setText(Integer.toString(randomPlayersLeftToAccept));
+                if (result.getOpponentsType().equals("FRIENDS"))
+                    for (Player p : result.getSelectedFriends()) {
+                        if (!result.getPlayers().contains(p))
+                            players.add(new SummarizedPlayer(p, false));
                     }
-                }
 
+                GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
+                detailsList.setAdapter(gda);
+                Dialog.dismiss();
             }
         }
     }
@@ -186,25 +152,61 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         private ArrayList<Object> details;
         Context context;
-        private int playersSeparatorIndex=0;
+        private int detailsSeparatorIndex=0;
+        private int playersSeparatorIndex;
         private int categoriesSeparatorIndex;
-        private static final int ITEM_VIEW_TYPE_PLAYERS_SEPARATOR = 0;
-        private static final int ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR = 1;
-        private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 2;
-        private static final int ITEM_VIEW_TYPE_PLAYER = 3;
-        private static final int ITEM_VIEW_TYPE_CATEGORY = 4;
-        private static final int ITEM_VIEW_TYPE_COUNT = 5;
+        private static final int ITEM_VIEW_TYPE_INFORMATION_SEPARATOR = 0;
+        private static final int ITEM_VIEW_TYPE_INFORMATION = 1;
+        private static final int ITEM_VIEW_TYPE_PLAYERS_SEPARATOR = 2;
+        private static final int ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR = 3;
+        private static final int ITEM_VIEW_TYPE_EMPTY_SEPARATOR = 4;
+        private static final int ITEM_VIEW_TYPE_PLAYER = 5;
+        private static final int ITEM_VIEW_TYPE_CATEGORY = 6;
+        private static final int ITEM_VIEW_TYPE_COUNT = 7;
+        private static final String detailsText = "Detalles";
         private static final String playersText = "Jugadores";
         private static final String categoriesText = "Categorias";
         boolean showsPlayers;
+        boolean showsRandomPlayersCount;
+        Game game;
 
 
-        public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, ArrayList<Category> categories)
+        public GameDetailsAdapter(Context context, ArrayList<SummarizedPlayer> players, Game game)
         {
+            this.game=game;
             this.context=context;
             this.details = new ArrayList<Object>();
+
+            /*
+            * OWNER
+            * MODE
+            * OPPONENTS
+            * CATEGORIES TYPE
+            * RANDOM PLAYERS COUNT?
+            *
+            * */
+
+            this.details.add(detailsText);
+            this.details.add("Creada por:|"+game.getOwner().getName());
+            this.details.add("Modo:         |"  +game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
+            this.details.add("Oponentes:|" +game.getSpanishOpponentsType());
+            this.details.add("Categorías:|"+game.getSpanishCategoriesType());
+
+            if (!game.getOpponentsType().equals("FRIENDS"))
+            {
+                int randomPlayersLeftToAccept = game.getRandomPlayersCount() - (game.getPlayers().size() - 1);
+                if (randomPlayersLeftToAccept > 0) {
+                    showsRandomPlayersCount=true;
+                    if(randomPlayersLeftToAccept>1)
+                        this.details.add("Faltan aceptar "+ randomPlayersLeftToAccept+ " jugadores");
+                    else
+                        this.details.add("Falta aceptar "+ randomPlayersLeftToAccept+ " jugador");
+                }
+            }
+
+
             this.details.addAll(players);
-            this.details.addAll(categories);
+            this.details.addAll(game.getSelectedCategories());
 
 
             showsPlayers = players.size() > 0;
@@ -212,14 +214,28 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             if (showsPlayers)
             {
-                this.details.add(playersSeparatorIndex, playersText);
-                this.categoriesSeparatorIndex = players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+                playersSeparatorIndex=6;
+                if(showsRandomPlayersCount)
+                    playersSeparatorIndex++;
 
-                this.details.add(categoriesSeparatorIndex-1, null);
+                this.details.add(playersSeparatorIndex-1, null);
+
+                this.details.add(playersSeparatorIndex, playersText);
+                this.categoriesSeparatorIndex = playersSeparatorIndex + players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+
+
             }
             else {
-                this.categoriesSeparatorIndex = 0; // Solo el header de invitaciones
+                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
+                if(showsRandomPlayersCount)
+                    categoriesSeparatorIndex++;
+
+
+                this.playersSeparatorIndex=-1;
+
             }
+
+            this.details.add(categoriesSeparatorIndex-1, null);
 
             this.details.add(categoriesSeparatorIndex, categoriesText);
 
@@ -237,13 +253,18 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             if(getItem(position) instanceof Category)
                 return ITEM_VIEW_TYPE_CATEGORY;
 
-            if(showsPlayers && position==0)
+
+            if(showsPlayers && position==playersSeparatorIndex)
                 return ITEM_VIEW_TYPE_PLAYERS_SEPARATOR;
 
             if(position==categoriesSeparatorIndex)
                 return ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR;
 
+            if(position ==0) //details
+                return ITEM_VIEW_TYPE_INFORMATION_SEPARATOR;
 
+            if(position <=7)
+                return ITEM_VIEW_TYPE_INFORMATION;
             return -1;
         }
 
@@ -284,6 +305,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             TextView text1;
         }
 
+        private class DetailViewHolder {
+            TextView text1;
+            TextView text2;
+        }
+
         @Override
         public View getView(final int i, View convertView, ViewGroup viewGroup) {
             final int type = getItemViewType(i);
@@ -298,11 +324,17 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 case ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR:
                     convertView = SetRowCategorySeparatorViewHolder(convertView);
                     break;
+                case ITEM_VIEW_TYPE_INFORMATION_SEPARATOR:
+                    convertView = SetRowDetailsSeparatorViewHolder(convertView);
+                    break;
                 case ITEM_VIEW_TYPE_PLAYER:
                     convertView = SetRowPlayerViewHolder(i, convertView);
                     break;
                 case ITEM_VIEW_TYPE_CATEGORY:
                     convertView = SetRowCategoryViewHolder(i, convertView);
+                    break;
+                case ITEM_VIEW_TYPE_INFORMATION:
+                    convertView = SetRowDetailsViewHolder(i, convertView);
                     break;
             }
 
@@ -336,16 +368,59 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             return convertView;
         }
 
+        private View SetRowDetailsSeparatorViewHolder(View convertView) {
+
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_separator_details, null);
+            }
+            return convertView;
+        }
+
+        private View SetRowDetailsViewHolder(int position, View convertView){
+            DetailViewHolder holder=null;
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.simple_list_item_details, null);
+
+                holder = new DetailViewHolder();
+                holder.text1 = (TextView) convertView.findViewById(R.id.detailText1);
+                holder.text2 = (TextView) convertView.findViewById(R.id.detailText2);
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (DetailViewHolder) convertView.getTag();
+            }
+
+            String detail = (String)details.get(position);
+            if(detail.contains("|")){
+                String description=detail.substring(0,detail.indexOf("|"));
+                String detailValue=detail.substring(detail.indexOf("|")+1,detail.length());
+                holder.text1.setText(description);
+                holder.text2.setText(detailValue);
+            }else
+            {
+                holder.text1.setText(detail);
+            }
+
+
+
+            return convertView;
+
+        }
+
         private View SetRowCategoryViewHolder(int position, View convertView){
             CategoryViewHolder holder=null;
 
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.simple_list_item_custom, null);
+                convertView = vi.inflate(R.layout.simple_list_item_categories, null);
 
                 holder = new CategoryViewHolder();
-                holder.text1 = (TextView) convertView.findViewById(R.id.customText1);
+                holder.text1 = (TextView) convertView.findViewById(R.id.categoryText);
                 convertView.setTag(holder);
             }
             else {
@@ -355,7 +430,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             Category category = (Category)details.get(position);
 
             holder.text1.setText(category.getName());
-            holder.text1.setPadding(10,15,0,15);
             return convertView;
 
         }
