@@ -4,18 +4,28 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context="com.example.tuttifrutti.app.ChooseRandomPlayersCountActivity">
+    tools:context="com.example.tuttifrutti.app.ChooseRandomPlayersCountActivity"
+    android:id="@+id/rlChooseRandom">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayoutModelbl"
+       >
     <TextView
         android:text="Elegí la cantidad de jugadores aleatorios para jugar!"
         android:textSize="20dp"
+        android:layout_marginLeft="35dp"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/title_container"
         android:layout_marginTop="46dp"
         android:id="@+id/title"
         android:gravity="center"/>
+    </RelativeLayout>
 <RelativeLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
