@@ -228,19 +228,17 @@ module.exports = function(app) {
                             'roundNumber':roundToShow.roundId,
                             'isComplete':isComplete,
                             'canPlayerPlay': canPlayerPlay,
-                            'roundScoreSummaries': scoresArray };
+                            'roundScoreSummaries': scoresArray,
+                            'roundLetter':roundToShow.letter };
 
       res.send(roundScoresResult, 200);            
      });
   }
 
-  getRoundScores = function(req, res){
-    console.log("entre a getRoundScores");
-    console.log("gameid:" + req.params.id);
+  getRoundScores = function(req, res){    
     Game.findOne({ 'gameId': req.params.id}, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);          
-      console.log("encontre el game");
       var roundToShow = game.getRound(req.params.roundId);
       var showScores = true;
       var playersWhoHaveLines = game.players;;
@@ -258,7 +256,8 @@ module.exports = function(app) {
                             'roundNumber':roundToShow.roundId,
                             'isComplete':isComplete,
                             'canPlayerPlay': canPlayerPlay,
-                            'roundScoreSummaries': scoresArray };
+                            'roundScoreSummaries': scoresArray,
+                            'roundLetter' : roundToShow.letter };
 
       res.send(roundScoresResult, 200);            
      });
