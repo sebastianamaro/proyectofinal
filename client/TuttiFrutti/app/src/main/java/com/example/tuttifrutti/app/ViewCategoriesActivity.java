@@ -53,12 +53,6 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!FacebookHelper.isSessionOpened())
-        {
-            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
-            startActivity(i);
-        }
-
         setContentView(R.layout.activity_view_categories);
         setTitle("");
         categoriesList = (ListView) findViewById(R.id.categoriesList);

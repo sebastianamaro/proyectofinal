@@ -51,12 +51,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!FacebookHelper.isSessionOpened())
-        {
-            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
-            startActivity(i);
-        }
-
         setTitle("");
         setContentView(R.layout.activity_show_game_details);
 

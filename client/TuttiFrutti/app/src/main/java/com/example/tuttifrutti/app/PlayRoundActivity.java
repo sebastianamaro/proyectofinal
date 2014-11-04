@@ -59,12 +59,6 @@ public class PlayRoundActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!FacebookHelper.isSessionOpened())
-        {
-            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
-            startActivity(i);
-        }
-
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
