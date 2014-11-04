@@ -40,12 +40,6 @@ public class ChooseFriendsActivity extends FragmentActivity {
         setTitle("");
         setContentView(R.layout.activity_choose_friends);
 
-        if (!FacebookHelper.isSessionOpened())
-        {
-            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
-            startActivity(i);
-        }
-
         Intent intent = getIntent();
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 

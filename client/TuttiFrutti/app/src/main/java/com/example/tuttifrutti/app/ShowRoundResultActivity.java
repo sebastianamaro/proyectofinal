@@ -43,12 +43,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!FacebookHelper.isSessionOpened())
-        {
-            Intent i = new Intent(getApplicationContext(), AndroidFacebookConnectActivity.class);
-            startActivity(i);
-        }
-
         setTitle("");
         setContentView(R.layout.activity_show_round_result);
 
@@ -151,7 +145,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
                         //en cada interacion, obtengo la play de la line (j), correspondiente a la categoria (i)
                         PlayScoreSummary linePlayForCategory = result.getRoundScoreSummaries().get(j).getPlays().get(i);
-                        AddContentTextView(contentRow, linePlayForCategory, result.getIsComplete(), result.getRoundScoreSummaries().get(j).getPlayer().getFbId());
+                        AddContentTextView(contentRow, linePlayForCategory, result.getIsComplete(), result.getRoundLetter(), result.getRoundScoreSummaries().get(j).getPlayer().getFbId());
                     }
 
                     //si estoy en la primera categoria, agrego el header con los players antes de las categorias con sus valores
@@ -209,7 +203,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         row.addView(text);
     }
 
-    private void AddContentTextView(TableRow row, final PlayScoreSummary playScoreSummary, boolean isComplete, final String fbId) {
+    private void AddContentTextView(TableRow row, final PlayScoreSummary playScoreSummary, boolean isComplete, String roundLetter ,final String fbId) {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
@@ -226,7 +220,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         text.setTextColor(Color.parseColor(getColorForScore(playScoreSummary.getScoreInfo().getScore())));
         text.setTextSize(20);
         text.setTypeface(null, Typeface.NORMAL);
-        //layout.addView(text);
 
         TextView score= null;
         ImageView imgReport=null;
@@ -246,7 +239,8 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             //layout.addView(score);
 
             if (myFbId.equals(fbId) && playScoreSummary.getScoreInfo().getScore() == ScoresForPlay.INVALID.getValue()
-                    && playScoreSummary.isFixed())
+                    && playScoreSummary.isFixed() && !playScoreSummary.getWord().isEmpty()
+                    && Character.toUpperCase(playScoreSummary.getWord().charAt(0)) == Character.toUpperCase(roundLetter.charAt(0)))
             {
                 imgReport = new ImageView(this.getApplicationContext());
                 imgReport.setImageResource(R.drawable.attention2_small);
