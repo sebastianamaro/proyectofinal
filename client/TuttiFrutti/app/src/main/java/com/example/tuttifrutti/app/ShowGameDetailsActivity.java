@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -96,6 +97,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         TuttiFruttiAPI api;
         FullGame gameInfo;
         boolean connError;
+        private ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
 
         @Override
         protected Game doInBackground(FullGame... userGame) {
@@ -111,7 +113,10 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            Dialog.setMessage("Obteniendo detalles...");
+            Dialog.show();
         }
 
         @Override
@@ -136,7 +141,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
                 GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
                 detailsList.setAdapter(gda);
-
+                Dialog.dismiss();
             }
         }
     }
@@ -181,20 +186,23 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             *
             * */
 
-            this.details.add(game.getOwner().getName());
-            this.details.add(game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
-            this.details.add(game.getSpanishOpponentsType());
-            this.details.add(game.getSpanishCategoriesType());
+            this.details.add(detailsText);
+            this.details.add("Creada por:|"+game.getOwner().getName());
+            this.details.add("Modo:         |"  +game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
+            this.details.add("Oponentes:|" +game.getSpanishOpponentsType());
+            this.details.add("Categorías:|"+game.getSpanishCategoriesType());
 
             if (!game.getOpponentsType().equals("FRIENDS"))
             {
                 int randomPlayersLeftToAccept = game.getRandomPlayersCount() - (game.getPlayers().size() - 1);
                 if (randomPlayersLeftToAccept > 0) {
                     showsRandomPlayersCount=true;
-                    this.details.add(randomPlayersLeftToAccept);
+                    if(randomPlayersLeftToAccept>1)
+                        this.details.add("Faltan aceptar "+ randomPlayersLeftToAccept+ " jugadores");
+                    else
+                        this.details.add("Falta aceptar "+ randomPlayersLeftToAccept+ " jugador");
                 }
             }
-
 
 
             this.details.addAll(players);
@@ -210,19 +218,24 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 if(showsRandomPlayersCount)
                     playersSeparatorIndex++;
 
-                this.details.add(playersSeparatorIndex, playersText);
-                this.categoriesSeparatorIndex = playersSeparatorIndex+players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+                this.details.add(playersSeparatorIndex-1, null);
 
-                this.details.add(categoriesSeparatorIndex-1, null);
+                this.details.add(playersSeparatorIndex, playersText);
+                this.categoriesSeparatorIndex = playersSeparatorIndex + players.size() + 2; // Es dos porque tenemos el header y una row transparente para dar el feelling de que son grillas separadas
+
+
             }
             else {
+                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
                 if(showsRandomPlayersCount)
                     categoriesSeparatorIndex++;
-                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
+
 
                 this.playersSeparatorIndex=-1;
 
             }
+
+            this.details.add(categoriesSeparatorIndex-1, null);
 
             this.details.add(categoriesSeparatorIndex, categoriesText);
 
@@ -292,6 +305,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             TextView text1;
         }
 
+        private class DetailViewHolder {
+            TextView text1;
+            TextView text2;
+        }
+
         @Override
         public View getView(final int i, View convertView, ViewGroup viewGroup) {
             final int type = getItemViewType(i);
@@ -306,11 +324,17 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                 case ITEM_VIEW_TYPE_CATEGORIES_SEPARATOR:
                     convertView = SetRowCategorySeparatorViewHolder(convertView);
                     break;
+                case ITEM_VIEW_TYPE_INFORMATION_SEPARATOR:
+                    convertView = SetRowDetailsSeparatorViewHolder(convertView);
+                    break;
                 case ITEM_VIEW_TYPE_PLAYER:
                     convertView = SetRowPlayerViewHolder(i, convertView);
                     break;
                 case ITEM_VIEW_TYPE_CATEGORY:
                     convertView = SetRowCategoryViewHolder(i, convertView);
+                    break;
+                case ITEM_VIEW_TYPE_INFORMATION:
+                    convertView = SetRowDetailsViewHolder(i, convertView);
                     break;
             }
 
@@ -353,16 +377,50 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             return convertView;
         }
 
+        private View SetRowDetailsViewHolder(int position, View convertView){
+            DetailViewHolder holder=null;
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.simple_list_item_details, null);
+
+                holder = new DetailViewHolder();
+                holder.text1 = (TextView) convertView.findViewById(R.id.detailText1);
+                holder.text2 = (TextView) convertView.findViewById(R.id.detailText2);
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (DetailViewHolder) convertView.getTag();
+            }
+
+            String detail = (String)details.get(position);
+            if(detail.contains("|")){
+                String description=detail.substring(0,detail.indexOf("|"));
+                String detailValue=detail.substring(detail.indexOf("|")+1,detail.length());
+                holder.text1.setText(description);
+                holder.text2.setText(detailValue);
+            }else
+            {
+                holder.text1.setText(detail);
+            }
+
+
+
+            return convertView;
+
+        }
+
         private View SetRowCategoryViewHolder(int position, View convertView){
             CategoryViewHolder holder=null;
 
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.simple_list_item_custom, null);
+                convertView = vi.inflate(R.layout.simple_list_item_categories, null);
 
                 holder = new CategoryViewHolder();
-                holder.text1 = (TextView) convertView.findViewById(R.id.customText1);
+                holder.text1 = (TextView) convertView.findViewById(R.id.categoryText);
                 convertView.setTag(holder);
             }
             else {
@@ -372,7 +430,6 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             Category category = (Category)details.get(position);
 
             holder.text1.setText(category.getName());
-            holder.text1.setPadding(10,15,0,15);
             return convertView;
 
         }

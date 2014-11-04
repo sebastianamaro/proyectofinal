@@ -45,9 +45,7 @@
             android:layout_height="wrap_content"
             android:text="Aceptar"
             android:id="@+id/accept"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
-
+            android:layout_marginLeft="35dp"
             android:onClick="acceptInvitation"  />
 
             <Button
@@ -55,8 +53,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rechazar"
-
                 android:id="@+id/reject"
+                android:layout_marginLeft="40dp"
                 android:layout_toRightOf="@+id/accept"
                 android:onClick="rejectInvitation"/>
 
