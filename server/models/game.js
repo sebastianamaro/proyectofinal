@@ -75,6 +75,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
       }
 
+      console.log('round.roundId == this.roundsCount' + round.roundId + this.roundsCount);
       if(round.roundId == this.roundsCount) {
           this.changeToStatusFinished();
       } 
