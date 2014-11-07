@@ -166,6 +166,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             Dialog.setMessage("Calculando resultados...");
+            Dialog.setCancelable(false);
             Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
@@ -369,6 +370,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         protected void onPreExecute(){
             Dialog.setMessage("Enviando calificación...");
+            Dialog.setCancelable(false);
             Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
@@ -418,6 +420,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         protected void onPreExecute(){
             Dialog.setMessage("Enviando reporte...");
+            Dialog.setCancelable(false);
             Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }

@@ -3,6 +3,7 @@ package com.example.tuttifrutti.app;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -275,7 +276,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         TuttiFruttiAPI api;
         boolean connError;
-
+        ProgressDialog Dialog= new ProgressDialog(PlayRoundActivity.this);
         @Override
         protected FullRound doInBackground(Integer... integers) {
             try {
@@ -337,10 +338,15 @@ public class PlayRoundActivity extends FragmentActivity implements
                 new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName,-1,null,currentRound.getCategories().length,currentRound.getRoundId()));
 
             }
+            Dialog.dismiss();
         }
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            Dialog.setMessage("Iniciando ronda...");
+            Dialog.setCancelable(false);
+            Dialog.show();
         }
     }
 

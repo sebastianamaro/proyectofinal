@@ -123,6 +123,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             Dialog.setMessage("Calculando resultados...");
+            Dialog.setCancelable(false);
             Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }

@@ -79,7 +79,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         new GetGameAsyncTask().execute(game);
     }
 
-    public static boolean isPlayableGame(FullGame game){
+    public static boolean isPlayableGame(Game game){
        return game instanceof UserGame;
     }
 
@@ -116,6 +116,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
             Dialog.setMessage("Obteniendo detalles...");
+            Dialog.setCancelable(false);
             Dialog.show();
         }
 
@@ -138,6 +139,16 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                         if (!result.getPlayers().contains(p))
                             players.add(new SummarizedPlayer(p, false));
                     }
+
+                if(isPlayableGame(result))
+                {
+                    Button b = (Button)findViewById(R.id.btnPlay);
+                    //no pregunto si ya jugo, porque si ya jugo no va a estar en esta pantalla
+                    if (((UserGame)result).getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED)
+                        b.setEnabled(false);
+                    else
+                        b.setEnabled(true);
+                }
 
                 GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
                 detailsList.setAdapter(gda);
@@ -182,6 +193,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             * MODE
             * OPPONENTS
             * CATEGORIES TYPE
+            * ROUNDS COUNT
             * RANDOM PLAYERS COUNT?
             *
             * */
@@ -191,6 +203,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             this.details.add("Modo:         |"  +game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
             this.details.add("Oponentes:|" +game.getSpanishOpponentsType());
             this.details.add("Categorías:|"+game.getSpanishCategoriesType());
+            this.details.add("Cant. Rondas:|"+game.getRoundsCount());
 
             if (!game.getOpponentsType().equals("FRIENDS"))
             {
@@ -214,7 +227,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             if (showsPlayers)
             {
-                playersSeparatorIndex=6;
+                playersSeparatorIndex=7;
                 if(showsRandomPlayersCount)
                     playersSeparatorIndex++;
 
@@ -226,7 +239,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             }
             else {
-                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
+                this.categoriesSeparatorIndex = 7; // Solo el header de invitaciones
                 if(showsRandomPlayersCount)
                     categoriesSeparatorIndex++;
 
@@ -543,6 +556,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     {
         TuttiFruttiAPI api;
         boolean connError;
+        ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
         @Override
         protected Void doInBackground(String... response) {
             String fbId= FacebookHelper.getUserId();
@@ -562,6 +576,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+            Dialog.setMessage("Enviando respuesta...");
+            Dialog.setCancelable(false);
+            Dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 

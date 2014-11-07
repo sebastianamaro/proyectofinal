@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -228,7 +229,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         Category recentlyCreatedCategory;
         TuttiFruttiAPI api;
         boolean connError;
-
+        ProgressDialog Dialog= new ProgressDialog(ViewCategoriesActivity.this);
         public GetCategoriesAsyncTask(){
         }
 
@@ -253,7 +254,11 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            Dialog.setMessage("Obteniendo categorías...");
+            Dialog.setCancelable(false);
+            Dialog.show();
         }
 
         @Override
@@ -309,6 +314,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if (recentlyCreatedCategory != null)
                     textView.addObject(recentlyCreatedCategory);
             }
+            Dialog.dismiss();
         }
     }
 

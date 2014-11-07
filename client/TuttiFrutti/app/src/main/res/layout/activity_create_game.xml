@@ -62,6 +62,7 @@
             android:textOff="OFFLINE"
             android:textOn="ONLINE"
             android:layout_centerHorizontal="true"
+            android:switchTextAppearance="@style/switchType"
             android:thumb="@drawable/apptheme_switch_inner_holo_light"
             android:track="@drawable/apptheme_switch_track_holo_light"
             />
@@ -115,6 +116,7 @@
             android:id="@+id/opponentsSelector"
             android:textOff="CON AMIGOS"
             android:textOn="ALEATORIO"
+            android:switchTextAppearance="@style/switchType"
             android:layout_centerHorizontal="true"
             android:thumb="@drawable/apptheme_switch_inner_holo_light"
             android:track="@drawable/apptheme_switch_track_holo_light"/>
@@ -169,6 +171,7 @@
             android:textOff="LIBRES"
             android:textOn="CONTROLADAS"
             android:layout_centerHorizontal="true"
+            android:switchTextAppearance="@style/switchType"
             android:thumb="@drawable/apptheme_switch_inner_holo_light"
             android:track="@drawable/apptheme_switch_track_holo_light"/>
 

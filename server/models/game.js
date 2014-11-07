@@ -82,6 +82,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
       game.save(function(err) {
                 if(!err) {
                   console.log('Finished round');
+                  console.log('game status:'+ game.status);
                 } else {
                   console.log('ERROR: ' + err);
                 }

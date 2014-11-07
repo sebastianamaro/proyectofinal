@@ -128,6 +128,7 @@ public class ViewGameStatusActivity extends ListActivity {
             if(showSpiner)
             {
                 Dialog.setMessage("Obteniendo partidas...");
+                Dialog.setCancelable(false);
                 Dialog.show();
             }
         }
