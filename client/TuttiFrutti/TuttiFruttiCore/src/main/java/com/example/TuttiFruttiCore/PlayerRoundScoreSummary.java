@@ -11,6 +11,7 @@ public class PlayerRoundScoreSummary {
     private int roundNumber;
     private String roundLetter;
     private ArrayList<RoundScoreSummary> roundScoreSummaries;
+    private String gameStatus;
 
     public boolean getCanPlayerPlay() {
         return canPlayerPlay;
@@ -50,5 +51,13 @@ public class PlayerRoundScoreSummary {
 
     public void setRoundLetter(String roundLetter) {
         this.roundLetter = roundLetter;
+    }
+
+    public String getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(String gameStatus) {
+        this.gameStatus = gameStatus;
     }
 }

@@ -229,7 +229,8 @@ module.exports = function(app) {
                             'isComplete':isComplete,
                             'canPlayerPlay': canPlayerPlay,
                             'roundScoreSummaries': scoresArray,
-                            'roundLetter':roundToShow.letter };
+                            'roundLetter':roundToShow.letter,
+                            'gameStatus':game.status };
 
       res.send(roundScoresResult, 200);            
      });
