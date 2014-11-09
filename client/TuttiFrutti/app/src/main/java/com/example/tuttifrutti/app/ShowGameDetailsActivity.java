@@ -46,6 +46,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
     FullGame game;
     ListView detailsList;
+    ProgressDialog dialog=new ProgressDialog(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,14 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         new GetGameAsyncTask().execute(game);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        super.onBackPressed();
+    }
+
     public static boolean isPlayableGame(Game game){
        return game instanceof UserGame;
     }
@@ -89,15 +98,17 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         // aca en algun lado deberia saber el ID de la partida
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
 
-        startActivity(intent);
+        MoveToAnotherActivity(intent);
     }
+
+
 
     public class GetGameAsyncTask extends AsyncTask<FullGame,Void, Game>
     {
         TuttiFruttiAPI api;
         FullGame gameInfo;
         boolean connError;
-        private ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
+
 
         @Override
         protected Game doInBackground(FullGame... userGame) {
@@ -115,9 +126,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
-            Dialog.setMessage("Obteniendo detalles...");
-            Dialog.setCancelable(false);
-            Dialog.show();
+            dialog.setMessage("Obteniendo detalles...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -152,8 +163,8 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
                 GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
                 detailsList.setAdapter(gda);
-                Dialog.dismiss();
             }
+            dialog.dismiss();
         }
     }
 
@@ -556,7 +567,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     {
         TuttiFruttiAPI api;
         boolean connError;
-        ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
+
         @Override
         protected Void doInBackground(String... response) {
             String fbId= FacebookHelper.getUserId();
@@ -576,22 +587,30 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
-            Dialog.setMessage("Enviando respuesta...");
-            Dialog.setCancelable(false);
-            Dialog.show();
+            dialog.setMessage("Enviando respuesta...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
         @Override
         protected void onPostExecute(Void result) {
+            dialog.dismiss();
             if (this.connError)
             {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-                startActivity(intent);
+                MoveToAnotherActivity(intent);
             }
         }
+    }
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
     }
 }
 

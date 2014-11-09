@@ -55,6 +55,7 @@ public class PlayRoundActivity extends FragmentActivity implements
     private String fileName;
     private FullRound currentRound;
     private CountDownTimer timer;
+    ProgressDialog dialog=new ProgressDialog(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,14 @@ public class PlayRoundActivity extends FragmentActivity implements
         int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
         new APIStartRoundTask().execute(gameId);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        super.onBackPressed();
     }
 
     @Override
@@ -276,7 +285,7 @@ public class PlayRoundActivity extends FragmentActivity implements
 
         TuttiFruttiAPI api;
         boolean connError;
-        ProgressDialog Dialog= new ProgressDialog(PlayRoundActivity.this);
+
         @Override
         protected FullRound doInBackground(Integer... integers) {
             try {
@@ -338,15 +347,15 @@ public class PlayRoundActivity extends FragmentActivity implements
                 new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName,-1,null,currentRound.getCategories().length,currentRound.getRoundId()));
 
             }
-            Dialog.dismiss();
+            dialog.dismiss();
         }
 
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
-            Dialog.setMessage("Iniciando ronda...");
-            Dialog.setCancelable(false);
-            Dialog.show();
+            dialog.setMessage("Iniciando ronda...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
     }
 
@@ -506,7 +515,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                        else
                            intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
 
-                       startActivity(intent);
+                        MoveToAnotherActivity(intent);
                    }
                });
                ad.show();
@@ -516,6 +525,13 @@ public class PlayRoundActivity extends FragmentActivity implements
 
     }
 
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
+    }
 
 }
 

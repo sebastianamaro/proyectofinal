@@ -42,7 +42,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
     private PullToRefreshListView mPullToRefreshLayout;
     String fbId;
-
+    ProgressDialog dialog=new ProgressDialog(this);
     @Override
     public void onResume (){
         super.onResume();
@@ -96,28 +96,38 @@ public class ViewGameStatusActivity extends ListActivity {
         int id = item.getItemId();
         if (id == R.id.action_showRules) {
             Intent i = new Intent(getApplicationContext(), ShowGameRulesActivity.class);
-            startActivity(i);
+            MoveToAnotherActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
         Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        MoveToAnotherActivity(startMain);
     }
 
     public void createGame(View view) {
         Intent intent = new Intent(getApplicationContext(), CreateGameActivity.class);
+        MoveToAnotherActivity(intent);
+    }
+
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
         startActivity(intent);
     }
 
 
     public class FillListViewAsyncTask extends AsyncTask<Void, Void, Void> {
         TuttiFruttiAPI api;
-        private ProgressDialog Dialog = new ProgressDialog(ViewGameStatusActivity.this);
         ArrayList<UserGame> games;
         ArrayList<FullGame> invitations;
         boolean connError;
@@ -127,9 +137,9 @@ public class ViewGameStatusActivity extends ListActivity {
             this.showSpinner=showSpiner;
             if(showSpiner)
             {
-                Dialog.setMessage("Obteniendo partidas...");
-                Dialog.setCancelable(false);
-                Dialog.show();
+                dialog.setMessage("Obteniendo partidas...");
+                dialog.setCancelable(false);
+                dialog.show();
             }
         }
 
@@ -156,10 +166,6 @@ public class ViewGameStatusActivity extends ListActivity {
         protected void onPostExecute(Void result) {
 
             if (this.connError) {
-
-                if(showSpinner)
-                     Dialog.dismiss();
-
                 mPullToRefreshLayout.onRefreshComplete();
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }
@@ -203,17 +209,25 @@ public class ViewGameStatusActivity extends ListActivity {
                         }
 
                         i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, itemValue);
-                        startActivity(i);
+                        MoveToAnotherActivity(i);
                     }
 
                 });
                 // Call onRefreshComplete when the list has been refreshed.
                 mPullToRefreshLayout.onRefreshComplete();
 
-                if(showSpinner)
-                   Dialog.dismiss();
             }
 
+            if(showSpinner)
+                dialog.dismiss();
+        }
+
+
+        public void MoveToAnotherActivity(Intent intent){
+            if(dialog != null && dialog.isShowing())
+                dialog.dismiss();
+
+            startActivity(intent);
         }
 
         public class GamesAdapter extends BaseAdapter {

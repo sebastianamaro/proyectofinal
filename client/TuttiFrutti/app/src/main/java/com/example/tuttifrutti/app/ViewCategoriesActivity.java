@@ -50,6 +50,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     CategoryAdapter adapter;
     TuttiFruttiAutoCompleteTextView textView;
     Button addCategoryButton;
+    ProgressDialog dialog=new ProgressDialog(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +125,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         });
 
         new GetCategoriesAsyncTask().execute();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        super.onBackPressed();
     }
 
     public void finish(View view) {
@@ -216,7 +225,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-                    startActivity(intent);
+                    MoveToAnotherActivity(intent);
                 }
             });
             ad.show();
@@ -224,12 +233,20 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
     }
 
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
+    }
+
         public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
 
         Category recentlyCreatedCategory;
         TuttiFruttiAPI api;
         boolean connError;
-        ProgressDialog Dialog= new ProgressDialog(ViewCategoriesActivity.this);
+
         public GetCategoriesAsyncTask(){
         }
 
@@ -256,9 +273,9 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
-            Dialog.setMessage("Obteniendo categorías...");
-            Dialog.setCancelable(false);
-            Dialog.show();
+            dialog.setMessage("Obteniendo categorías...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -314,7 +331,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if (recentlyCreatedCategory != null)
                     textView.addObject(recentlyCreatedCategory);
             }
-            Dialog.dismiss();
+            dialog.dismiss();
         }
     }
 

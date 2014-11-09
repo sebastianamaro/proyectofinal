@@ -37,7 +37,7 @@ import org.springframework.web.client.ResourceAccessException;
 import java.util.ArrayList;
 
 public class ShowGameResultActivity extends ActionBarActivity {
-
+    ProgressDialog dialog=new ProgressDialog(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +50,16 @@ public class ShowGameResultActivity extends ActionBarActivity {
         new GetScoresAsyncTask(gameId).execute();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        super.onBackPressed();
+    }
+
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameScoreSummary> {
-        private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
+
         TuttiFruttiAPI api;
         int gameId;
         boolean connError;
@@ -116,15 +124,15 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 // la ultima fila que agrego es la de los puntajes
                 table.addView(totalScoreRow);
 
-                Dialog.dismiss();
             }
+            dialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
-            Dialog.setMessage("Calculando resultados...");
-            Dialog.setCancelable(false);
-            Dialog.show();
+            dialog.setMessage("Calculando resultados...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
@@ -177,7 +185,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 i.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, fGameId);
                 i.putExtra(Constants.ROUND_ID_EXTRA_MESSAGE, froundId);
 
-                startActivity(i);
+                 MoveToAnotherActivity(i);
             }
         });
 
@@ -190,6 +198,14 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
         row.addView(rl);
         //row.addView(b);
+    }
+
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
     }
 
     private void AddContentTextView(TableRow row, ScoreInfo p) {
