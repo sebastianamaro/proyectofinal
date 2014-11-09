@@ -7,8 +7,9 @@ module.exports = function(app) {
   var NotificationFile = require('../models/notification.js');
 
   setQualification = function(req,res){
-    var statusRequired = new Game().getStatus().WAITING_FOR_QUALIFICATIONS;
-    Game.findOne({ 'gameId': req.params.id, status: statusRequired }, function (err, game){
+    var statusRequired = [new Game().getStatus().PLAYING,
+                          new Game().getStatus().WAITING_FOR_QUALIFICATIONS];
+    Game.findOne({ 'gameId': req.params.id, status: { $in: statusRequired} }, function (err, game){
       if (err) return res.send(err, 500);
       if (!game) return res.send('Game not found', 404);
       
@@ -68,9 +69,11 @@ module.exports = function(app) {
         game.status = game.getStatus().PLAYING;
         game.save(function(err) {
           if(!err) {
-            game.sendNotificationsRoundStarted(playerStarted,function(){
-              console.log('Created round with letter '+assignedLetter);
-            });
+            if (game.mode == game.getModes().ONLINE){
+              game.sendNotificationsRoundStarted(playerStarted,function(){
+                console.log('Created round with letter '+assignedLetter);
+              });
+            }
           } else {
             console.log('ERROR: ' + err);
           }

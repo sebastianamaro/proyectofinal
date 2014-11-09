@@ -74,12 +74,14 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
         
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+
         if(round.roundId == game.roundsCount) {
             game.changeToStatusFinished(game);
         } 
+
+        game.sendNotificationsRoundEnabled(function(){});
       }
 
-      console.log('round.roundId == this.roundsCount' + round.roundId + this.roundsCount);
 
       game.save(function(err) {
                 if(!err) {
@@ -161,6 +163,25 @@ gameSchema.methods.sendNotificationsRoundStarted = function (playerStarted,callb
       });
   }
 }
+gameSchema.methods.sendNotificationsFirstRoundEnabled = function (callback) {
+  for (var i = this.players.length - 1; i >= 0; i--) {
+      var player = this.players[i];
+      var gameId =this.gameId;
+      var notification = new Notification();
+      notification.setRegistrationId(player.registrationId);
+      notification.setMessageType(notification.getMessagesTypes().FIRST_ROUND_ENABLED);
+      notification.setValues({'game_id': gameId});
+      notification.send(function(err){
+        if (err){
+          console.log("Error when sendNotifications");
+          return callback("Error when sendNotifications");
+        } else {
+          return callback();
+        }
+      });
+  }
+}
+
 gameSchema.methods.sendNotificationsRoundEnabled = function (callback) {
   for (var i = this.players.length - 1; i >= 0; i--) {
       var player = this.players[i];
@@ -202,7 +223,7 @@ gameSchema.methods.hasStarted = function (){
 }
 
 gameSchema.methods.getNextLetter = function (){
-  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X','Y', 'Z'];
+  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
   var usedLetters = [];
 
   this.rounds.reduce(function(previousRound, currentRound, index, array){
@@ -462,8 +483,10 @@ gameSchema.methods.acceptInvitation = function(request, callback){
     //+1 porque todavia no lo guarde (porque necesito guardarlo sin las invitaciones y con el game)
     if (invitedPlayersCount == game.players.length + 1){
       game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
-      if (game.opponentsType == game.getOpponentsType().RANDOM)
+      if (game.opponentsType == game.getOpponentsType().RANDOM){
         game.removeAllInvitations(player.fbId);        
+      }
+      game.sendNotificationsFirstRoundEnabled(function(){});
     }
 
     player.removeInvitation(game.gameId);

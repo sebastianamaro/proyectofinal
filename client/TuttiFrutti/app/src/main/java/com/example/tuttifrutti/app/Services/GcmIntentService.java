@@ -70,6 +70,13 @@ public class GcmIntentService extends IntentService {
                     intentActivity.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, roundClosedNotificationData.getGame_id());
                     sendBroadcast(intentActivity);
                     break;
+                case Constants.FIRST_ROUND_ENABLED:
+                    GameNotificationData firstRoundEnabledData =
+                            new Gson().fromJson(dataJson, GameNotificationData.class);
+                    i =  new Intent(this, ShowRoundResultActivity.class);
+                    i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, new UserGame(firstRoundEnabledData.getGame_id()));
+                    this.showNotification(notificationData.getMessage_type(),"La partida ya está disponible para jugar", "Toca para ingresar a jugar", i);
+                    break;
             };
         }
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);

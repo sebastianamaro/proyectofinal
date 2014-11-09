@@ -48,7 +48,8 @@ Notification.prototype.getMessagesTypes= function (){
         INVITATION      : 1,
         ROUND_ENABLED  	: 2,
         ROUND_STARTED   : 3,
-        ROUND_CLOSED	: 4
+        ROUND_CLOSED	: 4,
+        FIRST_ROUND_ENABLED	: 5
       };
 }
 
