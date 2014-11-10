@@ -69,9 +69,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
                 game.endShowingResults(game);
-                if(round.roundId == game.roundsCount) {
-                   game.changeToStatusFinished();
-                } 
+                
               }, 1000*40);//40 seconds
         
       } else {
@@ -116,16 +114,29 @@ gameSchema.methods.changeToStatusShowingResults = function () {
 }
 gameSchema.methods.endShowingResults = function (game) {
   var round = game.getLastRound();
-  game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-  game.sendNotificationsRoundEnabled(function(){
-    game.save(function(err) {
-      if(err) {
-        console.log('ERROR: ' + err);
-      } else {
-        console.log('Sent notifications round enabled.');
-      }
+  if(round.roundId == game.roundsCount) {
+     game.changeToStatusFinished(game);
+     game.save(function(err) {
+        if(err) {
+          console.log('ERROR: ' + err);
+        } else {
+          console.log('Sent notifications round enabled.');
+        }
+      });
+  } 
+  else
+  {
+    game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+    game.sendNotificationsRoundEnabled(function(){
+      game.save(function(err) {
+        if(err) {
+          console.log('ERROR: ' + err);
+        } else {
+          console.log('Sent notifications round enabled.');
+        }
+      });
     });
-  });
+  }
 }
 gameSchema.methods.sendNotificationsRoundStarted = function (playerStarted,callback) {
  for (var i = this.players.length - 1; i >= 0; i--) {
