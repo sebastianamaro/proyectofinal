@@ -45,8 +45,15 @@ public class ShowGameResultActivity extends ActionBarActivity {
         setTitle("");
         dialog=new ProgressDialog(this);
         Intent intent = getIntent();
-        //UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
-        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        int gameId;
+        if(intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE) != null)
+        {
+            UserGame game=(UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
+            gameId=game.getGameId();
+        }
+        else
+         gameId=intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        
         new GetScoresAsyncTask(gameId).execute();
     }
 

@@ -108,7 +108,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
 }
 
 gameSchema.methods.changeToStatusFinished = function (game) {
-  game.status = this.getStatus().FINISHED;
+  game.status = game.getStatus().FINISHED;
 }
 
 gameSchema.methods.changeToStatusShowingResults = function () {
