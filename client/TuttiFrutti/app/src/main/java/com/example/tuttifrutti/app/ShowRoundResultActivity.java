@@ -39,13 +39,14 @@ import java.util.ArrayList;
 public class ShowRoundResultActivity extends ActionBarActivity {
     int gameId;
     int roundId;
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setTitle("");
         setContentView(R.layout.activity_show_round_result);
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
         if (intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE) != null) {
             UserGame userGame = ((UserGame) intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE));
@@ -67,15 +68,26 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
         if (roundId == -1) {
             Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-            startActivity(intent);
+            MoveToAnotherActivity(intent);
         }
         super.onBackPressed();
     }
 
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
+    }
+
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, PlayerRoundScoreSummary> {
-        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
         TuttiFruttiAPI api;
         boolean connError;
 
@@ -97,7 +109,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(PlayerRoundScoreSummary result) {
             if (this.connError) {
-                Dialog.dismiss();
+
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             } else {
 
@@ -159,14 +171,18 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 if (result.getIsComplete())
                     table.addView(totalScoreRow);
 
-                Dialog.dismiss();
             }
+            dialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
-            Dialog.setMessage("Calculando resultados...");
-            Dialog.show();
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Calculando resultados...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
@@ -335,7 +351,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         Intent intent = new Intent(getApplicationContext(), PlayRoundActivity.class);
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameId);
 
-        startActivity(intent);
+        MoveToAnotherActivity(intent);
     }
 
     public void seeGameResults(View v)
@@ -343,7 +359,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         Intent intent = new Intent(getApplicationContext(), ShowGameResultActivity.class);
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameId);
 
-        startActivity(intent);
+        MoveToAnotherActivity(intent);
     }
 
     public class SetQualificationAsyncTask extends AsyncTask<Void, Void, Void>
@@ -356,7 +372,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         View imgNo;
         boolean connError;
 
-        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
 
         public SetQualificationAsyncTask(boolean isValid, String category, String judgedPlayer, View imgYes, View imgNo)
         {
@@ -368,8 +383,12 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
-            Dialog.setMessage("Enviando calificación...");
-            Dialog.show();
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Enviando calificación...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -389,13 +408,13 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         protected void onPostExecute(Void result) {
             if (this.connError)
             {
-                Dialog.dismiss();
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }else {
                 this.imgYes.setVisibility(View.GONE);
                 this.imgNo.setVisibility(View.GONE);
-                Dialog.dismiss();
+
             }
+            dialog.dismiss();
         }
     }
 
@@ -407,7 +426,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         View imgReport;
         boolean connError;
 
-        private ProgressDialog Dialog = new ProgressDialog(ShowRoundResultActivity.this);
 
         public ReportWordAsValidAsyncTask(String category, String word, View imgReport)
         {
@@ -417,8 +435,12 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
-            Dialog.setMessage("Enviando reporte...");
-            Dialog.show();
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Enviando reporte...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
@@ -438,12 +460,12 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         protected void onPostExecute(Void result) {
             if (this.connError)
             {
-                Dialog.dismiss();
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }else {
                 this.imgReport.setVisibility(View.GONE);
-                Dialog.dismiss();
+
             }
+            dialog.dismiss();
         }
     }
 

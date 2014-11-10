@@ -46,6 +46,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
     FullGame game;
     ListView detailsList;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         setTitle("");
         setContentView(R.layout.activity_show_game_details);
-
+        dialog=new ProgressDialog(this);
         Intent i = getIntent();
         game = (FullGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
@@ -79,7 +80,15 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         new GetGameAsyncTask().execute(game);
     }
 
-    public static boolean isPlayableGame(FullGame game){
+    @Override
+    public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        super.onBackPressed();
+    }
+
+    public static boolean isPlayableGame(Game game){
        return game instanceof UserGame;
     }
 
@@ -89,15 +98,17 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         // aca en algun lado deberia saber el ID de la partida
         intent.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, game.getGameId());
 
-        startActivity(intent);
+        MoveToAnotherActivity(intent);
     }
+
+
 
     public class GetGameAsyncTask extends AsyncTask<FullGame,Void, Game>
     {
         TuttiFruttiAPI api;
         FullGame gameInfo;
         boolean connError;
-        private ProgressDialog Dialog = new ProgressDialog(ShowGameDetailsActivity.this);
+
 
         @Override
         protected Game doInBackground(FullGame... userGame) {
@@ -115,8 +126,12 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
-            Dialog.setMessage("Obteniendo detalles...");
-            Dialog.show();
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Obteniendo detalles...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -139,10 +154,20 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
                             players.add(new SummarizedPlayer(p, false));
                     }
 
+                if(isPlayableGame(result))
+                {
+                    Button b = (Button)findViewById(R.id.btnPlay);
+                    //no pregunto si ya jugo, porque si ya jugo no va a estar en esta pantalla
+                    if (((UserGame)result).getStatusCode() == Constants.GAME_STATUS_CODE_NOT_STARTED)
+                        b.setEnabled(false);
+                    else
+                        b.setEnabled(true);
+                }
+
                 GameDetailsAdapter gda = new GameDetailsAdapter(getApplicationContext(), players, result);
                 detailsList.setAdapter(gda);
-                Dialog.dismiss();
             }
+            dialog.dismiss();
         }
     }
 
@@ -182,6 +207,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             * MODE
             * OPPONENTS
             * CATEGORIES TYPE
+            * ROUNDS COUNT
             * RANDOM PLAYERS COUNT?
             *
             * */
@@ -191,6 +217,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             this.details.add("Modo:         |"  +game.getMode().substring(0, 1).toUpperCase() + game.getMode().substring(1).toLowerCase());
             this.details.add("Oponentes:|" +game.getSpanishOpponentsType());
             this.details.add("Categorías:|"+game.getSpanishCategoriesType());
+            this.details.add("Cant. Rondas:|"+game.getRoundsCount());
 
             if (!game.getOpponentsType().equals("FRIENDS"))
             {
@@ -214,7 +241,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             if (showsPlayers)
             {
-                playersSeparatorIndex=6;
+                playersSeparatorIndex=7;
                 if(showsRandomPlayersCount)
                     playersSeparatorIndex++;
 
@@ -226,7 +253,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
             }
             else {
-                this.categoriesSeparatorIndex = 6; // Solo el header de invitaciones
+                this.categoriesSeparatorIndex = 7; // Solo el header de invitaciones
                 if(showsRandomPlayersCount)
                     categoriesSeparatorIndex++;
 
@@ -543,6 +570,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     {
         TuttiFruttiAPI api;
         boolean connError;
+
         @Override
         protected Void doInBackground(String... response) {
             String fbId= FacebookHelper.getUserId();
@@ -562,19 +590,33 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Enviando respuesta...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
 
         @Override
         protected void onPostExecute(Void result) {
+            dialog.dismiss();
             if (this.connError)
             {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }else {
                 Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-                startActivity(intent);
+                MoveToAnotherActivity(intent);
             }
         }
+    }
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
     }
 }
 

@@ -68,20 +68,23 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
       if (game.mode ==  game.getModes().ONLINE){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
-              game.endShowingResults(game);
+                game.endShowingResults(game);
+                
               }, 1000*40);//40 seconds
         
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+        if(round.roundId == game.roundsCount) {
+            game.changeToStatusFinished(game);
+        } 
       }
 
-      if(round.roundId == this.roundsCount) {
-          this.changeToStatusFinished();
-      } 
+      console.log('round.roundId == this.roundsCount' + round.roundId + this.roundsCount);
 
       game.save(function(err) {
                 if(!err) {
                   console.log('Finished round');
+                  console.log('game status:'+ game.status);
                 } else {
                   console.log('ERROR: ' + err);
                 }
@@ -102,8 +105,8 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
   }
 }
 
-gameSchema.methods.changeToStatusFinished = function () {
-  this.status = this.getStatus().FINISHED;
+gameSchema.methods.changeToStatusFinished = function (game) {
+  game.status = game.getStatus().FINISHED;
 }
 
 gameSchema.methods.changeToStatusShowingResults = function () {
@@ -111,16 +114,29 @@ gameSchema.methods.changeToStatusShowingResults = function () {
 }
 gameSchema.methods.endShowingResults = function (game) {
   var round = game.getLastRound();
-  game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-  game.sendNotificationsRoundEnabled(function(){
-    game.save(function(err) {
-      if(err) {
-        console.log('ERROR: ' + err);
-      } else {
-        console.log('Sent notifications round enabled.');
-      }
+  if(round.roundId == game.roundsCount) {
+     game.changeToStatusFinished(game);
+     game.save(function(err) {
+        if(err) {
+          console.log('ERROR: ' + err);
+        } else {
+          console.log('Sent notifications round enabled.');
+        }
+      });
+  } 
+  else
+  {
+    game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+    game.sendNotificationsRoundEnabled(function(){
+      game.save(function(err) {
+        if(err) {
+          console.log('ERROR: ' + err);
+        } else {
+          console.log('Sent notifications round enabled.');
+        }
+      });
     });
-  });
+  }
 }
 gameSchema.methods.sendNotificationsRoundStarted = function (playerStarted,callback) {
  for (var i = this.players.length - 1; i >= 0; i--) {

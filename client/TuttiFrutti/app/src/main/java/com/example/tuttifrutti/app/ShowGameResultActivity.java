@@ -37,21 +37,36 @@ import org.springframework.web.client.ResourceAccessException;
 import java.util.ArrayList;
 
 public class ShowGameResultActivity extends ActionBarActivity {
-
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_game_result);
         setTitle("");
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
-        //UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
-        int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        int gameId;
+        if(intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE) != null)
+        {
+            UserGame game=(UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
+            gameId=game.getGameId();
+        }
+        else
+         gameId=intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
+        
         new GetScoresAsyncTask(gameId).execute();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        super.onBackPressed();
+    }
+
     public class GetScoresAsyncTask extends AsyncTask<Void,Void, GameScoreSummary> {
-        private ProgressDialog Dialog = new ProgressDialog(ShowGameResultActivity.this);
+
         TuttiFruttiAPI api;
         int gameId;
         boolean connError;
@@ -116,14 +131,18 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 // la ultima fila que agrego es la de los puntajes
                 table.addView(totalScoreRow);
 
-                Dialog.dismiss();
             }
+            dialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
-            Dialog.setMessage("Calculando resultados...");
-            Dialog.show();
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Calculando resultados...");
+            dialog.setCancelable(false);
+            dialog.show();
             api=new TuttiFruttiAPI(getString(R.string.server_url));
         }
     }
@@ -176,7 +195,7 @@ public class ShowGameResultActivity extends ActionBarActivity {
                 i.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, fGameId);
                 i.putExtra(Constants.ROUND_ID_EXTRA_MESSAGE, froundId);
 
-                startActivity(i);
+                 MoveToAnotherActivity(i);
             }
         });
 
@@ -189,6 +208,14 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
         row.addView(rl);
         //row.addView(b);
+    }
+
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
     }
 
     private void AddContentTextView(TableRow row, ScoreInfo p) {

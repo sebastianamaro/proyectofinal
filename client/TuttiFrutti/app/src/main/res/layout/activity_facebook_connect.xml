@@ -5,13 +5,37 @@
     tools:context=".AndroidFacebookConnectActivity"
 
     android:background="@drawable/background">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/welcomeLbl"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/title_container"
+        android:padding="13dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="60dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bienvenido a Tutti Frutti!"
+
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:id="@+id/lblModo"
+            android:layout_marginBottom="3dp"/>
+    </RelativeLayout>
+
         <com.facebook.widget.LoginButton
             android:id="@+id/authButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="45dp" />
+            android:layout_centerVertical="true"
+            android:layout_marginTop="60dp" />
 </RelativeLayout>
 

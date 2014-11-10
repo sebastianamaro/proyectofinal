@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     CategoryAdapter adapter;
     TuttiFruttiAutoCompleteTextView textView;
     Button addCategoryButton;
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +58,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         setContentView(R.layout.activity_view_categories);
         setTitle("");
         categoriesList = (ListView) findViewById(R.id.categoriesList);
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
@@ -123,6 +125,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         });
 
         new GetCategoriesAsyncTask().execute();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        super.onBackPressed();
     }
 
     public void finish(View view) {
@@ -215,12 +225,20 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(getApplicationContext(), ViewGameStatusActivity.class);
-                    startActivity(intent);
+                    MoveToAnotherActivity(intent);
                 }
             });
             ad.show();
 
         }
+    }
+
+
+    public void MoveToAnotherActivity(Intent intent){
+        if(dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
+        startActivity(intent);
     }
 
         public class GetCategoriesAsyncTask extends AsyncTask<Void, Void, ArrayList<Category>>{
@@ -253,7 +271,15 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         }
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Obteniendo categorías...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -309,6 +335,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if (recentlyCreatedCategory != null)
                     textView.addObject(recentlyCreatedCategory);
             }
+            dialog.dismiss();
         }
     }
 
