@@ -69,15 +69,15 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
                 game.endShowingResults(game);
-                if(round.roundId == this.roundsCount) {
-                   this.changeToStatusFinished();
+                if(round.roundId == game.roundsCount) {
+                   game.changeToStatusFinished();
                 } 
               }, 1000*40);//40 seconds
         
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
-        if(round.roundId == this.roundsCount) {
-            this.changeToStatusFinished();
+        if(round.roundId == game.roundsCount) {
+            game.changeToStatusFinished(game);
         } 
       }
 
@@ -107,8 +107,8 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
   }
 }
 
-gameSchema.methods.changeToStatusFinished = function () {
-  this.status = this.getStatus().FINISHED;
+gameSchema.methods.changeToStatusFinished = function (game) {
+  game.status = this.getStatus().FINISHED;
 }
 
 gameSchema.methods.changeToStatusShowingResults = function () {
