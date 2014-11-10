@@ -68,17 +68,20 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
       if (game.mode ==  game.getModes().ONLINE){
           game.status = game.getStatus().SHOWING_RESULTS;
           setTimeout(function() {
-              game.endShowingResults(game);
+                game.endShowingResults(game);
+                if(round.roundId == this.roundsCount) {
+                   this.changeToStatusFinished();
+                } 
               }, 1000*40);//40 seconds
         
       } else {
         game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;
+        if(round.roundId == this.roundsCount) {
+            this.changeToStatusFinished();
+        } 
       }
 
       console.log('round.roundId == this.roundsCount' + round.roundId + this.roundsCount);
-      if(round.roundId == this.roundsCount) {
-          this.changeToStatusFinished();
-      } 
 
       game.save(function(err) {
                 if(!err) {

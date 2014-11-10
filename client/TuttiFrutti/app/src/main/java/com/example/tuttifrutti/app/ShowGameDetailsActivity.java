@@ -46,7 +46,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
     private ArrayList<Bitmap> profilePics;
     FullGame game;
     ListView detailsList;
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         setTitle("");
         setContentView(R.layout.activity_show_game_details);
-
+        dialog=new ProgressDialog(this);
         Intent i = getIntent();
         game = (FullGame)i.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
 
@@ -126,6 +126,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Obteniendo detalles...");
             dialog.setCancelable(false);
             dialog.show();
@@ -587,6 +590,9 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Enviando respuesta...");
             dialog.setCancelable(false);
             dialog.show();

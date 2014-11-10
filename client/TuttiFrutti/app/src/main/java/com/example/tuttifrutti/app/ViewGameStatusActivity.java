@@ -42,7 +42,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
     private PullToRefreshListView mPullToRefreshLayout;
     String fbId;
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
     @Override
     public void onResume (){
         super.onResume();
@@ -56,7 +56,7 @@ public class ViewGameStatusActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        dialog=new ProgressDialog(this);
         setTitle("");
         setContentView(R.layout.activity_view_game_status);
 
@@ -137,6 +137,9 @@ public class ViewGameStatusActivity extends ListActivity {
             this.showSpinner=showSpiner;
             if(showSpiner)
             {
+                if(dialog.isShowing())
+                    dialog.dismiss();
+
                 dialog.setMessage("Obteniendo partidas...");
                 dialog.setCancelable(false);
                 dialog.show();
@@ -218,7 +221,7 @@ public class ViewGameStatusActivity extends ListActivity {
 
             }
 
-            if(showSpinner)
+            if(dialog.isShowing())
                 dialog.dismiss();
         }
 

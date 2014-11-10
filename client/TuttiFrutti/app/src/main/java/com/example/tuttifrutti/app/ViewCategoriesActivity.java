@@ -50,7 +50,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
     CategoryAdapter adapter;
     TuttiFruttiAutoCompleteTextView textView;
     Button addCategoryButton;
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +58,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         setContentView(R.layout.activity_view_categories);
         setTitle("");
         categoriesList = (ListView) findViewById(R.id.categoriesList);
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
         gameSettings = (Game)intent.getSerializableExtra(Constants.GAME_SETTINGS_EXTRA_MESSAGE);
 
@@ -273,6 +273,10 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Obteniendo categorías...");
             dialog.setCancelable(false);
             dialog.show();

@@ -37,13 +37,13 @@ import org.springframework.web.client.ResourceAccessException;
 import java.util.ArrayList;
 
 public class ShowGameResultActivity extends ActionBarActivity {
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_game_result);
         setTitle("");
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
         //UserGame game = (UserGame)intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE);
         int gameId = intent.getIntExtra(Constants.GAME_ID_EXTRA_MESSAGE, -1);
@@ -130,6 +130,9 @@ public class ShowGameResultActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Calculando resultados...");
             dialog.setCancelable(false);
             dialog.show();

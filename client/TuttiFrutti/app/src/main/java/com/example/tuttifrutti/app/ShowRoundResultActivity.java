@@ -39,14 +39,14 @@ import java.util.ArrayList;
 public class ShowRoundResultActivity extends ActionBarActivity {
     int gameId;
     int roundId;
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setTitle("");
         setContentView(R.layout.activity_show_round_result);
-
+        dialog=new ProgressDialog(this);
         Intent intent = getIntent();
         if (intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE) != null) {
             UserGame userGame = ((UserGame) intent.getSerializableExtra(Constants.GAME_INFO_EXTRA_MESSAGE));
@@ -177,6 +177,9 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Calculando resultados...");
             dialog.setCancelable(false);
             dialog.show();
@@ -380,6 +383,9 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Enviando calificación...");
             dialog.setCancelable(false);
             dialog.show();
@@ -429,6 +435,9 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         }
 
         protected void onPreExecute(){
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Enviando reporte...");
             dialog.setCancelable(false);
             dialog.show();

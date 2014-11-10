@@ -55,12 +55,12 @@ public class PlayRoundActivity extends FragmentActivity implements
     private String fileName;
     private FullRound currentRound;
     private CountDownTimer timer;
-    ProgressDialog dialog=new ProgressDialog(this);
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        dialog=new ProgressDialog(this);
         setContentView(R.layout.activity_play_round);
 
         Intent intent = getIntent();
@@ -353,6 +353,9 @@ public class PlayRoundActivity extends FragmentActivity implements
         protected void onPreExecute(){
 
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            if(dialog.isShowing())
+                dialog.dismiss();
+
             dialog.setMessage("Iniciando ronda...");
             dialog.setCancelable(false);
             dialog.show();
