@@ -139,7 +139,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         if(selectedCategories.size()>=4)
         {
             gameSettings.setSelectedCategories(selectedCategories);
-            gameSettings.setOwner(new Player(FacebookHelper.getUserId()));
+            gameSettings.setOwner(new Player(FacebookHelper.getUserId(getApplicationContext())));
             new CreateGameFreeCategoriesAsyncTask(getString(R.string.server_url), this).execute(gameSettings);
         }
         else
@@ -261,7 +261,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 if (gameSettings.getCategoriesType().equals("FIXED"))
                     categories = api.getFixedCategories();
                 else
-                    categories = api.getCategoriesForPlayer(FacebookHelper.getUserId());
+                    categories = api.getCategoriesForPlayer(FacebookHelper.getUserId(getApplicationContext()));
                 return categories;
             }catch (ResourceAccessException ex)
             {
@@ -670,7 +670,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
             @Override
             protected Category doInBackground(Category... categoryId) {
                 try {
-                api.starCategory(FacebookHelper.getUserId(),categoryId[0].getId());
+                api.starCategory(FacebookHelper.getUserId(getApplicationContext()),categoryId[0].getId());
                 return categoryId[0];
                 }catch (ResourceAccessException ex)
                 {

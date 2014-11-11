@@ -141,7 +141,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
             } else {
 
                 ArrayList<SummarizedPlayer> players = new ArrayList<SummarizedPlayer>();
-                String myId = FacebookHelper.getUserId();
+                String myId = FacebookHelper.getUserId(getApplicationContext());
                 for (Player p : result.getPlayers()) {
                     String playerFbId = p.getFbId();
                     if (!playerFbId.equals(myId))
@@ -150,8 +150,11 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
                 if (result.getOpponentsType().equals("FRIENDS"))
                     for (Player p : result.getSelectedFriends()) {
-                        if (!result.getPlayers().contains(p))
-                            players.add(new SummarizedPlayer(p, false));
+                        if (!result.getPlayers().contains(p)) {
+                            String playerFbId = p.getFbId();
+                            if (!playerFbId.equals(myId))
+                                players.add(new SummarizedPlayer(p, false));
+                        }
                     }
 
                 if(isPlayableGame(result))
@@ -573,7 +576,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... response) {
-            String fbId= FacebookHelper.getUserId();
+            String fbId= FacebookHelper.getUserId(getApplicationContext());
 
             Player me = new Player();
             me.setFbId(fbId);
