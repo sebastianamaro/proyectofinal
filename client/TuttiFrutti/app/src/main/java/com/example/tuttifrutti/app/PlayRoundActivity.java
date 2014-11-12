@@ -289,7 +289,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected FullRound doInBackground(Integer... integers) {
             try {
-                String fbId = FacebookHelper.getUserId();
+                String fbId = FacebookHelper.getUserId(getApplicationContext());
                 api.startRound(integers[0], fbId);
                 return api.getCurrentRoundInformation(integers[0]);
             }catch (ResourceAccessException ex)
@@ -369,7 +369,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         @Override
         protected Void doInBackground(FinishedRound... finishedRounds) {
             String regid = new PlayServicesHelper(ViewGameStatusActivity.class.getSimpleName()).getRegistrationId(getApplicationContext());
-            String fbId=FacebookHelper.getUserId();
+            String fbId=FacebookHelper.getUserId(getApplicationContext());
             try {
                 api.finishRound(finishedRounds[0].getGameId(), finishedRounds[0].getRoundId(), fbId, regid, finishedRounds[0].getStartTime(), finishedRounds[0].getFinishTime(), finishedRounds[0].getPlays());
             }catch (ResourceAccessException ex)
@@ -459,7 +459,7 @@ public class PlayRoundActivity extends FragmentActivity implements
            if (validateAllCategoriesPresent) {
                int i = 0;
                while (complete && i < currentRound.getCategories().length) {
-                   if (currentFilePlay.CategoriesValues[i] == null || currentFilePlay.CategoriesValues[i] == "")
+                   if (currentFilePlay.CategoriesValues[i] == null || currentFilePlay.CategoriesValues[i].isEmpty())
                        complete = false;
                    else if (Character.toLowerCase(currentFilePlay.CategoriesValues[i].charAt(0)) != Character.toLowerCase(currentRound.getLetter().charAt(0)))
                        allStartWithRoundLetter = false;

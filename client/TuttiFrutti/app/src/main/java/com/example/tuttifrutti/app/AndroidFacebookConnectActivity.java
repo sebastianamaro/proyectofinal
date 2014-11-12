@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.TuttiFruttiCore.Player;
+import com.example.tuttifrutti.app.Classes.FacebookHelper;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -42,17 +43,17 @@ public class AndroidFacebookConnectActivity extends Activity {
                             @Override
                             public void onCompleted(GraphUser user, Response response) {
                                 if (user != null) {
-
                                     PlayServicesHelper helper = new PlayServicesHelper(AndroidFacebookConnectActivity.class.getSimpleName());
                                     regid = helper.getRegistrationId(getApplicationContext());
 
                                     if (regid != null && !regid.isEmpty()) {
-
                                         Player newPlayer = new Player();
                                         newPlayer.setEmail(user.asMap().get("email").toString());
                                         newPlayer.setName(user.getName());
                                         newPlayer.setFbId(user.getId());
                                         newPlayer.setRegistrationId(regid);
+
+                                        FacebookHelper.storeFbId(getApplicationContext(), user.getId());
 
                                         TuttiFruttiAPI api = new TuttiFruttiAPI(getString(R.string.server_url));
                                         api.AddPlayer(newPlayer);
@@ -83,7 +84,7 @@ public class AndroidFacebookConnectActivity extends Activity {
         if (helper.checkPlayServices(AndroidFacebookConnectActivity.this))
         {
             regid = helper.getRegistrationId(getApplicationContext());
-            if (regid == "")
+            if (regid.isEmpty())
                 helper.registerGCMInBackground(getApplicationContext());
         }
 

@@ -93,7 +93,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
 
         @Override
         protected PlayerRoundScoreSummary doInBackground(Void... filePlays) {
-            String fbId = FacebookHelper.getUserId();
+            String fbId = FacebookHelper.getUserId(getApplicationContext());
             try{
                 if (roundId == -1)
                     return api.getRoundScore(gameId, fbId);
@@ -117,9 +117,28 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
                 //caso2: NO jugue la ronda actual ->  boton ESTA ronda
                 Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
-                if (!result.getCanPlayerPlay())
+                if (!result.getCanPlayerPlay()) {
                     btnJugar.setEnabled(false);
-
+                    if (!result.getGameStatus().isEmpty())
+                    {
+                        TextView lblStatus = (TextView) findViewById(R.id.lblStatus);
+                        if(result.getGameStatus().equals(Constants.GAME_STATUS_WAITINGFORQUALIF))
+                        {
+                            lblStatus.setText("Esperando todas las calificaciones");
+                        }else if(result.getGameStatus().equals(Constants.GAME_STATUS_SHOWINGRESULTS))
+                        {
+                            lblStatus.setText("Esperando a que todos vean los resultados");
+                        }
+                        else if(result.getGameStatus().equals(Constants.GAME_STATUS_PLAYING))
+                        {
+                            lblStatus.setText("Esperando a que todos jueguen");
+                        }
+                        else if(result.getGameStatus().equals(Constants.GAME_STATUS_WAITINGFORNEXTROUND))
+                        {
+                            lblStatus.setText("Esperando a que se inice la próxima ronda. Tocá jugar para empezarla!");
+                        }
+                    }
+                }
                 if (result.getRoundNumber() == 1 && !result.getIsComplete()) {
                     Button btnGameResults = (Button) findViewById(R.id.btnSeeGameResults);
                     btnGameResults.setVisibility(View.GONE);
@@ -223,7 +242,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         LinearLayout layout = new LinearLayout(this.getApplicationContext());
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundResource(R.drawable.cell_shape);
-        String myFbId = FacebookHelper.getUserId();
+        String myFbId = FacebookHelper.getUserId(getApplicationContext());
 
         TextView text=new TextView(getApplicationContext());
         if (playScoreSummary.getWord().isEmpty()) {
@@ -396,7 +415,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
         protected Void doInBackground(Void... smth) {
             try
             {
-                api.sendQualification(FacebookHelper.getUserId(), this.isValid, this.category, this.judgedPlayer, gameId);
+                api.sendQualification(FacebookHelper.getUserId(getApplicationContext()), this.isValid, this.category, this.judgedPlayer, gameId);
             }catch (ResourceAccessException ex)
             {
                 this.connError = true;

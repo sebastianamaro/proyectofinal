@@ -153,7 +153,8 @@ public class ViewGameStatusActivity extends ListActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... filePlays) {            fbId = FacebookHelper.getUserId();
+        protected Void doInBackground(Void... filePlays) {
+            fbId = FacebookHelper.getUserId(getApplicationContext());
             try {
                 games = api.getGames(fbId);
                 invitations = api.getPendingInvitations(fbId);
@@ -589,7 +590,7 @@ public class ViewGameStatusActivity extends ListActivity {
                 @Override
                 protected Void doInBackground(UserGame... userGames) {
                     ug = userGames[0];
-                    fbId = FacebookHelper.getUserId();
+                    fbId = FacebookHelper.getUserId(getApplicationContext());
                     try{
                         api.deleteFinishedGame(fbId, ug.getGameId());
                     }catch (ResourceAccessException ex)
