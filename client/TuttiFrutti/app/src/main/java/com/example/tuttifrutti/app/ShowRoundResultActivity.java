@@ -117,7 +117,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
                 //caso2: NO jugue la ronda actual ->  boton ESTA ronda
                 Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
-                if (!result.getCanPlayerPlay()) {
+                if (!result.getCanPlayerPlay() && roundId == -1) {
                     btnJugar.setEnabled(false);
                     if (!result.getGameStatus().isEmpty())
                     {
