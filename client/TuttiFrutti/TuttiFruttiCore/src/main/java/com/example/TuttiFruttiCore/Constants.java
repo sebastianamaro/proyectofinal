@@ -38,11 +38,10 @@ public class Constants {
     public final static int ROUND_ENABLED = 2;
     public final static int ROUND_STARTED = 3;
     public final static int ROUND_CLOSED = 4;
+    public final static int FIRST_ROUND_ENABLED = 5;
 
     public final static String GAME_STATUS_WAITINGFORQUALIF = "WAITINGFORQUALIFICATIONS";
     public final static String GAME_STATUS_SHOWINGRESULTS = "SHOWINGRESULTS";
     public final static String GAME_STATUS_PLAYING = "PLAYING";
     public final static String GAME_STATUS_WAITINGFORNEXTROUND = "WAITINGFORNEXTROUND";
-
-
 }
