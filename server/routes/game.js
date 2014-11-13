@@ -107,12 +107,13 @@ module.exports = function(app) {
             if (!foundPlayer) return res.send('Player not found', 404);
           
           game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
+            console.log('ENTRE AL CALLBACK!');
             currentRound.addLine(reqRound.line, foundPlayer);
             currentRound.finishIfAllPlayersFinished(game);
             game.moveToNextStatusIfPossible(currentRound, function(){
               game.save(function(err) {
                 if(!err) {
-                  console.log('Finished round');
+                  console.log('Finished round and saving game');
                 } else {
                   console.log('ERROR: ' + err);
                 }
