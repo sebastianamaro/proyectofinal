@@ -307,17 +307,18 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       var player = this.players[i];
       console.log('player.fbId: '+ player.fbId);
       console.log('fbIdStopPlayer '+ fbIdStopPlayer);
-      console.log('round.notifications: '+ round.notifications);
       if (player.fbId == fbIdStopPlayer){
         //Wont send notification to stop player
         continue;
       }
       if (round.hasSentNotificationToPlayer(player.fbId)) {
         //Wont send notification to a player that has already been notified 
+      console.log('Ya le mande notification a: '+ player.fbId);
         continue;
       }
       if (round.hasPlayerSentHisLine(player.fbId)) {
         //Wont send notification to a player that has already sent line 
+        console.log('Ya me mando su line: '+ player.fbId);
         continue;
       }
       var gameId =this.gameId;
