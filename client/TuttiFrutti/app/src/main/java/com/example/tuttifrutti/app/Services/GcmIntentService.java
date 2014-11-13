@@ -1,6 +1,7 @@
 package com.example.tuttifrutti.app.Services;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -107,6 +108,9 @@ public class GcmIntentService extends IntentService {
                         .setContentText(message)
                         .setContentIntent(contIntent)
                         .setAutoCancel(true);
+
+        mBuilder.setLights(0xff00ff00,300,1000);
+        mBuilder.setPriority(Notification.PRIORITY_DEFAULT);
         mNotificationManager.notify(id, mBuilder.build());
 
     }
