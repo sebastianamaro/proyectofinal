@@ -49,7 +49,8 @@ Notification.prototype.getMessagesTypes= function (){
         ROUND_ENABLED  	: 2,
         ROUND_STARTED   : 3,
         ROUND_CLOSED	: 4,
-        FIRST_ROUND_ENABLED	: 5
+        FIRST_ROUND_ENABLED	: 5,
+        GAME_FINISHED	: 6
       };
 }
 

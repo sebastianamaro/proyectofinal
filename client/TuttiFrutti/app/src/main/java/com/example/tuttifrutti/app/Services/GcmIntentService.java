@@ -17,6 +17,7 @@ import com.example.tuttifrutti.app.Classes.GameNotificationData;
 import com.example.tuttifrutti.app.Classes.GenericNotificationData;
 import com.example.tuttifrutti.app.PlayRoundActivity;
 import com.example.tuttifrutti.app.ShowGameDetailsActivity;
+import com.example.tuttifrutti.app.ShowGameResultActivity;
 import com.example.tuttifrutti.app.ShowRoundResultActivity;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
@@ -73,10 +74,19 @@ public class GcmIntentService extends IntentService {
                 case Constants.FIRST_ROUND_ENABLED:
                     GameNotificationData firstRoundEnabledData =
                             new Gson().fromJson(dataJson, GameNotificationData.class);
-                    i =  new Intent(this, ShowRoundResultActivity.class);
+                    i =  new Intent(this, ShowGameDetailsActivity.class);
                     i.putExtra(Constants.GAME_INFO_EXTRA_MESSAGE, new UserGame(firstRoundEnabledData.getGame_id()));
                     this.showNotification(notificationData.getMessage_type(),"La partida ya está disponible para jugar", "Toca para ingresar a jugar", i);
                     break;
+                case Constants.GAME_FINISHED:
+                    GameNotificationData gameFinishedData =
+                            new Gson().fromJson(dataJson, GameNotificationData.class);
+                    i =  new Intent(this, ShowGameResultActivity.class);
+                    i.putExtra(Constants.GAME_ID_EXTRA_MESSAGE, gameFinishedData.getGame_id());
+                    this.showNotification(notificationData.getMessage_type(),"La partida ha finalizado", "Toca para ver los resultados", i);
+                    break;
+
+
             };
         }
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);

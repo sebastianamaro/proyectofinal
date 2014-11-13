@@ -193,7 +193,7 @@ public class ShowGameDetailsActivity extends ActionBarActivity {
         private static final int ITEM_VIEW_TYPE_COUNT = 7;
         private static final String detailsText = "Detalles";
         private static final String playersText = "Jugadores";
-        private static final String categoriesText = "Categorias";
+        private static final String categoriesText = "Categorías";
         boolean showsPlayers;
         boolean showsRandomPlayersCount;
         Game game;
