@@ -316,6 +316,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
   if (this.mode == this.getModes().ONLINE)
   {
       console.log('round: '+ round.lines);
+      var thisGame=this;
       Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
@@ -327,8 +328,8 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
         }
         else {
 
-            for (var i = this.players.length - 1; i >= 0; i--) {
-              var player = this.players[i];
+            for (var i = thisGame.players.length - 1; i >= 0; i--) {
+              var player = thisGame.players[i];
               console.log('player.fbId: '+ player.fbId);
               console.log('fbIdStopPlayer '+ fbIdStopPlayer);
               if (player.fbId == fbIdStopPlayer){
@@ -346,7 +347,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
                 console.log('Ya me mando su line: '+ player.fbId);
                 continue;
               }
-              var gameId =this.gameId;
+              var gameId =thisGame.gameId;
               var notification = new Notification();
               notification.setRegistrationId(player.registrationId);
               notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
