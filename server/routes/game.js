@@ -112,7 +112,7 @@ module.exports = function(app) {
             game.moveToNextStatusIfPossible(currentRound, function(){
               game.save(function(err) {
                 if(!err) {
-                  console.log('Finished round and saving game');
+                  console.log('Finished round');
                 } else {
                   console.log('ERROR: ' + err);
                 }

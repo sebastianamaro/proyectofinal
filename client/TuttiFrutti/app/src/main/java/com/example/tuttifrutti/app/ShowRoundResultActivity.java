@@ -60,7 +60,6 @@ public class ShowRoundResultActivity extends ActionBarActivity {
             Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
             btnJugar.setVisibility(View.GONE);
             Button btnGameResults= (Button) findViewById(R.id.btnSeeGameResults);
-            btnGameResults.setVisibility(View.GONE);
         }
 
         new GetScoresAsyncTask().execute();
@@ -160,7 +159,7 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 TableRow totalScoreRow = new TableRow(getApplicationContext());
                 TableRow playersRow = new TableRow(getApplicationContext());
 
-                AddHeaderTextView(playersRow, "Categorias");
+                AddHeaderTextView(playersRow, "Categorías");
                 AddTotalTextView(totalScoreRow, null);
 
                 for (int i = 0; i < categories.length; i++) {

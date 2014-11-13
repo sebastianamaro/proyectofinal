@@ -70,10 +70,9 @@
             android:name=".ChooseRandomPlayersCountActivity"
             android:label="@string/title_activity_choose_random_players_count"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
-            android:screenOrientation = "portrait"
-            >
+            android:screenOrientation = "portrait">
         </activity>
-        <activity
+    <activity
             android:name=".ViewGameStatusActivity"
             android:label="@string/title_activity_view_game_status"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
@@ -82,12 +81,6 @@
         <activity
             android:name=".ShowGameResultActivity"
             android:label="@string/title_activity_show_game_result"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
-            android:screenOrientation = "portrait">
-        </activity>
-        <activity
-            android:name=".ManageInvitationActivity"
-            android:label="@string/title_activity_manage_invitation"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
