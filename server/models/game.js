@@ -55,7 +55,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
   if (!round.isClosed()){
     game.save(function(err) {
                 if(!err) {
-                  console.log('Finished round');
+                  console.log('Finished round and moving to next status');
                 } else {
                   console.log('ERROR: ' + err);
                 }
@@ -85,7 +85,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
 
       game.save(function(err) {
                 if(!err) {
-                  console.log('Finished round');
+                  console.log('Finished round and is fully validated');
                   console.log('game status:'+ game.status);
                 } else {
                   console.log('ERROR: ' + err);
@@ -98,7 +98,7 @@ gameSchema.methods.moveToNextStatusIfPossible = function (round, callback){
     this.status = this.getStatus().WAITING_FOR_QUALIFICATIONS;
     game.save(function(err) {
             if(!err) {
-              console.log('Finished round');
+              console.log('Finished round and is waiting for qualifications');
             } else {
               console.log('ERROR: ' + err);
             }
