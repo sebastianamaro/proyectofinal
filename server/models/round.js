@@ -222,10 +222,9 @@ roundSchema.methods.addToScoresMap = function (scoresMap, play, iLine, iPlay){
   scoresMap[play.category][play.word].push({'iLine':iLine, 'iPlay':iPlay});
 }
 
-roundSchema.methods.setNotificationSentForPlayer = function (player, callback){
+roundSchema.methods.setNotificationSentForPlayer = function (player){
   console.log("Guardo notification al player "+player.name);
   this.notifications.push(player.fbId);
-  callback();
 }
 
 roundSchema.methods.hasSentNotificationToPlayer = function (fbId){

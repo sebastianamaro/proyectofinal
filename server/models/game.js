@@ -325,6 +325,9 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       var notification = new Notification();
       notification.setRegistrationId(player.registrationId);
       notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
+      console.log('setting notification sent for player: '+ player.fbId);
+      round.setNotificationSentForPlayer(player);
+      callback();
       Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
@@ -339,10 +342,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
           if (err){
             console.log("Error when sendNotifications");
             return callback("Error when sendNotifications");
-          } else {
-            console.log('entre a setNotificationSentForPlayer para el player: '+ player);
-            round.setNotificationSentForPlayer(player, callback);
-          }
+          } 
         });
     });
     }

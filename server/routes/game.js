@@ -84,7 +84,6 @@ module.exports = function(app) {
     });
   }
   finishRound = function(req, res) {
-    console.log('finishing round');
     var statusRequired = new Game().getStatus().WAITING_FOR_PLAYERS;
     Game.findOne({ 'gameId': req.params.id , status: { $ne: statusRequired }}, function (err, game){
       var reqRound = req.body;
