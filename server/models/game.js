@@ -321,6 +321,7 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       console.log('player.fbId: '+ player.fbId);
       console.log('fbIdStopPlayer '+ fbIdStopPlayer);
       if (player.fbId == fbIdStopPlayer){
+      console.log('Stop y current son iguales. '+ player.fbId);
         //Wont send notification to stop player
         continue;
       }
@@ -340,8 +341,15 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
       console.log('setting notification sent for player: '+ player.fbId);
       round.setNotificationSentForPlayer(player);
+      notification.setValues({'game_id': gameId, 'player': fbIdStopPlayer});
+        notification.send(function(err){
+          if (err){
+            console.log("Error when sendNotifications");
+            return callback("Error when sendNotifications");
+          } 
+        });
       callback();
-      Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
+      /*Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
           return callback("ERROR: find player failed. "+err);
@@ -349,14 +357,8 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
         if (!foundPlayer){
           console.log("ERROR: player not found");
           return callback("ERROR: player not found"); 
-        }
-        notification.setValues({'game_id': gameId, 'player': foundPlayer.getName()});
-        notification.send(function(err){
-          if (err){
-            console.log("Error when sendNotifications");
-            return callback("Error when sendNotifications");
-          } 
-        });
+        }*/
+        
     });
     }
   }
