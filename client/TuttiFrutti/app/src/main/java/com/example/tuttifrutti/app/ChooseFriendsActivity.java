@@ -45,6 +45,9 @@ public class ChooseFriendsActivity extends FragmentActivity {
 
         Bundle args = getIntent().getExtras();
 
+        Session session = Session.getActiveSession();
+        Log.e("Expiration date: ",session.getExpirationDate().toString());
+
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState == null) {

@@ -302,8 +302,12 @@ gameSchema.methods.addPlayer = function (player){
 gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPlayer, callback){
   if (this.mode == this.getModes().ONLINE)
   {
+    console.log('round: '+ round.lines);
     for (var i = this.players.length - 1; i >= 0; i--) {
       var player = this.players[i];
+      console.log('player.fbId: '+ player.fbId);
+      console.log('fbIdStopPlayer '+ fbIdStopPlayer);
+      console.log('round.notifications: '+ round.notifications);
       if (player.fbId == fbIdStopPlayer){
         //Wont send notification to stop player
         continue;
@@ -320,12 +324,6 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       var notification = new Notification();
       notification.setRegistrationId(player.registrationId);
       notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
-      round.setNotificationSentForPlayer(player, callback);
-      this.save(function(err) {
-                if(err) {
-                  console.log('ERROR: ' + err);
-                }
-              });
       Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
@@ -340,6 +338,9 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
           if (err){
             console.log("Error when sendNotifications");
             return callback("Error when sendNotifications");
+          } else {
+            console.log('entre a setNotificationSentForPlayer para el player: '+ player);
+            round.setNotificationSentForPlayer(player, callback);
           }
         });
     });

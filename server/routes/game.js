@@ -109,11 +109,9 @@ module.exports = function(app) {
           game.sendNotificationsRoundFinished(currentRound, reqRound.line.player.fbId, function(err){
             currentRound.addLine(reqRound.line, foundPlayer);
             currentRound.finishIfAllPlayersFinished(game);
-            console.log(currentRound.status+" is the round status");
             game.moveToNextStatusIfPossible(currentRound, function(){
               game.save(function(err) {
                 if(!err) {
-                  console.log('game.status '+ game.status);
                   console.log('Finished round');
                 } else {
                   console.log('ERROR: ' + err);
