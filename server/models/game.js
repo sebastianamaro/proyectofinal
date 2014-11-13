@@ -321,7 +321,11 @@ gameSchema.methods.sendNotificationsRoundFinished = function (round, fbIdStopPla
       notification.setRegistrationId(player.registrationId);
       notification.setMessageType(notification.getMessagesTypes().ROUND_CLOSED);
       round.setNotificationSentForPlayer(player, callback);
-      callback();
+      this.save(function(err) {
+                if(err) {
+                  console.log('ERROR: ' + err);
+                }
+              });
       Player.findOne({fbId: fbIdStopPlayer }, function (err, foundPlayer){
         if (err) {
           console.log("ERROR: find player failed. "+err);
