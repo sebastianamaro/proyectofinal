@@ -32,12 +32,12 @@ public class CreateGameActivity extends ActionBarActivity {
 
 
 
-        NumericWheelAdapter hourAdapter = new NumericWheelAdapter(this, 1, 27, "%02d");
+        NumericWheelAdapter hourAdapter = new NumericWheelAdapter(this, 1, 20, "%02d");
         hourAdapter.setItemResource(R.layout.wheel_text_centered);
         hourAdapter.setItemTextResource(R.id.text);
         hours.setViewAdapter(hourAdapter);
         hours.setVisibleItems(3);
-        hours.setCurrentItem(12);
+        hours.setCurrentItem(10);
     }
 
     @Override
