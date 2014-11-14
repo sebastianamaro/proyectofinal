@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
 import com.example.TuttiFruttiCore.Player;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -124,7 +124,7 @@ public class AndroidFacebookConnectActivity extends Activity {
     {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.example.tuttifrutti.app",
+                    "com.example.tuttifrutti.app2",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.tuttifrutti.app.ViewGameStatusActivity" >
+    tools:context="com.example.tuttifrutti.app2.ViewGameStatusActivity" >
     <item android:id="@+id/action_showRules"
         android:icon="@android:drawable/ic_menu_help"
         android:title="Reglas del Juego"

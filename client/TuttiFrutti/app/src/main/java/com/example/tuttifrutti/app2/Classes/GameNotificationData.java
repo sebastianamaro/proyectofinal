@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import java.io.Serializable;
 

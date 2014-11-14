@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tuttifrutti.app" >
+    package="com.example.tuttifrutti.app2" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,10 +14,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <permission
-        android:name="com.example.tuttifrutti.app.permission.C2D_MESSAGE"
+        android:name="com.example.tuttifrutti.app2.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.tuttifrutti.app.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.example.tuttifrutti.app2.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +25,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".PlayRoundActivity"
+            android:name="com.example.tuttifrutti.app2.PlayRoundActivity"
             android:label="@string/title_activity_play_round"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
@@ -34,14 +34,14 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".CreateGameActivity"
+            android:name="com.example.tuttifrutti.app2.CreateGameActivity"
             android:label="@string/title_activity_create_game"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
 
         <receiver
-            android:name=".BroadcastReceivers.GcmBroadcastReceiver"
+            android:name="com.example.tuttifrutti.app2.BroadcastReceivers.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -52,7 +52,7 @@
         </receiver>
 
         <service
-            android:name=".Services.GcmIntentService"
+            android:name="com.example.tuttifrutti.app2.Services.GcmIntentService"
             android:enabled="true" >
         </service>
 
@@ -61,31 +61,31 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ShowRoundResultActivity"
+            android:name="com.example.tuttifrutti.app2.ShowRoundResultActivity"
             android:label="@string/title_activity_show_round_result"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
         <activity
-            android:name=".ChooseRandomPlayersCountActivity"
+            android:name="com.example.tuttifrutti.app2.ChooseRandomPlayersCountActivity"
             android:label="@string/title_activity_choose_random_players_count"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
     <activity
-            android:name=".ViewGameStatusActivity"
+            android:name="com.example.tuttifrutti.app2.ViewGameStatusActivity"
             android:label="@string/title_activity_view_game_status"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
         <activity
-            android:name=".ShowGameResultActivity"
+            android:name="com.example.tuttifrutti.app2.ShowGameResultActivity"
             android:label="@string/title_activity_show_game_result"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
         <activity
-            android:name=".AndroidFacebookConnectActivity"
+            android:name="com.example.tuttifrutti.app2.AndroidFacebookConnectActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
@@ -96,7 +96,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ChooseFriendsActivity"
+            android:name="com.example.tuttifrutti.app2.ChooseFriendsActivity"
             android:label="@string/title_activity_choose_friends"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
@@ -109,7 +109,7 @@
             android:screenOrientation = "portrait"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
         <activity
-            android:name=".ViewCategoriesActivity"
+            android:name="com.example.tuttifrutti.app2.ViewCategoriesActivity"
             android:label="@string/title_activity_view_categories"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
@@ -117,13 +117,13 @@
         </activity>
 
         <activity
-            android:name=".ShowGameDetailsActivity"
+            android:name="com.example.tuttifrutti.app2.ShowGameDetailsActivity"
             android:label="@string/title_activity_show_game_details"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:screenOrientation = "portrait">
         </activity>
         <activity
-            android:name=".ShowGameRulesActivity"
+            android:name="com.example.tuttifrutti.app2.ShowGameRulesActivity"
             android:label="@string/title_activity_show_game_rules" >
         </activity>
     </application>

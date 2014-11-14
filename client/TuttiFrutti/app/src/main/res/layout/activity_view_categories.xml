@@ -8,14 +8,14 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context="com.example.tuttifrutti.app.ViewCategoriesActivity">
+    tools:context="com.example.tuttifrutti.app2.ViewCategoriesActivity">
 
     <LinearLayout android:id="@+id/topText"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView
+        <com.example.tuttifrutti.app2.Classes.TuttiFruttiAutoCompleteTextView
             android:id="@+id/searchView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

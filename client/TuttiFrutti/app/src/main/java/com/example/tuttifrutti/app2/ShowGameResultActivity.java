@@ -1,21 +1,15 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -25,9 +19,7 @@ import android.widget.Toast;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.GameScoreSummary;
 
-import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.GameRoundScoreSummary;
-import com.example.TuttiFruttiCore.PlayerResult;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.UserGame;

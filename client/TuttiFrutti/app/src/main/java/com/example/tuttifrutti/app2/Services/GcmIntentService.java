@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Services;
+package com.example.tuttifrutti.app2.Services;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -12,17 +12,17 @@ import android.support.v4.app.NotificationCompat;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.BroadcastReceivers.GcmBroadcastReceiver;
-import com.example.tuttifrutti.app.Classes.GameAndPlayerNotificationData;
-import com.example.tuttifrutti.app.Classes.GameNotificationData;
-import com.example.tuttifrutti.app.Classes.GenericNotificationData;
-import com.example.tuttifrutti.app.PlayRoundActivity;
-import com.example.tuttifrutti.app.ShowGameDetailsActivity;
-import com.example.tuttifrutti.app.ShowGameResultActivity;
-import com.example.tuttifrutti.app.ShowRoundResultActivity;
+import com.example.tuttifrutti.app2.BroadcastReceivers.GcmBroadcastReceiver;
+import com.example.tuttifrutti.app2.Classes.GameAndPlayerNotificationData;
+import com.example.tuttifrutti.app2.Classes.GameNotificationData;
+import com.example.tuttifrutti.app2.Classes.GenericNotificationData;
+import com.example.tuttifrutti.app2.PlayRoundActivity;
+import com.example.tuttifrutti.app2.ShowGameDetailsActivity;
+import com.example.tuttifrutti.app2.ShowGameResultActivity;
+import com.example.tuttifrutti.app2.ShowRoundResultActivity;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
-import com.example.tuttifrutti.app.R;
+import com.example.tuttifrutti.app2.R;
 
 
 public class GcmIntentService extends IntentService {

@@ -1,12 +1,11 @@
-package com.example.tuttifrutti.app.BroadcastReceivers;
+package com.example.tuttifrutti.app2.BroadcastReceivers;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import com.example.tuttifrutti.app.Services.GcmIntentService;
+import com.example.tuttifrutti.app2.Services.GcmIntentService;
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     public GcmBroadcastReceiver() {
