@@ -552,15 +552,22 @@ gameSchema.methods.rejectInvitation = function(request, callback){
       console.log("Invitation successfully rejected to player "+player.getName()+" in game "+game.gameId);
       if (game.opponentsType == game.getOpponentsType().FRIENDS){
           //elimino al que rechazo de los amigos seleccionados, asi cuando los demas contestan q si puedo iniciar el game
-          var index = game.selectedFriends.indexOf({ fbId:player.fbId, name:player.name});
-          if (index > -1) 
+          var selectedFoundFriend = game.selectedFriends.filter(function (sf) {
+              return sf.fbId == player.fbId;
+            }).pop();
+          var index = game.selectedFriends.indexOf(selectedFoundFriend);
+          if (index > -1) {
+            console.log("found and removed from selectedFriends name: "+player.name+" fbId:"+player.fbId);
             game.selectedFriends.splice(index, 1);
+          } 
           if (game.selectedFriends.length + 1 == game.players.length)
           {
             if (game.players.length == 1)
               game.status = game.getStatus().ALL_PLAYERS_REJECTED;
-            else
+            else{
               game.status = game.getStatus().WAITING_FOR_NEXT_ROUND;  
+              game.sendNotificationsFirstRoundEnabled(function(){});
+            }
           }
       }
       game.save(function(err) {
