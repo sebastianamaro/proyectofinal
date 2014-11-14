@@ -523,9 +523,18 @@ public class ViewGameStatusActivity extends ListActivity {
                 namesToShow = "<b>" + namesToShow.substring(0, namesToShow.lastIndexOf(" - ")) + "</b>";
 
                 if (rowItem.getSelectedFriends().size() > 0 && rowItem.getPlayers().size() <= (rowItem.getSelectedFriends().size()+1)) {
+                    boolean allPlayersAccepted = true;
                     for (Player selectedFriend : rowItem.getSelectedFriends()) {
-                        if (!rowItem.SelectedFriendIsPlayer(selectedFriend.getName()))
+                        if (!rowItem.SelectedFriendIsPlayer(selectedFriend.getName())) {
                             namesToShow += " - <font color='grey'>" + selectedFriend.getName() + "</font>";
+                            allPlayersAccepted = false;
+                        }
+                    }
+                    if (allPlayersAccepted)
+                    {
+                        //le saco la negrita si todos aceptaron porque no queda bien
+                        namesToShow = namesToShow.replace("<b>", "");
+                        namesToShow = namesToShow.replace("</b>", "");
                     }
                 }
                 else if (rowItem.getRandomPlayersCount() > 0 && rowItem.getPlayers().size() <= rowItem.getRandomPlayersCount())
