@@ -248,7 +248,8 @@ public class ViewGameStatusActivity extends ListActivity {
             private static final int ITEM_VIEW_TYPE_FULL_GAME = 4;
             private static final int ITEM_VIEW_TYPE_USER_GAME = 5;
             private static final int ITEM_VIEW_TYPE_FINISHED_USER_GAME = 6;
-            private static final int ITEM_VIEW_TYPE_COUNT = 7; // 1,2,3) Headers  4) separador invisible 5) Full Game 6) userGame
+            private static final int ITEM_VIEW_TYPE_NO_GAMES = 7;
+            private static final int ITEM_VIEW_TYPE_COUNT = 8; // 1,2,3) Headers  4) separador invisible 5) Full Game 6) userGame
             private static final String activeGamesText = "Partidas Activas";
             private static final String invitationsText = "Invitaciones";
             private static final String finishedGamesText = "Partidas Finalizadas";
@@ -303,23 +304,37 @@ public class ViewGameStatusActivity extends ListActivity {
 
                     this.games.add(finishedGamesSeparatorIndex, finishedGamesText);
                 }
+
+                if(!showsActiveGames && !showsInvitations && !this.showsFinishedGames)
+                {
+
+                    this.games.add(0,"");
+                    this.games.add(0,null);
+                    this.games.add(0,null);
+                }
             }
 
 
             @Override
             public int getItemViewType(int position) {
 
+                if(games.get(position) == null)
+                    return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
+
+                if(!showsActiveGames && !showsInvitations && !this.showsFinishedGames)
+                    return ITEM_VIEW_TYPE_NO_GAMES;
+
                 if (showsActiveGames) {
                     if (position == activeGamesSeparatorIndex)
                         return ITEM_VIEW_TYPE_ACTIVE_GAMES_SEPARATOR;
 
-                    if (showsInvitations) {
+                    /*if (showsInvitations) {
                         if (position == invitationsSeparatorIndex - 1)
                             return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
                     } else if (showsFinishedGames) {
                         if (position == finishedGamesSeparatorIndex - 1)
                             return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
-                    }
+                    }*/
                 }
 
 
@@ -327,10 +342,11 @@ public class ViewGameStatusActivity extends ListActivity {
                     if (position == invitationsSeparatorIndex)
                         return ITEM_VIEW_TYPE_INVITATIONS_SEPARATOR;
 
-                    if (showsFinishedGames) {
-                        if (position == finishedGamesSeparatorIndex - 1)
+                    /*if (showsFinishedGames) {
+                        if (position == finishedGamesSeparatorIndex - 1) {
                             return ITEM_VIEW_TYPE_EMPTY_SEPARATOR;
-                    }
+                        }
+                    }*/
                 }
 
                 if (showsFinishedGames) {
@@ -425,12 +441,24 @@ public class ViewGameStatusActivity extends ListActivity {
                     case ITEM_VIEW_TYPE_FINISHED_USER_GAME:
                         convertView = SetRowFinishedGamesViewHolder(i, convertView);
                         break;
+                    case ITEM_VIEW_TYPE_NO_GAMES:
+                        convertView = SetRowNoGamesViewHolder(convertView);
+                        break;
 
                 }
 
                 return convertView;
 
 
+            }
+
+            private View SetRowNoGamesViewHolder(View convertView) {
+
+                LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+                if (convertView == null) {
+                    convertView = mInflater.inflate(R.layout.list_row_no_games, null);
+                }
+                return convertView;
             }
 
             private View SetRowEmptyViewHolder(View convertView) {
@@ -607,6 +635,10 @@ public class ViewGameStatusActivity extends ListActivity {
                         Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
                     }else {
                         GamesAdapter.this.games.remove(ug);
+                        Object lastElement=GamesAdapter.this.games.get(GamesAdapter.this.games.size()-1);
+                        if(lastElement instanceof String) //if it only remains the header -> we remove it
+                            GamesAdapter.this.games.remove(lastElement);
+
                         GamesAdapter.this.notifyDataSetChanged();
                     }
                 }
