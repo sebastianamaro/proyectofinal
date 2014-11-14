@@ -15,7 +15,7 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.tuttifrutti.app.CreateGameActivity">
+    tools:context="com.example.tuttifrutti.app2.CreateGameActivity">
 
 
     <RelativeLayout

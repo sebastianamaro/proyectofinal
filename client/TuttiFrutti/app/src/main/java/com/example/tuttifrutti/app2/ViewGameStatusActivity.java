@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -28,7 +28,7 @@ import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.FullGame;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 

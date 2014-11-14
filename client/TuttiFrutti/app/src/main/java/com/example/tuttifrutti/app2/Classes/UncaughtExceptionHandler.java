@@ -1,9 +1,9 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.tuttifrutti.app.AndroidFacebookConnectActivity;
+import com.example.tuttifrutti.app2.AndroidFacebookConnectActivity;
 
 /**
  * Created by Nituguivi on 26/09/2014.

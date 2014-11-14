@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,32 +9,24 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
-import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.PlayerRoundScoreSummary;
-import com.example.TuttiFruttiCore.RoundScoreSummary;
 import com.example.TuttiFruttiCore.PlayScoreSummary;
 import com.example.TuttiFruttiCore.ScoreInfo;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
 
 import org.springframework.web.client.ResourceAccessException;
-
-import java.util.ArrayList;
 
 public class ShowRoundResultActivity extends ActionBarActivity {
     int gameId;

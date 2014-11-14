@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.TuttiFruttiCore.Category;
-import com.example.tuttifrutti.app.R;
+import com.example.tuttifrutti.app2.R;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 /**

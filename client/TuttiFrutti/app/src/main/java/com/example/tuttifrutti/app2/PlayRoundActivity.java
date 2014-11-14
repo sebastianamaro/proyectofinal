@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -38,8 +38,8 @@ import com.example.TuttiFruttiCore.FinishedRound;
 import com.example.TuttiFruttiCore.FullRound;
 import com.example.TuttiFruttiCore.Play;
 import com.example.TuttiFruttiCore.PlayServicesHelper;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
-import com.example.tuttifrutti.app.Classes.GameAndPlayerNotificationData;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.GameAndPlayerNotificationData;
 
 import org.springframework.web.client.ResourceAccessException;
 
@@ -275,7 +275,7 @@ public class PlayRoundActivity extends FragmentActivity implements
         EditText textView = (EditText)findViewById(R.id.pager).findViewWithTag(position);
 
         String categoryValue = textView.getText().toString();
-        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow,setEmptyPlays).execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName, position,
+        new SaveFilePlayFinishRoundTask(validateAllCategoriesPresent,messageToShow,setEmptyPlays).execute(new com.example.tuttifrutti.app2.Classes.FilePlay(fileName, position,
                 categoryValue, currentRound.getCategories().length, currentRound.getRoundId()));
     }
 
@@ -344,7 +344,7 @@ public class PlayRoundActivity extends FragmentActivity implements
                         }
                 );
 
-                new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app.Classes.FilePlay(fileName,-1,null,currentRound.getCategories().length,currentRound.getRoundId()));
+                new SaveFilePlayStartRoundTask().execute(new com.example.tuttifrutti.app2.Classes.FilePlay(fileName,-1,null,currentRound.getCategories().length,currentRound.getRoundId()));
 
             }
             dialog.dismiss();

@@ -1,9 +1,9 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.tuttifrutti.app.Classes.FilePlay;
+import com.example.tuttifrutti.app2.Classes.FilePlay;
 
 public class GenericFocusChangeListener implements View.OnFocusChangeListener {
 

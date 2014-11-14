@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -28,7 +28,7 @@ import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.InvitationResponse;
 import com.example.TuttiFruttiCore.Player;
 import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

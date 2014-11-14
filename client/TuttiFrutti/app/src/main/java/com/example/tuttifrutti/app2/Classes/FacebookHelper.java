@@ -1,14 +1,10 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.example.TuttiFruttiCore.Constants;
-import com.example.tuttifrutti.app.AndroidFacebookConnectActivity;
 import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 

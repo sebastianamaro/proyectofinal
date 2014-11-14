@@ -1,22 +1,14 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.example.TuttiFruttiAPI;
 import com.example.TuttiFruttiCore.Game;
-import com.example.TuttiFruttiCore.Player;
-import com.example.tuttifrutti.app.R;
 
-import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.web.client.ResourceAccessException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Sebastian on 13/09/2014.

@@ -1,10 +1,8 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
-import com.example.tuttifrutti.app.R;
 
 public class ShowGameRulesActivity extends ActionBarActivity {
 

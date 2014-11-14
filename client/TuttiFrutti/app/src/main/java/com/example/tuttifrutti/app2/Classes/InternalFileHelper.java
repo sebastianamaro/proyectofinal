@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app.Classes;
+package com.example.tuttifrutti.app2.Classes;
 
 import com.example.TuttiFruttiCore.FilePlay;
 import com.google.gson.Gson;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Created by Nituguivi on 21/06/2014.
  */
 public class InternalFileHelper {
-    public FilePlay saveCategoryValue(com.example.tuttifrutti.app.Classes.FilePlay filePlay) {
+    public FilePlay saveCategoryValue(com.example.tuttifrutti.app2.Classes.FilePlay filePlay) {
         FilePlay currentFilePlay = null;
 
         File file = new File(filePlay.getFileName());

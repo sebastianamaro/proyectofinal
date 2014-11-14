@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context="com.example.tuttifrutti.app.ChooseRandomPlayersCountActivity"
+    tools:context="com.example.tuttifrutti.app2.ChooseRandomPlayersCountActivity"
     android:id="@+id/rlChooseRandom">
 
     <RelativeLayout

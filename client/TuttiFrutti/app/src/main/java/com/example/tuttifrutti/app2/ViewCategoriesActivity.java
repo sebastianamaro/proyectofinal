@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,10 +31,9 @@ import com.example.TuttiFruttiCore.Category;
 import com.example.TuttiFruttiCore.Constants;
 import com.example.TuttiFruttiCore.Game;
 import com.example.TuttiFruttiCore.Player;
-import com.example.TuttiFruttiCore.UserGame;
-import com.example.tuttifrutti.app.Classes.CreateGameAsyncTask;
-import com.example.tuttifrutti.app.Classes.FacebookHelper;
-import com.example.tuttifrutti.app.Classes.TuttiFruttiAutoCompleteTextView;
+import com.example.tuttifrutti.app2.Classes.CreateGameAsyncTask;
+import com.example.tuttifrutti.app2.Classes.FacebookHelper;
+import com.example.tuttifrutti.app2.Classes.TuttiFruttiAutoCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.springframework.web.client.ResourceAccessException;

@@ -1,4 +1,4 @@
-package com.example.tuttifrutti.app;
+package com.example.tuttifrutti.app2;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
