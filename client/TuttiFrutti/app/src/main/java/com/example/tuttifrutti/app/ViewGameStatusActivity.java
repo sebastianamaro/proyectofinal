@@ -492,7 +492,7 @@ public class ViewGameStatusActivity extends ListActivity {
                 for (Player player : rowItem.getPlayers())
                     namesToShow += player.getName() + " - ";
 
-                namesToShow = namesToShow.substring(0, namesToShow.lastIndexOf(" - "));
+                namesToShow = "<b>" + namesToShow.substring(0, namesToShow.lastIndexOf(" - ")) + "</b>";
 
                 if (rowItem.getSelectedFriends().size() > 0 && rowItem.getPlayers().size() <= (rowItem.getSelectedFriends().size()+1)) {
                     for (Player selectedFriend : rowItem.getSelectedFriends()) {

@@ -59,6 +59,7 @@ android:orientation="vertical"
     android:scrollbars="horizontal|vertical"
     android:layout_width="match_parent"
     android:layout_marginTop="5dp"
+    android:layout_marginLeft="15dp"
     android:layout_marginBottom="15dp"
     android:scrollbarStyle="outsideInset"
     android:fillViewport="true">
@@ -73,8 +74,7 @@ android:orientation="vertical"
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/resultsTable"
-            android:layout_marginLeft="15dp">
+            android:id="@+id/resultsTable">
         </TableLayout>
     </HorizontalScrollView>
 </ScrollView>

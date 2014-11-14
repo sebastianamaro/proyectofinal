@@ -116,15 +116,18 @@ public class ShowRoundResultActivity extends ActionBarActivity {
                 //caso2: jugue y se termino la ronda -> con boton PROXIMA ronda
                 //caso2: NO jugue la ronda actual ->  boton ESTA ronda
                 Button btnJugar = (Button) findViewById(R.id.btnPlayNextRound);
+                TextView lblStatus = (TextView) findViewById(R.id.lblStatus);
+                lblStatus.setVisibility(View.GONE);
                 if (!result.getCanPlayerPlay() && roundId == -1) {
                     btnJugar.setEnabled(false);
                     if (!result.getGameStatus().isEmpty())
                     {
-                        TextView lblStatus = (TextView) findViewById(R.id.lblStatus);
+                        lblStatus.setVisibility(View.VISIBLE);
                         if(result.getGameStatus().equals(Constants.GAME_STATUS_WAITINGFORQUALIF))
                         {
                             lblStatus.setText("Esperando todas las calificaciones");
-                        }else if(result.getGameStatus().equals(Constants.GAME_STATUS_SHOWINGRESULTS))
+                        }
+						else if(result.getGameStatus().equals(Constants.GAME_STATUS_SHOWINGRESULTS))
                         {
                             lblStatus.setText("Esperando a que todos vean los resultados");
                         }
