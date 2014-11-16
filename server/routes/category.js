@@ -242,7 +242,7 @@ module.exports = function(app) {
       category.save(function(err) {
         if(!err) {
           console.log('Saved category with id '+category.id);
-          return res.status(204).send();  
+          return res.status(200).send();  
         } else {
           console.log('ERROR: Save category failed. ' + err);
           return res.send('Save category failed',500);  
