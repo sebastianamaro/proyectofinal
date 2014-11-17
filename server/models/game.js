@@ -258,6 +258,16 @@ gameSchema.methods.addRound = function (round){
   this.rounds.push(round);
 }
 
+gameSchema.methods.saveHitsToCategories = function (){
+  var categoriesIds = [];
+  for (var i = this.categories.length - 1; i >= 0; i--) {
+    categoriesIds.push(this.categories[i].id);
+  };
+  Category.update({ 'id': { $in : categoriesIds } },
+    {$inc:{hits:1}},
+    {multi:true},function(err,numAffected){
+    });
+}
 gameSchema.methods.setValues = function (game){
   this.mode = game.mode;
   this.categoriesType = game.categoriesType;
