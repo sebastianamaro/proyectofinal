@@ -140,7 +140,7 @@ module.exports = function(app) {
       game.save(function(err) {
         if(!err) {
           console.log('Created game with gameId '+largerId);
-
+          game.saveHitsToCategories();
           game.addPlayer(req.body.owner);
           
           
