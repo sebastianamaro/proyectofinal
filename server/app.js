@@ -11,7 +11,7 @@ routes = require('./routes/category.js')(app);
 app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.json({limit: '50mb'}));
+  app.use(express.json({limit: '50mb', parameterLimit:'30000'}));
   app.use(express.urlencoded({limit: '50mb', parameterLimit:'30000'}));
   app.use(app.router);
 });
