@@ -236,7 +236,7 @@ gameSchema.methods.hasStarted = function (){
 }
 
 gameSchema.methods.getNextLetter = function (){
-  var letters = ['A','B','C','D','E','F', 'G', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
+  var letters = ['A','B','C','D','E','F', 'G', 'I', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T',  'V'];
   var usedLetters = [];
 
   this.rounds.reduce(function(previousRound, currentRound, index, array){
