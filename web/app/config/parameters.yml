@@ -16,6 +16,6 @@ parameters:
     debug_redirects: false
     use_assetic_controller: true
 
-    server.location: 'localhost:8080'
+    server.location: '54.94.138.160:8080'
     server.category: category
     server.player: player

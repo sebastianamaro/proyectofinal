@@ -20,7 +20,7 @@ class CategoryFilterType extends AbstractType
                 'required'  => false,
                 'attr'=>array('class'=>'form-control')))
             ->add('isReported', 'choice', array(
-                'label'  => 'Fue reportada',
+                'label'  => 'Fue denunciada',
                 'choices'   => array(null => 'Todas', '0' => 'No', '1'=>'Si'),
                 'required'  => false,
                 'attr'=>array('class'=>'form-control')))
