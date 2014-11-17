@@ -394,10 +394,7 @@ public abstract class TokenCompleteTextView extends MultiAutoCompleteTextView im
 
     @Override
     public boolean onEditorAction(TextView view, int action, KeyEvent keyEvent) {
-        if (action == EditorInfo.IME_ACTION_DONE) {
-            handleDone();
-            return true;
-        }
+
         return false;
     }
 
