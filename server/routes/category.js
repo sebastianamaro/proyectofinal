@@ -187,7 +187,7 @@ module.exports = function(app) {
       category.isReported = true;
       category.save(function(err) {
         if(!err) {
-          console.log('Saved category with id '+category.id);
+          console.log('Saved reported category with id '+category.id);
           return res.status(204).send();  
         } else {
           console.log('ERROR: Save category failed. ' + err);
@@ -217,7 +217,7 @@ module.exports = function(app) {
       }
       category.save(function(err) {
         if(!err) {
-          console.log('Saved category with id '+category.id);
+          console.log('Saved edited category with id '+category.id);
           return res.status(200).send();  
         } else {
           console.log('ERROR: Save category failed. ' + err);

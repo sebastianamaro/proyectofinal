@@ -38,7 +38,7 @@ app.get('/category/hitsPerType', getCategoryHitsPerType);
 app.get('/category/:id', getCategory); 
 app.put('/category/:id', editCategory); 
 app.put('/category/:name/:word/reportAsValid', reportWordAsValid); 
-app.put('/category/:id?report', reportCategory); 
+app.put('/category/:id/report', reportCategory); 
 app.post('/category', createCategory); 
 app.delete('/category/:id', removeCategory); 
 
