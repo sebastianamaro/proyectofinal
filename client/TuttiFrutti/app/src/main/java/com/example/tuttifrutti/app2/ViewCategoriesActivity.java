@@ -642,7 +642,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                 {
                     this.connError = true;
                 }
-                return null;
+                return categoryId[0];
             }
 
             @Override

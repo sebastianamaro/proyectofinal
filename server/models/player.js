@@ -82,7 +82,7 @@ playerSchema.methods.sendInvitationToGameIfPossible = function(gameId, from){
   }
   var notification = new Notification();
   notification.setRegistrationId(this.registrationId);
-  notification.setValues({'game_id':gameId, 'player': from});
+  notification.setValues({'game_id':gameId, 'player': from.getFirstName()});
   notification.setMessageType(notification.getMessagesTypes().INVITATION);
   var player = this;
   notification.send(function(err){

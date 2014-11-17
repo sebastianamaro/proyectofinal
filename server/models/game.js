@@ -441,7 +441,7 @@ gameSchema.methods.getPlayerResults = function(partialScores){
   return playerResults;
 }
 gameSchema.methods.sendInvitations = function(callback){
-  var creator = this.creator[0].getFirstName();
+  var creator = this.creator[0];
   var gameId = this.gameId;
   
   var selectedFriendsFbsId = [];

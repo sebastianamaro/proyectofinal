@@ -229,7 +229,7 @@ public class TuttiFruttiAPI {
 
     public void reportCategory(int categoryId){
 
-        String url= serverURL+"category/"+ categoryId+"?report";
+        String url= serverURL+"category/"+ categoryId+"/report";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
