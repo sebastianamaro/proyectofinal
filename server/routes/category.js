@@ -130,7 +130,6 @@ module.exports = function(app) {
     var criteria = url.parse(req.url,true).query;
     var name = criteria.name;
     var fixed = criteria.isFixed;
-    console.log("value isFixed:"+fixed);
     var reported = criteria.isReported;
 
     var criteriaMongo = {};
@@ -139,10 +138,12 @@ module.exports = function(app) {
       criteriaMongo['name'] = nameLike;
     }
     if (hasValue(fixed)){
-      criteriaMongo['isFixed'] = fixed == '1' ? true : false;
+      var fixedValue = fixed.replace("?","");
+      criteriaMongo['isFixed'] = fixedValue == '1' ? true : false;
     }
     if (hasValue(reported)){
-      criteriaMongo['isReported'] = reported == '1' ? true : false;
+      var reportedValue = reported.replace("?","");
+      criteriaMongo['isReported'] = reportedValue == '1' ? true : false;
     }
     
     Category.find(criteriaMongo, function (err, categories){
