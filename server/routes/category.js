@@ -97,35 +97,11 @@ module.exports = function(app) {
         return res.status(204).send();  
       }
       var reportedWord = category.getReportedWord(valueWord);
-      if (reportedWord != undefined){
-        category.acceptedWords.push(valueWord);
-      }
 
-      category.save(function(err) {
-        if(!err) {
-          console.log('Added word to category with id '+category.id);
-          return res.status(204).send();  
-        } else {
-          console.log('ERROR: Save category failed. ' + err);
-          return res.send('Save category failed',500);  
+      if (reportedWord != undefined){
+        if (!arrayContains(category.acceptedWords,valueWord) && hasValue(valueWord)){
+          category.acceptedWords.push(valueWord);
         }
-      });
-    });
-  }
-  addWordToCategory = function(req, res) {
-    Category.findOne({id:req.params.id}, function (err, category){
-      if (err) return res.send(err, 500);
-      if (!category) return res.send('Category not found', 404);   
-
-      var valueWord = req.params.word.toUpperCase().trim();
-      if (!hasValue(valueWord)){
-        return res.status(204).send();  
-      }
-      if (!arrayContains(category.acceptedWords,valueWord)){
-        category.acceptedWords.push(valueWord);
-      }
-      var reportedWord = category.getReportedWord(valueWord);
-      if (reportedWord != undefined){
         var index = category.reportedWords.indexOf(reportedWord);
         category.reportedWords.splice(index, 1);
       }
@@ -154,6 +130,7 @@ module.exports = function(app) {
     var criteria = url.parse(req.url,true).query;
     var name = criteria.name;
     var fixed = criteria.isFixed;
+    console.log("value isFixed:"+fixed);
     var reported = criteria.isReported;
 
     var criteriaMongo = {};

@@ -42,7 +42,6 @@ app.put('/category/:id?report', reportCategory);
 app.post('/category', createCategory); 
 app.delete('/category/:id', removeCategory); 
 
-//app.post('/category/:id/word/:word', addWordToCategory); 
 app.put('/category/:id/word/:word', acceptReportedWordAsValid); 
 app.delete('/category/:id/word/:word', removeAcceptedWordFromCategory); 
 app.delete('/category/:id/word/:word?reported', removeReportedWordFromCategory); 
