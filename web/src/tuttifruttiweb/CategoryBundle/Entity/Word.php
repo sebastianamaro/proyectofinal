@@ -14,6 +14,9 @@ use tuttifruttiweb\UtilsBundle\Utils\StringModifier;
 class Word
 {
     public function __construct($value=''){
+        if (is_object($value)){
+            $value = $value->word;
+        }
         $str = new StringModifier();
         $this->value = $str->removeAccents(strtoupper($value));
     }

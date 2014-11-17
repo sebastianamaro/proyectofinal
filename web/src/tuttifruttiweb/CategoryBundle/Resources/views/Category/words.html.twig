@@ -11,6 +11,7 @@
     <thead>
       <tr>
         <th>Palabra</th>
+        <th>Cantidad Reportes</th>
         <th>Acciones</th>
 
       </tr>
@@ -19,6 +20,7 @@
     {% for word in reportedWordsPage %}
             <tr>
                 <td>{{ word.value }}</td>
+                <td>{{ word.count }}</td>
                 <td>
                     <a href="{{ path('reportedword_accept', { 'id': category.id, 'word':word.value }) }}" class="btn btn-primary btn-xs">aceptar</a>
                     <a href="{{ path('reportedword_reject', { 'id': category.id, 'word':word.value }) }}" class="btn btn-danger btn-xs">rechazar</a>

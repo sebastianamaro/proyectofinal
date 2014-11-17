@@ -87,11 +87,12 @@ class CategoryController extends Controller
             $acceptedWordsBatch = $form["acceptedWordsBatch"]->getData();
             $category->addAcceptedWordsBatch($acceptedWordsBatch);
             $encoder = new Encoder();
-            $objectCategory = $encoder->getSerializedObject($category);
+            $objectCategory = $encoder->getSerializedCategory($category);
             $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category');            
             $reqJson  = new HttpPostJson($url,$objectCategory);
             $categoryData = $this->get('api_caller')->call($reqJson);
-            if (!$categoryData->id){
+
+            if (!is_object($categoryData) || !$categoryData->id){
               throw new \Exception("Error al guardar la categoría", 1);
             }
             return $this->redirect($this->generateUrl('category_show', array('id' => $categoryData->id)));
@@ -202,7 +203,7 @@ class CategoryController extends Controller
           $acceptedWordsBatch = $editForm["acceptedWordsBatch"]->getData();
           $category->addAcceptedWordsBatch($acceptedWordsBatch);
           $encoder = new Encoder();
-          $objectCategory = $encoder->getSerializedObject($category);
+          $objectCategory = $encoder->getSerializedCategory($category);
 
           $url = $this->container->getParameter('server.location').'/'.$this->container->getParameter('server.category').'/'.$id;            
           $reqJson  = new HttpPutJson($url,$objectCategory);
