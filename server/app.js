@@ -44,7 +44,7 @@ app.delete('/category/:id', removeCategory);
 
 app.put('/category/:id/word/:word', acceptReportedWordAsValid); 
 app.delete('/category/:id/word/:word', removeAcceptedWordFromCategory); 
-app.delete('/category/:id/word/:word?reported', removeReportedWordFromCategory); 
+app.delete('/category/:id/word/:word/reported', removeReportedWordFromCategory); 
 
 var connection = mongoose.connect('mongodb://localhost:30000', function(err, res) {
   if(err) {
