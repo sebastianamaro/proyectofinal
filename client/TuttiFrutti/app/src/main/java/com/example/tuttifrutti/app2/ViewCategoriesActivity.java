@@ -182,7 +182,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         boolean connError;
 
         protected void onPreExecute(){
+
             api=new TuttiFruttiAPI(getString(R.string.server_url));
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Creando categoría...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -198,12 +205,14 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
         @Override
         protected void onPostExecute(Category result) {
+            dialog.dismiss();
             if (this.connError)
             {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
             }else {
                 new GetCategoriesAsyncTask(result).execute();
             }
+
         }
     }
 
@@ -212,12 +221,18 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
         public CreateGameFreeCategoriesAsyncTask(String serverUrl, Activity redirectionActivity)
         {
             super(serverUrl,redirectionActivity);
+            if(dialog.isShowing())
+                dialog.dismiss();
+
+            dialog.setMessage("Creando partida...");
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
 
         @Override
         protected void onPostExecute(Void result) {
-
+            dialog.dismiss();
             ad.setCancelable(false); // This blocks the 'BACK' button
             ad.setMessage("Se ha creado la partida!");
             ad.setButton("OK", new DialogInterface.OnClickListener() {
@@ -632,6 +647,13 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             protected void onPreExecute(){
                 api=new TuttiFruttiAPI(getString(R.string.server_url));
+
+                if(dialog.isShowing())
+                    dialog.dismiss();
+
+                dialog.setMessage("Reportando categoría...");
+                dialog.setCancelable(false);
+                dialog.show();
             }
 
             @Override
@@ -647,6 +669,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             @Override
             protected void onPostExecute(Category result) {
+                dialog.dismiss();
                 if (this.connError)
                 {
                     Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
@@ -654,6 +677,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
                     ((Category) result).setReported(true);
                     CategoryAdapter.this.notifyDataSetChanged();
                 }
+
             }
         }
 
@@ -664,11 +688,21 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             protected void onPreExecute(){
                 api=new TuttiFruttiAPI(getString(R.string.server_url));
+
+                if(dialog.isShowing())
+                    dialog.dismiss();
+                String mensaje="Editando categorías favortias...";
+
+                dialog.setMessage(mensaje);
+                dialog.setCancelable(false);
+                dialog.show();
+
             }
 
             @Override
             protected Category doInBackground(Category... categoryId) {
                 try {
+
                 api.starCategory(FacebookHelper.getUserId(getApplicationContext()),categoryId[0].getId());
                 return categoryId[0];
                 }catch (ResourceAccessException ex)
@@ -680,6 +714,7 @@ public class ViewCategoriesActivity extends ActionBarActivity implements TokenCo
 
             @Override
             protected void onPostExecute(Category result) {
+                dialog.dismiss();
                 if (this.connError)
                 {
                     Toast.makeText(getApplicationContext(), getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
